@@ -5,7 +5,7 @@
 int main(int argc, char const *argv[])
 {
     /* code */
-    std::ifstream file("read.txt");
+    std::ifstream file("test.txt");
     std::string str;
     std::vector<std::string> lines;
     while (std::getline(file, str))
@@ -14,6 +14,8 @@ int main(int argc, char const *argv[])
     }
     auto a = lexxer(lines);
     print_tokens(a);
+    std::cout << "" << std::endl;
+
     std::cout << "Successfully compiled" << std::endl;
     return 0;
 }
