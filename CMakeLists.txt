@@ -34,6 +34,7 @@ set(EXECUTABLE_NAME psuedoc)
 add_executable(${EXECUTABLE_NAME} 
    src/main.cpp
    src/lexxer.cpp
+   src/parser.cpp
 
 
 )

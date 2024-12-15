@@ -1,5 +1,6 @@
 #include <iostream>
 #include <Frontend/lexxer.h>
+#include <Frontend/parser.h>
 #include <fstream>
 
 int main(int argc, char const *argv[])
@@ -13,9 +14,12 @@ int main(int argc, char const *argv[])
         lines.push_back(str);
     }
     auto a = lexxer(lines);
-    print_tokens(a);
     std::cout << "" << std::endl;
+    print_tokens(a);
+    parse_node(a);
+    std::cout
+        << "" << std::endl;
 
-    std::cout << "Successfully compiled" << std::endl;
+    std::cout << "Successfully Compiled" << std::endl;
     return 0;
 }

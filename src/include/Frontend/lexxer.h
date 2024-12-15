@@ -1,15 +1,20 @@
 #include <vector>
+#include <iostream>
 
 #ifndef TOKEN_TYPE
 #define TOKEN_TYPE
 enum TokenType
 {
-    Number,
     Addition,
     Subtraction,
     Multiplication,
     Division,
-    Tab
+    Tab,
+    Identifier,
+    HexDigit,
+    BinaryDigit,
+    BaseTenDigit,
+
 };
 #endif
 
