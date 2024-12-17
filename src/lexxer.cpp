@@ -139,9 +139,6 @@ void is_token(Lexxer_Context &ctx)
         ctx.tokens.push_back({ctx.buffer, TokenType::Identifier});
     ctx.buffer = "";
 }
-void is_minus(Lexxer_Context &ctx, char value)
-{
-}
 
 void is_operand(Lexxer_Context &ctx, char value)
 {
@@ -175,7 +172,7 @@ void is_number(Lexxer_Context &ctx, char value)
 
         is_token(ctx);
         ctx.buffer += value;
-        std::cout << "state2 " << value << std::endl;
+        // std::cout << "state2 " << value << std::endl;
         ctx.state = 2;
     }
     else
@@ -218,24 +215,20 @@ std::vector<Tokens> lexxer(std::vector<std::string> lines)
             }
             if (ctx.state == 0)
             {
-                std::cout << "0" << std::endl;
+                // std::cout << "0" << std::endl;
                 is_space(ctx, current_char);
             }
             else if (ctx.state == 1)
             {
-                std::cout << "state 1 " << " current char: " << current_char << std::endl;
+                // std::cout << "state 1 " << " current char: " << current_char << std::endl;
 
                 is_number(ctx, current_char);
             }
             else if (ctx.state == 2)
             {
-                std::cout << "state 2 " << "current char: " << current_char << std::endl;
+                // std::cout << "state 2 " << "current char: " << current_char << std::endl;
 
                 is_operand(ctx, current_char);
-            }
-            else if (ctx.state == 3)
-            {
-                is_minus(ctx, current_char);
             }
         }
         ctx.state = 0;
