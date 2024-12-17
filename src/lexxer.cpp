@@ -14,6 +14,13 @@ enum TokenType
     HexDigit,
     BinaryDigit,
     BaseTenDigit,
+    Open_Parenthesis,
+    Close_Parenthesis,
+    Let,
+    Integer,
+    Decimal,
+    Conditional
+
 };
 
 struct Tokens
@@ -127,12 +134,18 @@ void is_token(Lexxer_Context &ctx)
     token_map["-"] = TokenType::Subtraction;
     token_map["*"] = TokenType::Multiplication;
     token_map["/"] = TokenType::Division;
+    token_map["("] = TokenType::Open_Parenthesis;
+    token_map[")"] = TokenType::Close_Parenthesis;
+    token_map["let"] = TokenType::Let;
+    token_map["conditional"] = TokenType::Conditional;
+    token_map["integer"] = TokenType::Integer;
+
     if (token_map.find(ctx.buffer) != token_map.end())
         ctx.tokens.push_back({ctx.buffer, token_map[ctx.buffer]});
     else if (is_hex_digit(ctx.buffer))
-        ctx.tokens.push_back({ctx.buffer, TokenType::HexDigit});
+        ctx.tokens.push_back({ctx.buffer.substr(2, ctx.buffer.size()), TokenType::HexDigit});
     else if (is_binary_digit(ctx.buffer))
-        ctx.tokens.push_back({ctx.buffer, TokenType::BinaryDigit});
+        ctx.tokens.push_back({ctx.buffer.substr(2, ctx.buffer.size()), TokenType::BinaryDigit});
     else if (is_base_ten(ctx.buffer))
         ctx.tokens.push_back({ctx.buffer, TokenType::BaseTenDigit});
     else
@@ -142,21 +155,11 @@ void is_token(Lexxer_Context &ctx)
 
 void is_operand(Lexxer_Context &ctx, char value)
 {
-    if (value == '-')
-    {
-        is_token(ctx);
 
-        ctx.buffer += value;
+    is_token(ctx);
+    ctx.buffer += value;
+    if (value != '(')
         ctx.state = 1;
-    }
-    else
-    {
-        is_token(ctx);
-        ctx.buffer += value;
-        ctx.state = 1;
-    }
-
-    // std::cout << "buffer state2 " << ctx.buffer << value << std::endl;
 }
 
 void is_number(Lexxer_Context &ctx, char value)
@@ -167,7 +170,7 @@ void is_number(Lexxer_Context &ctx, char value)
     {
         ctx.buffer += value;
     }
-    else if (value == '+' || value == '*' || value == '-' || value == '/')
+    else if (value == '+' || value == '*' || value == '-' || value == '/' || value == '(' || value == ')')
     {
 
         is_token(ctx);
@@ -250,6 +253,12 @@ void print_tokens(std::vector<Tokens> tokens)
 
     token_map[TokenType::Tab] = "Tab";
     token_map[TokenType::Identifier] = "Identifier";
+    token_map[TokenType::Open_Parenthesis] = "Open_paren";
+    token_map[TokenType::Close_Parenthesis] = "Close_paren";
+    token_map[TokenType::Integer] = "integer";
+    token_map[TokenType::Decimal] = "decimal";
+    token_map[TokenType::Conditional] = "conditional";
+    token_map[TokenType::Let] = "let";
 
     for (int i = 0; i < tokens.size(); i++)
     {

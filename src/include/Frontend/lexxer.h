@@ -14,6 +14,12 @@ enum TokenType
     HexDigit,
     BinaryDigit,
     BaseTenDigit,
+    Open_Parenthesis,
+    Close_Parenthesis,
+    Let,
+    Integer,
+    Decimal,
+    Conditional
 
 };
 #endif

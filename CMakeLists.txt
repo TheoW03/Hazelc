@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.22.1)
 project(SimpleProject)
 
 find_package(LLVM REQUIRED CONFIG)
-set(CMAKE_CXX_STANDARD 20)  # Requires C++20
+set(CMAKE_CXX_STANDARD 23)  # Requires C++20
 
 message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
 message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
@@ -35,6 +35,7 @@ add_executable(${EXECUTABLE_NAME}
    src/main.cpp
    src/lexxer.cpp
    src/parser.cpp
+   src/Ast.cpp
 
 
 )
