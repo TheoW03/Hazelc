@@ -1,15 +1,13 @@
 #include <iostream>
 #include <Frontend/lexxer.h>
 #include <Frontend/parser.h>
+#include <backend/Compiler.h>
 #include <fstream>
 #include <cstdlib>
 
 int main(int argc, char const *argv[])
 {
     /* code */
-    std::string c = "2";
-    unsigned int b = std::stoul(c, nullptr, 10);
-    std::cout << b << std::endl;
 
     std::ifstream file("test.txt");
     std::string str;
@@ -22,9 +20,8 @@ int main(int argc, char const *argv[])
     std::cout << "" << std::endl;
     print_tokens(a);
     parse_node(a);
-    std::cout
-        << "" << std::endl;
-
+    std::cout << "" << std::endl;
+    InitCompiler("file");
     std::cout << "Successfully Compiled" << std::endl;
     return 0;
 }

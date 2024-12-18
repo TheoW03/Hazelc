@@ -27,7 +27,7 @@ public:
 
 #ifndef EXPR_NODE_H
 #define EXPR_NODE_H
-class ExprNode : ASTNode
+class ExprNode : public ASTNode
 {
 public:
     std::shared_ptr<ASTNode> lhs;

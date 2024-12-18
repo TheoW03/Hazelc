@@ -68,14 +68,30 @@ std::optional<std::shared_ptr<ASTNode>> factor(std::vector<Tokens> &tokens)
 }
 std::optional<std::shared_ptr<ASTNode>> term(std::vector<Tokens> &tokens)
 {
-    return {};
+    auto lhs = factor(tokens);
+    auto op = match_and_remove({TokenType::Multiplication, TokenType::Division}, tokens);
+    while (op.has_value())
+    {
+        auto rhs = factor(tokens);
+        lhs = std::make_shared<ExprNode>(lhs.value(), op.value(), rhs.value());
+        op = match_and_remove({TokenType::Multiplication, TokenType::Division}, tokens);
+    }
+    return lhs;
 }
 std::optional<std::shared_ptr<ASTNode>> expression(std::vector<Tokens> &tokens)
 {
-    return {};
+    auto lhs = term(tokens);
+    auto op = match_and_remove({TokenType::Addition, TokenType::Subtraction}, tokens);
+    while (op.has_value())
+    {
+        auto rhs = term(tokens);
+        lhs = std::make_shared<ExprNode>(lhs.value(), op.value(), rhs.value());
+        op = match_and_remove({TokenType::Addition, TokenType::Subtraction}, tokens);
+    }
+    return lhs;
 }
 
-void parse_node(std::vector<Tokens> tokens)
+void parse_node(std::vector<Tokens> &tokens)
 {
     std::cout << "parsing" << std::endl;
 }

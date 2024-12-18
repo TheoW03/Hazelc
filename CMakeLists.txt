@@ -36,6 +36,7 @@ add_executable(${EXECUTABLE_NAME}
    src/lexxer.cpp
    src/parser.cpp
    src/Ast.cpp
+   src/Compiler.cpp
 
 
 )

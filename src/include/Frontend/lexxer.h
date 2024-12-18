@@ -30,6 +30,7 @@ struct Tokens
 {
     std::string value;
     TokenType type;
+    int line_num;
 };
 #endif
 

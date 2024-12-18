@@ -23,6 +23,9 @@ IntegerNode::IntegerNode(Tokens num)
 void IntegerNode::Accept() {}
 ExprNode::ExprNode(std::shared_ptr<ASTNode> lhs, Tokens operation, std::shared_ptr<ASTNode> rhs)
 {
+    this->lhs = lhs;
+    this->rhs = rhs;
+    this->operation = operation;
 }
 void ExprNode::Accept()
 {
