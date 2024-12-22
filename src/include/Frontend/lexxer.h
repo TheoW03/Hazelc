@@ -19,7 +19,9 @@ enum TokenType
     Let,
     Integer,
     Decimal,
-    Conditional
+    Conditional,
+    Indents,
+    Dedents
 
 };
 #endif

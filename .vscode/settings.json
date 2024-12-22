@@ -1,5 +1,5 @@
 {
-    "C_Cpp.errorSquiggles": "disabled",
+    "C_Cpp.errorSquiggles": "enabled",
     "files.associations": {
         "array": "cpp",
         "atomic": "cpp",
@@ -50,6 +50,8 @@
         "unordered_set": "cpp",
         "cstring": "cpp",
         "cinttypes": "cpp",
-        "optional": "cpp"
+        "optional": "cpp",
+        "bitset": "cpp",
+        "set": "cpp"
     }
 }

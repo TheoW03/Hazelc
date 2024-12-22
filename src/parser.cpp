@@ -91,7 +91,8 @@ std::optional<std::shared_ptr<ASTNode>> expression(std::vector<Tokens> &tokens)
     return lhs;
 }
 
-void parse_node(std::vector<Tokens> &tokens)
+std::optional<std::shared_ptr<ASTNode>> parse_node(std::vector<Tokens> &tokens)
 {
     std::cout << "parsing" << std::endl;
+    return expression(tokens);
 }

@@ -19,7 +19,9 @@ enum TokenType
     Let,
     Integer,
     Decimal,
-    Conditional
+    Conditional,
+    Indents,
+    Dedents
 
 };
 
@@ -35,6 +37,8 @@ struct Lexxer_Context
     int state;
     std::string buffer;
     std::vector<Tokens> tokens;
+    int indents_idx;
+    int indents_num;
 };
 bool is_hex_digit(std::string &str)
 {
@@ -165,7 +169,6 @@ void is_operand(Lexxer_Context &ctx, char value)
 
 void is_number(Lexxer_Context &ctx, char value)
 {
-    // std::cout << "buffer state1 " << ctx.buffer << "value: " << value << std::endl;
 
     if (value == '-' && ctx.buffer.size() == 0)
     {
@@ -189,11 +192,25 @@ void is_space(Lexxer_Context &ctx, char value)
 {
     if (ctx.buffer.size() == 4)
     {
-        ctx.tokens.push_back({"tab", TokenType::Tab});
+        // ctx.tokens.push_back({"tab", TokenType::Tab});
+
+        ctx.indents_idx++;
+
         ctx.buffer = "";
     }
     if (value != ' ')
     {
+        if (ctx.indents_idx > ctx.indents_num)
+        {
+            ctx.indents_num = ctx.indents_idx;
+            ctx.tokens.push_back({"Indent", TokenType::Indents});
+        }
+        else if (ctx.indents_idx < ctx.indents_num)
+        {
+            ctx.indents_num = ctx.indents_idx;
+            ctx.tokens.push_back({"dedent", TokenType::Dedents});
+        }
+        ctx.indents_idx = 0;
         ctx.state = 1;
         ctx.buffer += value;
     }
@@ -260,6 +277,8 @@ void print_tokens(std::vector<Tokens> tokens)
     token_map[TokenType::Decimal] = "decimal";
     token_map[TokenType::Conditional] = "conditional";
     token_map[TokenType::Let] = "let";
+    token_map[TokenType::Indents] = "indent";
+    token_map[TokenType::Dedents] = "dedent";
 
     for (int i = 0; i < tokens.size(); i++)
     {

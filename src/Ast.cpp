@@ -1,4 +1,5 @@
 #include <Frontend/Ast.h>
+#include <map>
 ASTNode::~ASTNode()
 {
 }
@@ -21,6 +22,11 @@ IntegerNode::IntegerNode(Tokens num)
     }
 }
 void IntegerNode::Accept() {}
+
+std::string IntegerNode::to_string()
+{
+    return std::to_string(this->number);
+}
 ExprNode::ExprNode(std::shared_ptr<ASTNode> lhs, Tokens operation, std::shared_ptr<ASTNode> rhs)
 {
     this->lhs = lhs;
@@ -29,4 +35,15 @@ ExprNode::ExprNode(std::shared_ptr<ASTNode> lhs, Tokens operation, std::shared_p
 }
 void ExprNode::Accept()
 {
+}
+
+std::string ExprNode::to_string()
+{
+    std::map<TokenType, std::string> token_map;
+
+    token_map[TokenType::Addition] = "+";
+    token_map[TokenType::Subtraction] = "-";
+    token_map[TokenType::Multiplication] = "*";
+    token_map[TokenType::Division] = "/";
+    return lhs->to_string() + token_map[operation.type] + rhs->to_string();
 }

@@ -10,6 +10,7 @@ public:
     virtual void Accept() = 0;
     ASTNode();
     ~ASTNode();
+    virtual std::string to_string() = 0;
 };
 #endif
 
@@ -22,6 +23,7 @@ public:
 
     IntegerNode(Tokens num);
     void Accept();
+    std::string to_string();
 };
 #endif
 
@@ -35,5 +37,6 @@ public:
     Tokens operation;
     ExprNode(std::shared_ptr<ASTNode> lhs, Tokens operation, std::shared_ptr<ASTNode> rhs);
     void Accept();
+    std::string to_string();
 };
 #endif
