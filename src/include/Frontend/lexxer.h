@@ -21,7 +21,18 @@ enum TokenType
     Decimal,
     Conditional,
     Indents,
-    Dedents
+    Dedents,
+    Return,
+    cont_line,
+    Colon,
+    Default,
+    Comma,
+    Arrow,
+    GT,
+    LT,
+    LTE,
+    EQ,
+    GTE
 
 };
 #endif

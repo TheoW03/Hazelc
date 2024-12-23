@@ -21,7 +21,18 @@ enum TokenType
     Decimal,
     Conditional,
     Indents,
-    Dedents
+    Dedents,
+    Return,
+    cont_line,
+    Colon,
+    Comma,
+    Default,
+    Arrow,
+    GT,
+    LT,
+    LTE,
+    EQ,
+    GTE
 
 };
 
@@ -144,6 +155,18 @@ void is_token(Lexxer_Context &ctx)
     token_map["let"] = TokenType::Let;
     token_map["conditional"] = TokenType::Conditional;
     token_map["integer"] = TokenType::Integer;
+    token_map["return"] = TokenType::Return;
+    token_map["|"] = TokenType::cont_line;
+    token_map[":"] = TokenType::Colon;
+    token_map[","] = TokenType::Comma;
+
+    token_map["$default"] = TokenType::Default;
+    token_map["="] = TokenType::EQ;
+    token_map["=>"] = TokenType::Arrow;
+    token_map["<="] = TokenType::LTE;
+    token_map[">="] = TokenType::GTE;
+    token_map[">"] = TokenType::GT;
+    token_map["<"] = TokenType::LT;
 
     if (token_map.find(ctx.buffer) != token_map.end())
         ctx.tokens.push_back({ctx.buffer, token_map[ctx.buffer]});
@@ -166,6 +189,15 @@ void is_operand(Lexxer_Context &ctx, char value)
     if (value != '(')
         ctx.state = 1;
 }
+void is_equal(Lexxer_Context &ctx, char value)
+{
+    if (value == '=' || value == '>' || value == '<')
+    {
+        ctx.buffer += value;
+    }
+    is_token(ctx);
+    ctx.state = 1;
+}
 
 void is_number(Lexxer_Context &ctx, char value)
 {
@@ -181,6 +213,19 @@ void is_number(Lexxer_Context &ctx, char value)
         ctx.buffer += value;
         // std::cout << "state2 " << value << std::endl;
         ctx.state = 2;
+    }
+    else if (value == ':' || value == ',')
+    {
+        is_token(ctx);
+        ctx.buffer += value;
+        is_token(ctx);
+    }
+    else if (value == '=' || value == '>' || value == '<')
+    {
+        is_token(ctx);
+
+        ctx.buffer += value;
+        ctx.state = 3;
     }
     else
     {
@@ -251,6 +296,12 @@ std::vector<Tokens> lexxer(std::vector<std::string> lines)
 
                 is_operand(ctx, current_char);
             }
+            else if (ctx.state == 3)
+            {
+                // std::cout << "state 2 " << "current char: " << current_char << std::endl;
+
+                is_equal(ctx, current_char);
+            }
         }
         ctx.state = 0;
         is_token(ctx);
@@ -279,6 +330,17 @@ void print_tokens(std::vector<Tokens> tokens)
     token_map[TokenType::Let] = "let";
     token_map[TokenType::Indents] = "indent";
     token_map[TokenType::Dedents] = "dedent";
+    token_map[TokenType::Colon] = "Colon";
+    token_map[TokenType::Return] = "return";
+    token_map[TokenType::Default] = "defualt";
+    token_map[TokenType::Comma] = "comma";
+    token_map[TokenType::Arrow] = "Arrow";
+    token_map[TokenType::GTE] = "Gte";
+    token_map[TokenType::GT] = "Gt";
+    token_map[TokenType::LT] = "Lt";
+    token_map[TokenType::LTE] = "LTE";
+    token_map[TokenType::EQ] = "EQ";
+    token_map[TokenType::cont_line] = "contine";
 
     for (int i = 0; i < tokens.size(); i++)
     {

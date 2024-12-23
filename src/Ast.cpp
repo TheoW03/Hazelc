@@ -1,5 +1,6 @@
 #include <Frontend/Ast.h>
 #include <map>
+
 ASTNode::~ASTNode()
 {
 }
@@ -46,4 +47,53 @@ std::string ExprNode::to_string()
     token_map[TokenType::Multiplication] = "*";
     token_map[TokenType::Division] = "/";
     return lhs->to_string() + token_map[operation.type] + rhs->to_string();
+}
+
+FunctionRefNode::FunctionRefNode(Tokens name,
+                                 std::vector<std::shared_ptr<FunctionRefNode>> params,
+                                 std::shared_ptr<Type> returnType)
+{
+}
+
+void FunctionRefNode::Accept()
+{
+}
+
+std::string FunctionRefNode::to_string()
+{
+    return std::string();
+}
+
+FunctionNode::FunctionNode(std::shared_ptr<FunctionRefNode> functionHeader, std::vector<std::shared_ptr<ASTNode>> stmnts)
+{
+}
+
+void FunctionNode::Accept()
+{
+}
+
+std::string FunctionNode::to_string()
+{
+    return std::string();
+}
+
+std::string NativeType::to_string()
+{
+    return std::string();
+}
+FunctionType::FunctionType(std::shared_ptr<Type> params,
+                           std::shared_ptr<Type> returnType)
+{
+}
+NativeType::NativeType(Tokens type)
+{
+}
+std::string FunctionType::to_string()
+{
+    return std::string();
+}
+
+std::string Type::to_string()
+{
+    return "";
 }
