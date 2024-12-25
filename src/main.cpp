@@ -5,7 +5,7 @@
 #include <fstream>
 #include <cstdlib>
 
-int main(int argc, char const *argv[])
+int main(int argc, char *argv[])
 {
     /* code */
 
@@ -17,12 +17,12 @@ int main(int argc, char const *argv[])
         lines.push_back(str);
     }
     auto a = lexxer(lines);
-    std::cout << "" << std::endl;
+    // std::cout << "" << std::endl;
     print_tokens(a);
-    auto p = parse_node(a);
-    std::cout << "" << std::endl;
-    std::cout << "parsed expr: " << p.value()->to_string() << std::endl;
-    std::cout << "" << std::endl;
+    // auto p = parse_node(a);
+    // std::cout << "" << std::endl;
+    // std::cout << "parsed expr: " << p.value()->to_string() << std::endl;
+    // std::cout << "" << std::endl;
     InitCompiler("file");
     std::cout << "Successfully Compiled" << std::endl;
     return 0;
