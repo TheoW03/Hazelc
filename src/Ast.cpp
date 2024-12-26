@@ -81,7 +81,7 @@ std::string NativeType::to_string()
 {
     return std::string();
 }
-FunctionType::FunctionType(std::shared_ptr<Type> params,
+FunctionType::FunctionType(std::vector<std::shared_ptr<Type>> params,
                            std::shared_ptr<Type> returnType)
 {
 }

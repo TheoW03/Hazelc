@@ -33,26 +33,5 @@ add_llvm_executable(${EXECUTABLE_NAME}
 
 
 )
-separate_arguments(LLVM_DEFINITIONS_LIST NATIVE_COMMAND ${LLVM_DEFINITIONS})
-add_definitions(${LLVM_DEFINITIONS_LIST})
 
-# Now build our tools
-# Specify the output directory for the executable
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/..)
-message("Include paths of YourDependency: ${YourDependency_INCLUDE_DIRS}")
-
-# execute_process(
-#     COMMAND llvm-config --ldflags
-#     OUTPUT_VARIABLE LLVM_LIBS
-#     OUTPUT_STRIP_TRAILING_WHITESPACE
-# )
-
-
-target_include_directories(${EXECUTABLE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/src/include)
-
-# Find the libraries that correspond to the LLVM components
-# that we wish to use
-llvm_map_components_to_libnames(llvm_libs support core irreader native mc target  )
-
-# Link against LLVM libraries
-# target_link_libraries(${EXECUTABLE_NAME} ${llvm_libs})

@@ -26,6 +26,8 @@ class Type
 
 class NativeType : public Type
 {
+public:
+    Tokens type;
     NativeType(Tokens type);
     std::string to_string();
 };
@@ -36,7 +38,8 @@ class NativeType : public Type
 
 class FunctionType : public Type
 {
-    FunctionType(std::shared_ptr<Type> params, std::shared_ptr<Type> returnType);
+public:
+    FunctionType(std::vector<std::shared_ptr<Type>> params, std::shared_ptr<Type> returnType);
     std::string to_string();
 };
 #endif

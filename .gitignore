@@ -1,3 +1,4 @@
 psuedoc
 test.txt
 /build/
+*.o
