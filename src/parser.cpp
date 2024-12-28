@@ -3,10 +3,14 @@
 #include <Frontend/lexxer.h>
 #include <iostream>
 #include <Frontend/Ast.h>
+#include <map>
+#include <stdint.h>
+
 std::optional<Tokens> current;
 
 std::optional<std::shared_ptr<ASTNode>> expression(std::vector<Tokens> &tokens);
 std::optional<std::shared_ptr<FunctionRefNode>> parse_function_ref(std::vector<Tokens> &tokens);
+using parser = std::optional<std::shared_ptr<ASTNode>> (*)(std::vector<Tokens> &);
 
 std::optional<Tokens> match_and_remove(TokenType token_type, std::vector<Tokens> &tokens)
 {
@@ -32,6 +36,10 @@ std::optional<Tokens> match_and_remove(std::vector<TokenType> token, std::vector
         }
     }
     return {};
+}
+Tokens get_next_token(std::vector<Tokens> &tokens)
+{
+    return tokens[0];
 }
 
 bool look_ahead(TokenType t, std::vector<Tokens> &tokens)
@@ -98,6 +106,7 @@ std::optional<std::shared_ptr<ASTNode>> expression(std::vector<Tokens> &tokens)
 std::vector<std::shared_ptr<FunctionRefNode>> parse_params(std::vector<Tokens> &tokens)
 {
     std::vector<std::shared_ptr<FunctionRefNode>> params;
+
     if (!match_and_remove(TokenType::Open_Parenthesis, tokens)
              .has_value())
     {
@@ -149,21 +158,21 @@ std::optional<std::shared_ptr<FunctionRefNode>> parse_function_ref(std::vector<T
 }
 std::optional<std::shared_ptr<ASTNode>> parse_function(std::vector<Tokens> &tokens)
 {
+    match_and_remove(TokenType::Let, tokens);
     auto func = parse_function_ref(tokens);
     std::vector<std::shared_ptr<ASTNode>> ast;
 
     return std::make_shared<FunctionNode>(func.value(),
                                           ast);
 }
+
 std::optional<std::shared_ptr<ASTNode>> parse_stmnts(std::vector<Tokens> &tokens)
 {
-    if (match_and_remove(TokenType::Let, tokens).has_value())
-    {
-        std::cout << "let" << std::endl;
-        // print_tokens(tokens);
-        return parse_function(tokens);
-    }
-    return {};
+    using std::make_pair; // here bc im lazy you may use using on the stack level. but lets stick to this
+
+    std::map<TokenType, parser> parse_map;
+    parse_map.insert(make_pair(TokenType::Let, (parser)parse_function));
+    return parse_map.at(get_next_token(tokens).type)(tokens);
 }
 std::optional<std::shared_ptr<ASTNode>> parse_node(std::vector<Tokens> &tokens)
 {
