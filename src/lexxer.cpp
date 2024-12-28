@@ -32,7 +32,8 @@ enum TokenType
     LT,
     LTE,
     EQ,
-    GTE
+    GTE,
+    None
 
 };
 
@@ -167,6 +168,7 @@ void is_token(Lexxer_Context &ctx)
     token_map[">="] = TokenType::GTE;
     token_map[">"] = TokenType::GT;
     token_map["<"] = TokenType::LT;
+    token_map["None"] = TokenType::None;
 
     if (token_map.find(ctx.buffer) != token_map.end())
         ctx.tokens.push_back({ctx.buffer, token_map[ctx.buffer]});

@@ -97,3 +97,30 @@ std::string Type::to_string()
 {
     return "";
 }
+
+NoneNode::NoneNode()
+{
+}
+
+void NoneNode::Accept()
+{
+}
+
+std::string NoneNode::to_string()
+{
+    return std::string();
+}
+
+ReturnNode::ReturnNode(std::shared_ptr<ASTNode> expr)
+{
+    this->Expr = expr;
+}
+
+void ReturnNode::Accept()
+{
+}
+
+std::string ReturnNode::to_string()
+{
+    return std::string();
+}

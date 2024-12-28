@@ -96,3 +96,24 @@ public:
     std::string to_string();
 };
 #endif
+#ifndef NONE_H
+#define NONE_H
+class NoneNode : public ASTNode
+{
+public:
+    NoneNode();
+    void Accept();
+    std::string to_string();
+};
+#endif
+#ifndef RETURN_H
+#define RETURN_H
+class ReturnNode : public ASTNode
+{
+public:
+    std::shared_ptr<ASTNode> Expr;
+    ReturnNode(std::shared_ptr<ASTNode> expr);
+    void Accept();
+    std::string to_string();
+};
+#endif

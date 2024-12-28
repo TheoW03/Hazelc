@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
     // std::cout << "" << std::endl;
     // std::cout << "parsed expr: " << p.value()->to_string() << std::endl;
     // std::cout << "" << std::endl;
-    // InitCompiler("file");
+    InitCompiler("file");
     std::cout << "Successfully Compiled" << std::endl;
     return 0;
 }

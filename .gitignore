@@ -2,3 +2,4 @@ psuedoc
 test.txt
 /build/
 *.o
+LazyEvalInt.c

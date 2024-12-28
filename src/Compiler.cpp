@@ -19,6 +19,34 @@ void InitCompiler(std::string file_name)
 {
     llvm::LLVMContext context;
     llvm::Module module("my_module", context);
+    llvm::IRBuilder<> builder(context);
+
+    llvm::ArrayType *arrayType = llvm::ArrayType::get(builder.getInt8PtrTy(), 10000);
+
+    // sets up the run time
+
+    llvm::GlobalVariable *myGlobal = new llvm::GlobalVariable(
+        module,    // Module to insert into
+        arrayType, // Type of the variable
+        false,     // Is constant? (false = mutable)
+        llvm::GlobalValue::ExternalLinkage,
+        nullptr, // Linkage type
+        "stack_size");
+
+    llvm::FunctionType *push_type = llvm::FunctionType::get(
+        builder.getVoidTy(), {builder.getInt8PtrTy()}, false);
+    llvm::FunctionType *pop_type = llvm::FunctionType::get(
+        builder.getInt8PtrTy(), {}, false);
+    llvm::FunctionType *bottom_type = llvm::FunctionType::get(
+        builder.getVoidTy(), {}, false);
+
+    llvm::Function *push_cont = llvm::Function::Create(
+        push_type, llvm::Function::ExternalLinkage, "pushContinuation", module);
+    llvm::Function *pop_cont = llvm::Function::Create(
+        pop_type, llvm::Function::ExternalLinkage, "popContinuation", module);
+    llvm::Function *bottom = llvm::Function::Create(
+        bottom_type, llvm::Function::ExternalLinkage, "bottom", module);
+
     auto TargetTriple = llvm::sys::getDefaultTargetTriple();
     // Initialize the target registry etc.
     llvm::InitializeAllTargets();

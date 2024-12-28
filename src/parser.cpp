@@ -69,6 +69,10 @@ std::optional<std::shared_ptr<ASTNode>> factor(std::vector<Tokens> &tokens)
                                        tokens);
         return std::make_shared<IntegerNode>(number.value());
     }
+    else if (match_and_remove(TokenType::None, tokens).has_value())
+    {
+        return std::make_shared<NoneNode>();
+    }
     else if (look_ahead(TokenType::Open_Parenthesis, tokens))
     {
         match_and_remove(TokenType::Open_Parenthesis, tokens);
@@ -153,8 +157,27 @@ std::optional<std::shared_ptr<FunctionRefNode>> parse_function_ref(std::vector<T
     auto params = parse_params(tokens);
     match_and_remove(TokenType::Colon, tokens);
 
-    auto ret = parse_type(tokens);
-    return std::make_shared<FunctionRefNode>(name.value(), params, ret.value());
+    auto ret_type = parse_type(tokens);
+    return std::make_shared<FunctionRefNode>(name.value(), params, ret_type.value());
+}
+std::vector<std::shared_ptr<ASTNode>> parse_scope(std::vector<Tokens> &tokens)
+{
+    std::vector<std::shared_ptr<ASTNode>> ast;
+    if (match_and_remove(TokenType::Indents, tokens))
+    {
+        while (match_and_remove(TokenType::Dedents, tokens).has_value())
+        {
+            std::optional<std::shared_ptr<ASTNode>> parse_stmnts(std::vector<Tokens> & tokens);
+            auto v = parse_stmnts(tokens);
+            ast.push_back(v.value());
+        }
+    }
+    else if (match_and_remove(TokenType::Arrow, tokens).has_value())
+    {
+        ast.push_back(std::make_shared<ReturnNode>(expression(tokens).value()));
+    }
+
+    return ast;
 }
 std::optional<std::shared_ptr<ASTNode>> parse_function(std::vector<Tokens> &tokens)
 {
@@ -172,7 +195,7 @@ std::optional<std::shared_ptr<ASTNode>> parse_stmnts(std::vector<Tokens> &tokens
 
     std::map<TokenType, parser> parse_map;
     parse_map.insert(make_pair(TokenType::Let, (parser)parse_function));
-    return parse_map.at(get_next_token(tokens).type)(tokens);
+    return parse_map.at(get_next_token(tokens).type)(tokens); // meow :3
 }
 std::optional<std::shared_ptr<ASTNode>> parse_node(std::vector<Tokens> &tokens)
 {
