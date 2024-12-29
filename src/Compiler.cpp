@@ -31,7 +31,7 @@ void InitCompiler(std::string file_name)
         false,     // Is constant? (false = mutable)
         llvm::GlobalValue::ExternalLinkage,
         nullptr, // Linkage type
-        "stack_size");
+        "stack");
 
     llvm::FunctionType *push_type = llvm::FunctionType::get(
         builder.getVoidTy(), {builder.getInt8PtrTy()}, false);
