@@ -30,13 +30,7 @@ add_llvm_executable(${EXECUTABLE_NAME}
    src/parser.cpp
    src/Ast.cpp
    src/Compiler.cpp
-   src/semantic_analysis.cpp 
-
-
-
-
-
-
+   src/semantic_analysis.cpp
 
 )
 
