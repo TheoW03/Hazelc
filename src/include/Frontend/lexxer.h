@@ -33,7 +33,9 @@ enum TokenType
     LTE,
     EQ,
     GTE,
-    None
+    None,
+    Open_Bracket,
+    Closed_Bracket
 
 };
 #endif

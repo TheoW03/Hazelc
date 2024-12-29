@@ -44,6 +44,17 @@ public:
 };
 #endif
 
+#ifndef LIST_TYPE_H
+#define LIST_TYPE_H
+
+class ListType : public Type
+{
+public:
+    ListType(std::shared_ptr<Type> inner);
+    std::string to_string();
+};
+#endif
+
 #ifndef INTNODE_H
 #define INTNODE_H
 class IntegerNode : public ASTNode

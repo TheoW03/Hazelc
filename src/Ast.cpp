@@ -124,3 +124,12 @@ std::string ReturnNode::to_string()
 {
     return std::string();
 }
+
+ListType::ListType(std::shared_ptr<Type> inner)
+{
+}
+
+std::string ListType::to_string()
+{
+    return std::string();
+}

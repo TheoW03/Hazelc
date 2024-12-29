@@ -121,8 +121,6 @@ std::vector<std::shared_ptr<FunctionRefNode>> parse_params(std::vector<Tokens> &
         match_and_remove(TokenType::Let, tokens);
         params.push_back(parse_function_ref(tokens)
                              .value());
-        // print_tokens(tokens);
-        // std::cout << "" << std::endl;
         match_and_remove(TokenType::Comma, tokens);
     }
 
@@ -148,6 +146,10 @@ std::optional<std::shared_ptr<Type>> parse_type(std::vector<Tokens> &tokens)
         match_and_remove(TokenType::Colon, tokens);
         auto retty = parse_type(tokens).value();
         return std::make_shared<FunctionType>(type_params, retty);
+    }
+    else if (look_ahead(TokenType::Open_Bracket, tokens))
+    {
+        return std::make_shared<ListType>(parse_type(tokens).value());
     }
     return {};
 }
@@ -188,6 +190,11 @@ std::optional<std::shared_ptr<ASTNode>> parse_function(std::vector<Tokens> &toke
     return std::make_shared<FunctionNode>(func.value(),
                                           ast);
 }
+std::optional<std::shared_ptr<ASTNode>> parse_return(std::vector<Tokens> &tokens)
+{
+    match_and_remove(TokenType::Return, tokens);
+    return std::make_shared<ReturnNode>(expression(tokens).value());
+}
 
 std::optional<std::shared_ptr<ASTNode>> parse_stmnts(std::vector<Tokens> &tokens)
 {
@@ -195,6 +202,8 @@ std::optional<std::shared_ptr<ASTNode>> parse_stmnts(std::vector<Tokens> &tokens
 
     std::map<TokenType, parser> parse_map;
     parse_map.insert(make_pair(TokenType::Let, (parser)parse_function));
+    parse_map.insert(make_pair(TokenType::Return, (parser)parse_return));
+
     return parse_map.at(get_next_token(tokens).type)(tokens); // meow :3
 }
 std::optional<std::shared_ptr<ASTNode>> parse_node(std::vector<Tokens> &tokens)

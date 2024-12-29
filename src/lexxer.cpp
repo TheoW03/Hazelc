@@ -33,7 +33,9 @@ enum TokenType
     LTE,
     EQ,
     GTE,
-    None
+    None,
+    Open_Bracket,
+    Closed_Bracket
 
 };
 
@@ -169,6 +171,8 @@ void is_token(Lexxer_Context &ctx)
     token_map[">"] = TokenType::GT;
     token_map["<"] = TokenType::LT;
     token_map["None"] = TokenType::None;
+    token_map["["] = TokenType::Open_Bracket;
+    token_map["]"] = TokenType::Closed_Bracket;
 
     if (token_map.find(ctx.buffer) != token_map.end())
         ctx.tokens.push_back({ctx.buffer, token_map[ctx.buffer]});
@@ -216,7 +220,7 @@ void is_number(Lexxer_Context &ctx, char value)
         // std::cout << "state2 " << value << std::endl;
         ctx.state = 2;
     }
-    else if (value == ':' || value == ',')
+    else if (value == ':' || value == ',' || value == '[' || value == ']')
     {
         is_token(ctx);
         ctx.buffer += value;
@@ -231,6 +235,7 @@ void is_number(Lexxer_Context &ctx, char value)
     }
     else
     {
+
         ctx.buffer += value;
     }
 }
@@ -259,7 +264,8 @@ void is_space(Lexxer_Context &ctx, char value)
         }
         ctx.indents_idx = 0;
         ctx.state = 1;
-        ctx.buffer += value;
+        is_number(ctx, value);
+        // ctx.buffer += value;
     }
     else
         ctx.buffer += value;
@@ -343,6 +349,8 @@ void print_tokens(std::vector<Tokens> tokens)
     token_map[TokenType::LTE] = "LTE";
     token_map[TokenType::EQ] = "EQ";
     token_map[TokenType::cont_line] = "contine";
+    token_map[TokenType::Open_Bracket] = "Open bracket";
+    token_map[TokenType::Closed_Bracket] = "Closed bracket";
 
     for (int i = 0; i < tokens.size(); i++)
     {
