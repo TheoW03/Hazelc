@@ -73,7 +73,7 @@ public:
 class FunctionRefNode : public ASTNode
 {
 public:
-    int number;
+    Tokens FunctionName;
     FunctionRefNode(Tokens name,
                     std::vector<std::shared_ptr<FunctionRefNode>> params,
                     std::shared_ptr<Type> returnType);
@@ -87,6 +87,7 @@ public:
 class FunctionNode : public ASTNode
 {
 public:
+    std::shared_ptr<FunctionRefNode> f;
     FunctionNode(std::shared_ptr<FunctionRefNode> functionHeader,
                  std::vector<std::shared_ptr<ASTNode>> stmnts);
     void Accept();

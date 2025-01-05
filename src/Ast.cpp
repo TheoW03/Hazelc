@@ -53,6 +53,7 @@ FunctionRefNode::FunctionRefNode(Tokens name,
                                  std::vector<std::shared_ptr<FunctionRefNode>> params,
                                  std::shared_ptr<Type> returnType)
 {
+    this->FunctionName = name;
 }
 
 void FunctionRefNode::Accept()
@@ -66,6 +67,7 @@ std::string FunctionRefNode::to_string()
 
 FunctionNode::FunctionNode(std::shared_ptr<FunctionRefNode> functionHeader, std::vector<std::shared_ptr<ASTNode>> stmnts)
 {
+    this->f = functionHeader;
 }
 
 void FunctionNode::Accept()

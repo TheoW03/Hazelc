@@ -19,11 +19,11 @@ int main(int argc, char *argv[])
     auto a = lexxer(lines);
     // std::cout << "" << std::endl;
     print_tokens(a);
-    // auto p = parse_node(a);
+    auto p = parse_node(a);
     // std::cout << "" << std::endl;
     // std::cout << "parsed expr: " << p.value()->to_string() << std::endl;
     // std::cout << "" << std::endl;
-    // InitCompiler("file");
+    InitCompiler("file", p.value());
     std::cout << "Successfully Compiled" << std::endl;
     return 0;
 }

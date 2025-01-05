@@ -10,12 +10,23 @@
 #include "llvm/Target/TargetOptions.h"
 #include "llvm/IR/Verifier.h"
 #include "llvm/IR/LegacyPassManager.h"
-
+#include <Frontend/parser.h>
 #include "llvm/Support/Host.h"
 
 #include "llvm/IR/LLVMContext.h"
+void CompileStmnt(llvm::Module &module, llvm::IRBuilder<> &builder, std::shared_ptr<ASTNode> node)
+{
+    if (dynamic_cast<FunctionNode *>(node.get()))
+    {
+        auto p = dynamic_cast<FunctionNode *>(node.get());
+        llvm::FunctionType *functype = llvm::FunctionType::get(
+            builder.getInt32Ty(), {}, false);
 
-void InitCompiler(std::string file_name)
+        llvm::Function *function = llvm::Function::Create(
+            functype, llvm::Function::ExternalLinkage, p->f->FunctionName.value, module);
+    }
+}
+void InitCompiler(std::string file_name, std::shared_ptr<ASTNode> node)
 {
     llvm::LLVMContext context;
     llvm::Module module("my_module", context);
@@ -48,6 +59,7 @@ void InitCompiler(std::string file_name)
         bottom_type, llvm::Function::ExternalLinkage, "bottom", module);
 
     auto TargetTriple = llvm::sys::getDefaultTargetTriple();
+    CompileStmnt(module, builder, node);
     // Initialize the target registry etc.
     llvm::InitializeAllTargets();
 

@@ -201,7 +201,7 @@ std::optional<std::shared_ptr<ASTNode>> parse_stmnts(std::vector<Tokens> &tokens
     using std::make_pair; // here bc im lazy you may use using on the stack level. but lets stick to this
 
     std::map<TokenType, parser> parse_map;
-    parse_map.insert(make_pair(TokenType::Let, (parser)parse_function));
+    parse_map.insert(make_pair(TokenType::Let, (parser)parse_function)); //
     parse_map.insert(make_pair(TokenType::Return, (parser)parse_return));
 
     return parse_map.at(get_next_token(tokens).type)(tokens); // meow :3
