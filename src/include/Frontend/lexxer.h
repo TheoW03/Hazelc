@@ -35,7 +35,9 @@ enum TokenType
     GTE,
     None,
     Open_Bracket,
-    Closed_Bracket
+    Closed_Bracket,
+    EndOfFile,
+    Module
 
 };
 #endif

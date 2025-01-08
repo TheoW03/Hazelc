@@ -11,22 +11,51 @@
 #include "llvm/IR/Verifier.h"
 #include "llvm/IR/LegacyPassManager.h"
 #include <Frontend/parser.h>
+#include <map>
 #include "llvm/Support/Host.h"
 
 #include "llvm/IR/LLVMContext.h"
-void CompileStmnt(llvm::Module &module, llvm::IRBuilder<> &builder, std::shared_ptr<ASTNode> node)
+llvm::StructType *myStruct;
+std::vector<llvm::Type *> elements;
+llvm::Type *compileType(llvm::IRBuilder<> &builder, std::shared_ptr<Type> ty)
 {
+    std::cout << "a" << std::endl;
+
+    if (dynamic_cast<NativeType *>(ty.get()))
+    {
+        auto p = dynamic_cast<NativeType *>(ty.get());
+        if (p->type.type == TokenType::Integer)
+        {
+            llvm::FunctionType *functype = llvm::FunctionType::get(
+                builder.getInt64Ty(), {}, false);
+            return functype;
+        }
+        else if (p->type.type == TokenType::Decimal)
+        {
+            llvm::FunctionType *functype = llvm::FunctionType::get(
+                builder.getFloatTy(), {}, false);
+            return functype;
+        }
+    }
+    return builder.getVoidTy();
+}
+void CompileStmnt(llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<ASTNode> node, std::map<std::string, llvm::Function *> &func_map)
+{
+    using std::make_pair; // here bc im lazy you may use using on the stack level. but lets stick to this
     if (dynamic_cast<FunctionNode *>(node.get()))
     {
         auto p = dynamic_cast<FunctionNode *>(node.get());
+        auto c = p->f->RetType;
         llvm::FunctionType *functype = llvm::FunctionType::get(
-            builder.getInt32Ty(), {}, false);
+            compileType(builder, c), {}, false);
 
         llvm::Function *function = llvm::Function::Create(
             functype, llvm::Function::ExternalLinkage, p->f->FunctionName.value, module);
+        elements.push_back(functype);
+        func_map.insert(make_pair(p->f->FunctionName.value, function));
     }
 }
-void InitCompiler(std::string file_name, std::shared_ptr<ASTNode> node)
+void InitCompiler(std::string file_name, std::vector<std::shared_ptr<ModuleNode>> node)
 {
     llvm::LLVMContext context;
     llvm::Module module("my_module", context);
@@ -59,7 +88,15 @@ void InitCompiler(std::string file_name, std::shared_ptr<ASTNode> node)
         bottom_type, llvm::Function::ExternalLinkage, "bottom", module);
 
     auto TargetTriple = llvm::sys::getDefaultTargetTriple();
-    CompileStmnt(module, builder, node);
+    std::map<std::string, llvm::Function *> func_map;
+    myStruct = llvm::StructType::create(context, "lookup_table");
+    for (int i = 0; i < node.size(); i++)
+    {
+        for (int j = 0; j < node[i]->functions.size(); j++)
+        {
+            CompileStmnt(module, builder, context, node[i]->functions[j], func_map);
+        }
+    }
     // Initialize the target registry etc.
     llvm::InitializeAllTargets();
 

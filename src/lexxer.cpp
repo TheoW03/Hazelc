@@ -35,7 +35,9 @@ enum TokenType
     GTE,
     None,
     Open_Bracket,
-    Closed_Bracket
+    Closed_Bracket,
+    EndOfFile,
+    Module
 
 };
 
@@ -158,6 +160,8 @@ void is_token(Lexxer_Context &ctx)
     token_map["let"] = TokenType::Let;
     token_map["conditional"] = TokenType::Conditional;
     token_map["integer"] = TokenType::Integer;
+    token_map["decimal"] = TokenType::Decimal;
+
     token_map["return"] = TokenType::Return;
     token_map["|"] = TokenType::cont_line;
     token_map[":"] = TokenType::Colon;
@@ -173,6 +177,7 @@ void is_token(Lexxer_Context &ctx)
     token_map["None"] = TokenType::None;
     token_map["["] = TokenType::Open_Bracket;
     token_map["]"] = TokenType::Closed_Bracket;
+    token_map["module"] = TokenType::Module;
 
     if (token_map.find(ctx.buffer) != token_map.end())
         ctx.tokens.push_back({ctx.buffer, token_map[ctx.buffer]});
@@ -315,6 +320,7 @@ std::vector<Tokens> lexxer(std::vector<std::string> lines)
         is_token(ctx);
         ctx.buffer = "";
     }
+    ctx.tokens.push_back({"EOF", TokenType::EndOfFile});
     return ctx.tokens;
 }
 void print_tokens(std::vector<Tokens> tokens)

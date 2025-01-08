@@ -18,6 +18,10 @@ public:
 #define TYPE_H
 class Type
 {
+public:
+    // TODO: add constrctor
+    Type();
+    ~Type();
     virtual std::string to_string() = 0;
 };
 #endif
@@ -74,6 +78,7 @@ class FunctionRefNode : public ASTNode
 {
 public:
     Tokens FunctionName;
+    std::shared_ptr<Type> RetType;
     FunctionRefNode(Tokens name,
                     std::vector<std::shared_ptr<FunctionRefNode>> params,
                     std::shared_ptr<Type> returnType);
@@ -108,6 +113,7 @@ public:
     std::string to_string();
 };
 #endif
+
 #ifndef NONE_H
 #define NONE_H
 class NoneNode : public ASTNode
@@ -125,6 +131,19 @@ class ReturnNode : public ASTNode
 public:
     std::shared_ptr<ASTNode> Expr;
     ReturnNode(std::shared_ptr<ASTNode> expr);
+    void Accept();
+    std::string to_string();
+};
+#endif
+
+#ifndef MODULE_H
+#define MODULE_H
+class ModuleNode : public ASTNode
+{
+public:
+    std::vector<std::shared_ptr<ASTNode>> functions;
+    Tokens name;
+    ModuleNode(std::vector<std::shared_ptr<ASTNode>> functions, Tokens name);
     void Accept();
     std::string to_string();
 };

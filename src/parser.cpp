@@ -132,10 +132,13 @@ std::optional<std::shared_ptr<Type>> parse_type(std::vector<Tokens> &tokens)
     {
 
         auto ty = match_and_remove({TokenType::Integer, TokenType::Decimal}, tokens);
+        std::cout << "native type" << std::endl;
         return std::make_shared<NativeType>(ty.value());
     }
     else if (look_ahead(TokenType::Open_Parenthesis, tokens))
     {
+
+        print_tokens(tokens);
         std::vector<std::shared_ptr<Type>> type_params;
         while (!match_and_remove(TokenType::Close_Parenthesis, tokens).has_value())
         {
@@ -149,6 +152,7 @@ std::optional<std::shared_ptr<Type>> parse_type(std::vector<Tokens> &tokens)
     }
     else if (look_ahead(TokenType::Open_Bracket, tokens))
     {
+        print_tokens(tokens);
         return std::make_shared<ListType>(parse_type(tokens).value());
     }
     return {};
@@ -188,7 +192,7 @@ std::optional<std::shared_ptr<ASTNode>> parse_function(std::vector<Tokens> &toke
     std::vector<std::shared_ptr<ASTNode>> ast;
 
     return std::make_shared<FunctionNode>(func.value(),
-                                          ast);
+                                          parse_scope(tokens));
 }
 std::optional<std::shared_ptr<ASTNode>> parse_return(std::vector<Tokens> &tokens)
 {
@@ -206,8 +210,32 @@ std::optional<std::shared_ptr<ASTNode>> parse_stmnts(std::vector<Tokens> &tokens
 
     return parse_map.at(get_next_token(tokens).type)(tokens); // meow :3
 }
-std::optional<std::shared_ptr<ASTNode>> parse_node(std::vector<Tokens> &tokens)
+std::shared_ptr<ModuleNode> parse_module(std::vector<Tokens> &tokens)
 {
-    std::cout << "parsing" << std::endl;
-    return parse_stmnts(tokens);
+    auto module_name = match_and_remove(TokenType::Identifier, tokens);
+    std::vector<std::shared_ptr<ASTNode>> functions;
+    while (!look_ahead(TokenType::EndOfFile, tokens) && !look_ahead(TokenType::Module, tokens))
+    {
+        if (match_and_remove(TokenType::Let, tokens).has_value())
+        {
+            functions.push_back(parse_function(tokens).value());
+        }
+        print_tokens(tokens);
+    }
+    return std::make_shared<ModuleNode>(functions, module_name.value());
+}
+std::vector<std::shared_ptr<ModuleNode>> parse_node(std::vector<Tokens> &tokens)
+{
+    std::vector<std::shared_ptr<ModuleNode>> modules;
+    while (!match_and_remove(TokenType::EndOfFile, tokens).has_value())
+    {
+        if (match_and_remove(TokenType::Module, tokens).has_value())
+        {
+            auto m = parse_module(tokens);
+            modules.push_back(m);
+        }
+    }
+    return modules;
+
+    // return modules(tokens);
 }

@@ -54,6 +54,7 @@ FunctionRefNode::FunctionRefNode(Tokens name,
                                  std::shared_ptr<Type> returnType)
 {
     this->FunctionName = name;
+    this->RetType = returnType;
 }
 
 void FunctionRefNode::Accept()
@@ -83,12 +84,15 @@ std::string NativeType::to_string()
 {
     return std::string();
 }
+Type::Type() {}
+Type::~Type() {}
 FunctionType::FunctionType(std::vector<std::shared_ptr<Type>> params,
                            std::shared_ptr<Type> returnType)
 {
 }
 NativeType::NativeType(Tokens type)
 {
+    this->type = type;
 }
 std::string FunctionType::to_string()
 {
@@ -132,6 +136,21 @@ ListType::ListType(std::shared_ptr<Type> inner)
 }
 
 std::string ListType::to_string()
+{
+    return std::string();
+}
+
+ModuleNode::ModuleNode(std::vector<std::shared_ptr<ASTNode>> functions, Tokens name)
+{
+    this->functions = functions;
+    this->name = name;
+}
+
+void ModuleNode::Accept()
+{
+}
+
+std::string ModuleNode::to_string()
 {
     return std::string();
 }
