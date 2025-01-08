@@ -37,7 +37,13 @@ enum TokenType
     Open_Bracket,
     Closed_Bracket,
     EndOfFile,
-    Module
+    Module,
+    Byte,
+    Uinteger,
+    Ubyte,
+    boolean,
+    character,
+    string
 
 };
 #endif

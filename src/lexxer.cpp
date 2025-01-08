@@ -37,7 +37,13 @@ enum TokenType
     Open_Bracket,
     Closed_Bracket,
     EndOfFile,
-    Module
+    Module,
+    Byte,
+    Uinteger,
+    Ubyte,
+    boolean,
+    character,
+    string
 
 };
 
@@ -161,6 +167,12 @@ void is_token(Lexxer_Context &ctx)
     token_map["conditional"] = TokenType::Conditional;
     token_map["integer"] = TokenType::Integer;
     token_map["decimal"] = TokenType::Decimal;
+    token_map["byte"] = TokenType::Byte;
+    token_map["unsigned_integer"] = TokenType::Uinteger;
+    token_map["unsigned_byte"] = TokenType::Ubyte;
+    token_map["boolean"] = TokenType::boolean;
+    token_map["character"] = TokenType::character;
+    token_map["string"] = TokenType::string;
 
     token_map["return"] = TokenType::Return;
     token_map["|"] = TokenType::cont_line;

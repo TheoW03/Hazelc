@@ -128,10 +128,18 @@ std::vector<std::shared_ptr<FunctionRefNode>> parse_params(std::vector<Tokens> &
 }
 std::optional<std::shared_ptr<Type>> parse_type(std::vector<Tokens> &tokens)
 {
-    if (look_ahead({TokenType::Integer, TokenType::Decimal}, tokens))
+    std::vector<TokenType> typeVector = {TokenType::Integer,
+                                         TokenType::Decimal,
+                                         TokenType::Ubyte,
+                                         TokenType::Uinteger,
+                                         TokenType::Byte,
+                                         TokenType::boolean,
+                                         TokenType::character,
+                                         TokenType::string};
+    if (look_ahead(typeVector, tokens))
     {
 
-        auto ty = match_and_remove({TokenType::Integer, TokenType::Decimal}, tokens);
+        auto ty = match_and_remove(typeVector, tokens);
         std::cout << "native type" << std::endl;
         return std::make_shared<NativeType>(ty.value());
     }
