@@ -60,28 +60,6 @@ void InitCompiler(std::string file_name, std::vector<std::shared_ptr<ModuleNode>
 
     // sets up the run time
 
-    llvm::GlobalVariable *myGlobal = new llvm::GlobalVariable(
-        module,    // Module to insert into
-        arrayType, // Type of the variable
-        false,     // Is constant? (false = mutable)
-        llvm::GlobalValue::ExternalLinkage,
-        nullptr, // Linkage type
-        "stack");
-
-    llvm::FunctionType *push_type = llvm::FunctionType::get(
-        builder.getVoidTy(), {builder.getInt8PtrTy()}, false);
-    llvm::FunctionType *pop_type = llvm::FunctionType::get(
-        builder.getInt8PtrTy(), {}, false);
-    llvm::FunctionType *bottom_type = llvm::FunctionType::get(
-        builder.getVoidTy(), {}, false);
-
-    llvm::Function *push_cont = llvm::Function::Create(
-        push_type, llvm::Function::ExternalLinkage, "pushContinuation", module);
-    llvm::Function *pop_cont = llvm::Function::Create(
-        pop_type, llvm::Function::ExternalLinkage, "popContinuation", module);
-    llvm::Function *bottom = llvm::Function::Create(
-        bottom_type, llvm::Function::ExternalLinkage, "bottom", module);
-
     auto TargetTriple = llvm::sys::getDefaultTargetTriple();
     std::map<std::string, llvm::Function *> func_map;
     myStruct = llvm::StructType::create(context, "lookup_table");
@@ -90,7 +68,6 @@ void InitCompiler(std::string file_name, std::vector<std::shared_ptr<ModuleNode>
         for (int j = 0; j < node[i]->functions.size(); j++)
         {
             CompileStmnt(module, builder, context, node[i]->functions[j], func_map);
-            // CompileStmnt(module, builder, context, node[i]->functions[j], func_map);
         }
     }
     // Initialize the target registry etc.
