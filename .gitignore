@@ -3,3 +3,4 @@ test.txt
 /build/
 *.o
 LazyEvalInt.c
+*.out
