@@ -19,26 +19,21 @@ llvm::StructType *myStruct;
 std::vector<llvm::Type *> elements;
 llvm::Type *compileType(llvm::IRBuilder<> &builder, std::shared_ptr<Type> ty)
 {
-    std::cout << "a" << std::endl;
-
     if (dynamic_cast<NativeType *>(ty.get()))
     {
         auto p = dynamic_cast<NativeType *>(ty.get());
         if (p->type.type == TokenType::Integer)
         {
-            llvm::FunctionType *functype = llvm::FunctionType::get(
-                builder.getInt64Ty(), {}, false);
-            return functype;
+            return builder.getInt64Ty();
         }
         else if (p->type.type == TokenType::Decimal)
         {
-            llvm::FunctionType *functype = llvm::FunctionType::get(
-                builder.getFloatTy(), {}, false);
-            return functype;
+            return builder.getFloatTy();
         }
     }
     return builder.getVoidTy();
 }
+
 void CompileStmnt(llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<ASTNode> node, std::map<std::string, llvm::Function *> &func_map)
 {
     using std::make_pair; // here bc im lazy you may use using on the stack level. but lets stick to this
@@ -95,6 +90,7 @@ void InitCompiler(std::string file_name, std::vector<std::shared_ptr<ModuleNode>
         for (int j = 0; j < node[i]->functions.size(); j++)
         {
             CompileStmnt(module, builder, context, node[i]->functions[j], func_map);
+            // CompileStmnt(module, builder, context, node[i]->functions[j], func_map);
         }
     }
     // Initialize the target registry etc.

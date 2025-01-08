@@ -93,6 +93,7 @@ class FunctionNode : public ASTNode
 {
 public:
     std::shared_ptr<FunctionRefNode> f;
+    std::vector<std::shared_ptr<ASTNode>> stmnts;
     FunctionNode(std::shared_ptr<FunctionRefNode> functionHeader,
                  std::vector<std::shared_ptr<ASTNode>> stmnts);
     void Accept();

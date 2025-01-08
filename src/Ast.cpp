@@ -69,6 +69,7 @@ std::string FunctionRefNode::to_string()
 FunctionNode::FunctionNode(std::shared_ptr<FunctionRefNode> functionHeader, std::vector<std::shared_ptr<ASTNode>> stmnts)
 {
     this->f = functionHeader;
+    this->stmnts = stmnts;
 }
 
 void FunctionNode::Accept()
