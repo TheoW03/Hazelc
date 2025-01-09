@@ -19,7 +19,7 @@ include_directories(${LLVM_INCLUDE_DIRS})
 if(DEFINED DEBUG AND DEBUG)
    message("test")
 endif()
-set(EXECUTABLE_NAME psuedoc)
+set(EXECUTABLE_NAME hazelc)
 
 # Add your source files to an executable target
 include_directories(${EXECUTABLE_NAME} PRIVATE src/include/)
@@ -31,6 +31,8 @@ add_llvm_executable(${EXECUTABLE_NAME}
    src/Ast.cpp
    src/Compiler.cpp
    src/semantic_analysis.cpp
+   src/visitor.cpp
+   src/CompilerUtil.cpp
 
 )
 

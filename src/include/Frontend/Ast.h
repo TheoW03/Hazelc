@@ -1,13 +1,15 @@
 #include <Frontend/lexxer.h>
-#include <memory>
 #include <iostream>
+#include <memory>
 
 #ifndef ASTNODE_H
 #define ASTNODE_H
+class Visitor;
 class ASTNode
 {
 public:
-    virtual void Accept() = 0;
+    // Visitor v;
+    virtual void Accept(Visitor &v) = 0;
     ASTNode();
     ~ASTNode();
     virtual std::string to_string() = 0;
@@ -61,13 +63,14 @@ public:
 
 #ifndef INTNODE_H
 #define INTNODE_H
+class Visitor;
 class IntegerNode : public ASTNode
 {
 public:
     int number;
 
     IntegerNode(Tokens num);
-    void Accept();
+    void Accept(Visitor &v);
     std::string to_string();
 };
 #endif
@@ -82,13 +85,15 @@ public:
     FunctionRefNode(Tokens name,
                     std::vector<std::shared_ptr<FunctionRefNode>> params,
                     std::shared_ptr<Type> returnType);
-    void Accept();
+    void Accept(Visitor &v);
     std::string to_string();
 };
 #endif
 
 #ifndef FUNCTION_NODE_H
 #define FUNCTION_NODE_H
+class Visitor;
+
 class FunctionNode : public ASTNode
 {
 public:
@@ -96,7 +101,7 @@ public:
     std::vector<std::shared_ptr<ASTNode>> stmnts;
     FunctionNode(std::shared_ptr<FunctionRefNode> functionHeader,
                  std::vector<std::shared_ptr<ASTNode>> stmnts);
-    void Accept();
+    void Accept(Visitor &v);
     std::string to_string();
 };
 #endif
@@ -110,42 +115,48 @@ public:
     std::shared_ptr<ASTNode> rhs;
     Tokens operation;
     ExprNode(std::shared_ptr<ASTNode> lhs, Tokens operation, std::shared_ptr<ASTNode> rhs);
-    void Accept();
+    void Accept(Visitor &v);
     std::string to_string();
 };
 #endif
 
 #ifndef NONE_H
 #define NONE_H
+class Visitor;
+
 class NoneNode : public ASTNode
 {
 public:
     NoneNode();
-    void Accept();
+    void Accept(Visitor &v);
     std::string to_string();
 };
 #endif
 #ifndef RETURN_H
 #define RETURN_H
+class Visitor;
+
 class ReturnNode : public ASTNode
 {
 public:
     std::shared_ptr<ASTNode> Expr;
     ReturnNode(std::shared_ptr<ASTNode> expr);
-    void Accept();
+    void Accept(Visitor &v) override;
     std::string to_string();
 };
 #endif
 
 #ifndef MODULE_H
 #define MODULE_H
+class Visitor;
+
 class ModuleNode : public ASTNode
 {
 public:
     std::vector<std::shared_ptr<ASTNode>> functions;
     Tokens name;
     ModuleNode(std::vector<std::shared_ptr<ASTNode>> functions, Tokens name);
-    void Accept();
+    void Accept(Visitor &v);
     std::string to_string();
 };
 #endif

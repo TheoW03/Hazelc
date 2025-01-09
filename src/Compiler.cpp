@@ -12,70 +12,27 @@
 #include "llvm/IR/LegacyPassManager.h"
 #include <Frontend/parser.h>
 #include <map>
+#include <visitor.h>
 #include "llvm/Support/Host.h"
 
 #include "llvm/IR/LLVMContext.h"
-llvm::StructType *myStruct;
-std::vector<llvm::Type *> elements;
-llvm::Type *compileType(llvm::IRBuilder<> &builder, std::shared_ptr<Type> ty)
-{
-    if (dynamic_cast<NativeType *>(ty.get()))
-    {
-        auto p = dynamic_cast<NativeType *>(ty.get());
-        if (p->type.type == TokenType::Integer || p->type.type == TokenType::Uinteger)
-        {
-            return builder.getInt64Ty();
-        }
-        else if (p->type.type == TokenType::Decimal)
-        {
-            return builder.getFloatTy();
-        }
-        else if (p->type.type == TokenType::Byte || p->type.type == TokenType::character || p->type.type == TokenType::Ubyte)
-        {
-            return builder.getInt8Ty();
-        }
-        else if (p->type.type == TokenType::boolean)
-        {
-            return builder.getInt1Ty();
-        }
-    }
-    return builder.getVoidTy();
-}
 
-void CompileStmnt(llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<ASTNode> node, std::map<std::string, llvm::Function *> &func_map)
-{
-    using std::make_pair; // here bc im lazy you may use using on the stack level. but lets stick to this
-    if (dynamic_cast<FunctionNode *>(node.get()))
-    {
-        auto p = dynamic_cast<FunctionNode *>(node.get());
-        auto c = p->f->RetType;
-        llvm::FunctionType *functype = llvm::FunctionType::get(
-            compileType(builder, c), {}, false);
-
-        llvm::Function *function = llvm::Function::Create(
-            functype, llvm::Function::ExternalLinkage, p->f->FunctionName.value, module);
-        elements.push_back(functype);
-        func_map.insert(make_pair(p->f->FunctionName.value, function));
-    }
-}
 void InitCompiler(std::string file_name, std::vector<std::shared_ptr<ModuleNode>> node)
 {
     llvm::LLVMContext context;
-    llvm::Module module("my_module", context);
-    llvm::IRBuilder<> builder(context);
+    llvm::Module module("MyModule", context); // Module tied to context
 
-    llvm::ArrayType *arrayType = llvm::ArrayType::get(builder.getInt8PtrTy(), 10000);
-
-    // sets up the run time
+    llvm::IRBuilder<> builder(context); // Builder also tied to context
 
     auto TargetTriple = llvm::sys::getDefaultTargetTriple();
     std::map<std::string, llvm::Function *> func_map;
-    myStruct = llvm::StructType::create(context, "lookup_table");
+    CompileHighLevel c(module, builder, context);
+
     for (int i = 0; i < node.size(); i++)
     {
         for (int j = 0; j < node[i]->functions.size(); j++)
         {
-            CompileStmnt(module, builder, context, node[i]->functions[j], func_map);
+            node[i]->functions[j]->Accept(c);
         }
     }
     // Initialize the target registry etc.
