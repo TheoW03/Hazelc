@@ -81,7 +81,9 @@ class FunctionRefNode : public ASTNode
 {
 public:
     Tokens FunctionName;
-    std::shared_ptr<Type> RetType;
+    std::vector<std::shared_ptr<FunctionRefNode>> params;
+    std::shared_ptr<Type>
+        RetType;
     FunctionRefNode(Tokens name,
                     std::vector<std::shared_ptr<FunctionRefNode>> params,
                     std::shared_ptr<Type> returnType);

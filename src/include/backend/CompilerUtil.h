@@ -4,3 +4,4 @@
 #include "llvm/IR/LLVMContext.h"
 
 llvm::Type *compileType(llvm::IRBuilder<> &builder, std::shared_ptr<Type> ty);
+llvm::FunctionType *CompileFunctionType(llvm::IRBuilder<> &builder, std::shared_ptr<FunctionRefNode> n);

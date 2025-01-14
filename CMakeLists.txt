@@ -7,7 +7,7 @@ include(AddLLVM)
 
 message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
 message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
-
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions")
 # Set your project compile flags.
 # E.g. if using the C++ header files
 # you will need to enable C++11 support

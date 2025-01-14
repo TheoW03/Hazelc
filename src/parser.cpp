@@ -18,8 +18,10 @@ std::optional<Tokens> match_and_remove(TokenType token_type, std::vector<Tokens>
         return {};
     if (tokens[0].type == token_type)
     {
+
         current = tokens[0];
         tokens.erase(tokens.begin());
+
         return current;
     }
     return {};
@@ -122,6 +124,7 @@ std::vector<std::shared_ptr<FunctionRefNode>> parse_params(std::vector<Tokens> &
         params.push_back(parse_function_ref(tokens)
                              .value());
         match_and_remove(TokenType::Comma, tokens);
+        print_tokens(tokens);
     }
 
     return params;
@@ -146,7 +149,7 @@ std::optional<std::shared_ptr<Type>> parse_type(std::vector<Tokens> &tokens)
     else if (look_ahead(TokenType::Open_Parenthesis, tokens))
     {
 
-        print_tokens(tokens);
+        // print_tokens(tokens);
         std::vector<std::shared_ptr<Type>> type_params;
         while (!match_and_remove(TokenType::Close_Parenthesis, tokens).has_value())
         {
@@ -160,7 +163,7 @@ std::optional<std::shared_ptr<Type>> parse_type(std::vector<Tokens> &tokens)
     }
     else if (look_ahead(TokenType::Open_Bracket, tokens))
     {
-        print_tokens(tokens);
+        // print_tokens(tokens);
         return std::make_shared<ListType>(parse_type(tokens).value());
     }
     return {};
@@ -221,6 +224,8 @@ std::optional<std::shared_ptr<ASTNode>> parse_stmnts(std::vector<Tokens> &tokens
 std::shared_ptr<ModuleNode> parse_module(std::vector<Tokens> &tokens)
 {
     auto module_name = match_and_remove(TokenType::Identifier, tokens);
+    // print_tokens(tokens);
+
     std::vector<std::shared_ptr<ASTNode>> functions;
     while (!look_ahead(TokenType::EndOfFile, tokens) && !look_ahead(TokenType::Module, tokens))
     {
@@ -228,7 +233,6 @@ std::shared_ptr<ModuleNode> parse_module(std::vector<Tokens> &tokens)
         {
             functions.push_back(parse_function(tokens).value());
         }
-        print_tokens(tokens);
     }
     return std::make_shared<ModuleNode>(functions, module_name.value());
 }
@@ -240,6 +244,7 @@ std::vector<std::shared_ptr<ModuleNode>> parse_node(std::vector<Tokens> &tokens)
         if (match_and_remove(TokenType::Module, tokens).has_value())
         {
             auto m = parse_module(tokens);
+
             modules.push_back(m);
         }
     }

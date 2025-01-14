@@ -4,6 +4,7 @@
 #include <backend/Compiler.h>
 #include <fstream>
 #include <cstdlib>
+#include <stdexcept>
 
 int main(int argc, char *argv[])
 {
@@ -18,13 +19,16 @@ int main(int argc, char *argv[])
     }
     auto a = lexxer(lines);
     // std::cout << "" << std::endl;
-    print_tokens(a);
+    // print_tokens(a);
     auto p = parse_node(a);
+    std::cout << "parsed" << std::endl;
     // std::cout << "" << std::endl;
     // std::cout << "parsed expr: " << p.value()->to_string() << std::endl;
     // std::cout << "" << std::endl;
     InitCompiler("file", p);
+
     std::cout << "" << std::endl;
     std::cout << "Successfully Compiled" << std::endl;
+
     return 0;
 }

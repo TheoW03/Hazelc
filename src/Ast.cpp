@@ -56,6 +56,7 @@ FunctionRefNode::FunctionRefNode(Tokens name,
 {
     this->FunctionName = name;
     this->RetType = returnType;
+    this->params = params;
 }
 
 void FunctionRefNode::Accept(Visitor &v)
