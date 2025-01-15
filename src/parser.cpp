@@ -124,7 +124,7 @@ std::vector<std::shared_ptr<FunctionRefNode>> parse_params(std::vector<Tokens> &
         params.push_back(parse_function_ref(tokens)
                              .value());
         match_and_remove(TokenType::Comma, tokens);
-        print_tokens(tokens);
+        // print_tokens(tokens);
     }
 
     return params;
@@ -143,7 +143,6 @@ std::optional<std::shared_ptr<Type>> parse_type(std::vector<Tokens> &tokens)
     {
 
         auto ty = match_and_remove(typeVector, tokens);
-        std::cout << "native type" << std::endl;
         return std::make_shared<NativeType>(ty.value());
     }
     else if (look_ahead(TokenType::Open_Parenthesis, tokens))

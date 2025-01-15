@@ -9,7 +9,7 @@ class ASTNode
 {
 public:
     // Visitor v;
-    virtual void Accept(Visitor &v) = 0;
+    virtual void Accept(Visitor *v) = 0;
     ASTNode();
     ~ASTNode();
     virtual std::string to_string() = 0;
@@ -70,7 +70,7 @@ public:
     int number;
 
     IntegerNode(Tokens num);
-    void Accept(Visitor &v);
+    void Accept(Visitor *v);
     std::string to_string();
 };
 #endif
@@ -87,7 +87,7 @@ public:
     FunctionRefNode(Tokens name,
                     std::vector<std::shared_ptr<FunctionRefNode>> params,
                     std::shared_ptr<Type> returnType);
-    void Accept(Visitor &v);
+    void Accept(Visitor *v);
     std::string to_string();
 };
 #endif
@@ -103,7 +103,7 @@ public:
     std::vector<std::shared_ptr<ASTNode>> stmnts;
     FunctionNode(std::shared_ptr<FunctionRefNode> functionHeader,
                  std::vector<std::shared_ptr<ASTNode>> stmnts);
-    void Accept(Visitor &v);
+    void Accept(Visitor *v);
     std::string to_string();
 };
 #endif
@@ -117,7 +117,7 @@ public:
     std::shared_ptr<ASTNode> rhs;
     Tokens operation;
     ExprNode(std::shared_ptr<ASTNode> lhs, Tokens operation, std::shared_ptr<ASTNode> rhs);
-    void Accept(Visitor &v);
+    void Accept(Visitor *v);
     std::string to_string();
 };
 #endif
@@ -130,7 +130,7 @@ class NoneNode : public ASTNode
 {
 public:
     NoneNode();
-    void Accept(Visitor &v);
+    void Accept(Visitor *v);
     std::string to_string();
 };
 #endif
@@ -143,7 +143,7 @@ class ReturnNode : public ASTNode
 public:
     std::shared_ptr<ASTNode> Expr;
     ReturnNode(std::shared_ptr<ASTNode> expr);
-    void Accept(Visitor &v) override;
+    void Accept(Visitor *v) override;
     std::string to_string();
 };
 #endif
@@ -158,7 +158,7 @@ public:
     std::vector<std::shared_ptr<ASTNode>> functions;
     Tokens name;
     ModuleNode(std::vector<std::shared_ptr<ASTNode>> functions, Tokens name);
-    void Accept(Visitor &v);
+    void Accept(Visitor *v);
     std::string to_string();
 };
 #endif

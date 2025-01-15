@@ -37,6 +37,10 @@ void CompileHighLevel::Visit(FunctionNode *node)
     func_map.insert(make_pair(node->f->FunctionName.value, CompileFunctionHeader(node->f)));
 }
 
+void CompileHighLevel::Visit(ReturnNode *node)
+{
+}
+
 Function CompileHighLevel::CompileFunctionHeader(std::shared_ptr<FunctionRefNode> n)
 {
     auto c = n->RetType;
@@ -58,4 +62,61 @@ Function CompileHighLevel::CompileFunctionHeader(std::shared_ptr<FunctionRefNode
 std::map<std::string, Function> CompileHighLevel::get_map()
 {
     return this->func_map;
+}
+
+CompileStatement::CompileStatement(llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::map<std::string, Function> func_map) : module(module), builder(builder), context(context)
+{
+    this->func_map = func_map;
+}
+
+void CompileStatement::Visit(ASTNode *node)
+{
+}
+
+void CompileStatement::Visit(FunctionNode *node)
+{
+    // Create the entry block for the function
+    auto func = func_map[node->f->FunctionName.value].function;
+    llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, "entry", func);
+    builder.SetInsertPoint(EntryBlock);
+    for (int i = 0; i < node->stmnts.size(); i++)
+    {
+
+        node->stmnts[i]->Accept(this);
+    }
+}
+
+void CompileStatement::Visit(ReturnNode *node)
+{
+    CompileExpr c(module, builder, context, func_map);
+    builder.CreateRet(c.Expression(node->Expr));
+}
+
+CompileExpr::CompileExpr(llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::map<std::string, Function> func_map) : module(module), builder(builder), context(context)
+{
+    this->func_map = func_map;
+}
+
+llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
+{
+    if (dynamic_cast<IntegerNode *>(node.get()))
+    {
+        auto c = dynamic_cast<IntegerNode *>(node.get());
+        return llvm::ConstantInt::get(llvm::Type::getInt64Ty(context), c->number);
+    }
+    else if (dynamic_cast<ExprNode *>(node.get()))
+    {
+        auto c = dynamic_cast<ExprNode *>(node.get());
+
+        auto lhs = Expression(c->lhs);
+        auto rhs = Expression(c->rhs);
+        switch (c->operation.type)
+        {
+        case Addition:
+            return builder.CreateAdd(lhs, rhs, "addition");
+        default:
+            break;
+        }
+    }
+    return nullptr;
 }

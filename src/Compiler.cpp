@@ -26,8 +26,8 @@ void InitCompiler(std::string file_name, std::vector<std::shared_ptr<ModuleNode>
 
     auto TargetTriple = llvm::sys::getDefaultTargetTriple();
     std::map<std::string, llvm::Function *> func_map;
-    CompileHighLevel c(module, builder, context);
-
+    // CompileHighLevel c(module, builder, context);
+    CompileHighLevel *c = new CompileHighLevel(module, builder, context);
     for (int i = 0; i < node.size(); i++)
     {
         for (int j = 0; j < node[i]->functions.size(); j++)
@@ -35,8 +35,20 @@ void InitCompiler(std::string file_name, std::vector<std::shared_ptr<ModuleNode>
             node[i]->functions[j]->Accept(c);
         }
     }
-    // Initialize the target registry etc.
-    llvm::InitializeAllTargets();
+    std::cout << "compiled functions" << std::endl;
+    CompileStatement *c2 = new CompileStatement(module, builder, context, c->func_map);
+    for (int i = 0; i < node.size(); i++)
+    {
+        for (int j = 0; j < node[i]->functions.size(); j++)
+        {
+            node[i]->functions[j]->Accept(c2);
+        }
+    }
+    delete c;
+    delete c2;
+    module.print(llvm::outs(), nullptr);
+
+    // Initialize the target registry etc.llvm::InitializeAllTargets();
 
     llvm::InitializeAllTargetInfos();
     llvm::InitializeAllTargetMCs();
@@ -74,6 +86,4 @@ void InitCompiler(std::string file_name, std::vector<std::shared_ptr<ModuleNode>
 
     pass.run(module);
     dest.flush();
-
-    module.print(llvm::outs(), nullptr);
 }

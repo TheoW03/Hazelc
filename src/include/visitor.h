@@ -25,6 +25,7 @@ public:
     ~Visitor();
     virtual void Visit(ASTNode *node) = 0;
     virtual void Visit(FunctionNode *node) = 0;
+    virtual void Visit(ReturnNode *node) = 0;
 };
 #endif
 
@@ -40,9 +41,40 @@ public:
     CompileHighLevel(llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context);
     void Visit(ASTNode *node) override;
     void Visit(FunctionNode *node) override;
+    void Visit(ReturnNode *node) override;
 
     Function CompileFunctionHeader(std::shared_ptr<FunctionRefNode> n);
     std::map<std::string, Function> get_map();
 };
 
+#endif
+#ifndef STATEMENt_H
+#define STATEMENt_H
+class CompileStatement : public Visitor
+{
+public:
+    llvm::Module &module;
+    std::map<std::string, Function> func_map;
+    llvm::IRBuilder<> &builder;
+    llvm::LLVMContext &context;
+    CompileStatement(llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::map<std::string, Function> func_map);
+    void Visit(ASTNode *node) override;
+    void Visit(FunctionNode *node) override;
+    void Visit(ReturnNode *node) override;
+};
+
+#endif
+
+#ifndef COMPILE_EXPR_H
+#define COMPILE_EXPR_H
+class CompileExpr
+{
+public:
+    llvm::Module &module;
+    std::map<std::string, Function> func_map;
+    llvm::IRBuilder<> &builder;
+    llvm::LLVMContext &context;
+    CompileExpr(llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::map<std::string, Function> func_map);
+    llvm::Value *Expression(std::shared_ptr<ASTNode> node);
+};
 #endif

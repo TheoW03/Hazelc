@@ -23,7 +23,7 @@ IntegerNode::IntegerNode(Tokens num)
         this->number = std::stoul(num.value, nullptr, 2);
     }
 }
-void IntegerNode::Accept(Visitor &v) {}
+void IntegerNode::Accept(Visitor *v) {}
 
 std::string IntegerNode::to_string()
 {
@@ -35,7 +35,7 @@ ExprNode::ExprNode(std::shared_ptr<ASTNode> lhs, Tokens operation, std::shared_p
     this->rhs = rhs;
     this->operation = operation;
 }
-void ExprNode::Accept(Visitor &v)
+void ExprNode::Accept(Visitor *v)
 {
 }
 
@@ -59,10 +59,10 @@ FunctionRefNode::FunctionRefNode(Tokens name,
     this->params = params;
 }
 
-void FunctionRefNode::Accept(Visitor &v)
+void FunctionRefNode::Accept(Visitor *v)
 {
     // std::shared_ptr<FunctionNode> sharedPtr(this);
-    v.Visit(this);
+    v->Visit(this);
     // v.Visit(std::make_shared<FunctionNode>(this));
 }
 
@@ -77,9 +77,9 @@ FunctionNode::FunctionNode(std::shared_ptr<FunctionRefNode> functionHeader, std:
     this->stmnts = stmnts;
 }
 
-void FunctionNode::Accept(Visitor &v)
+void FunctionNode::Accept(Visitor *v)
 {
-    v.Visit(this);
+    v->Visit(this);
     // v.Visit(std::make_shared<FunctionNode>(this));
 }
 
@@ -116,8 +116,9 @@ NoneNode::NoneNode()
 {
 }
 
-void NoneNode::Accept(Visitor &v)
+void NoneNode::Accept(Visitor *v)
 {
+    v->Visit(this);
 }
 
 std::string NoneNode::to_string()
@@ -130,8 +131,9 @@ ReturnNode::ReturnNode(std::shared_ptr<ASTNode> expr)
     this->Expr = expr;
 }
 
-void ReturnNode::Accept(Visitor &v)
+void ReturnNode::Accept(Visitor *v)
 {
+    v->Visit(this);
 }
 
 std::string ReturnNode::to_string()
@@ -154,7 +156,7 @@ ModuleNode::ModuleNode(std::vector<std::shared_ptr<ASTNode>> functions, Tokens n
     this->name = name;
 }
 
-void ModuleNode::Accept(Visitor &v)
+void ModuleNode::Accept(Visitor *v)
 {
 }
 

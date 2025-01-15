@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
 {
     /* code */
 
-    std::ifstream file("test.txt");
+    std::ifstream file(argv[1]);
     std::string str;
     std::vector<std::string> lines;
     while (std::getline(file, str))
@@ -18,6 +18,8 @@ int main(int argc, char *argv[])
         lines.push_back(str);
     }
     auto a = lexxer(lines);
+    std::cout << "lexxed" << std::endl;
+
     // std::cout << "" << std::endl;
     // print_tokens(a);
     auto p = parse_node(a);
