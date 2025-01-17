@@ -24,7 +24,6 @@ void InitCompiler(std::string file_name, std::vector<std::shared_ptr<ModuleNode>
 
     llvm::IRBuilder<> builder(context); // Builder also tied to context
 
-    auto TargetTriple = llvm::sys::getDefaultTargetTriple();
     std::map<std::string, llvm::Function *> func_map;
     // CompileHighLevel c(module, builder, context);
     CompileHighLevel *c = new CompileHighLevel(module, builder, context);
@@ -46,25 +45,36 @@ void InitCompiler(std::string file_name, std::vector<std::shared_ptr<ModuleNode>
     }
     delete c;
     delete c2;
-    module.print(llvm::outs(), nullptr);
-
     // Initialize the target registry etc.llvm::InitializeAllTargets();
 
     llvm::InitializeAllTargetInfos();
+    llvm::InitializeAllTargets();
     llvm::InitializeAllTargetMCs();
     llvm::InitializeAllAsmParsers();
     llvm::InitializeAllAsmPrinters();
     // auto TargetTriple = llvm::sys::getDefaultTargetTriple();
     std::string Error;
+    auto TargetTriple = llvm::sys::getDefaultTargetTriple();
 
     auto Target = llvm::TargetRegistry::lookupTarget(TargetTriple, Error);
+    module.setTargetTriple(TargetTriple);
+
+    if (!Target)
+    {
+        std::cout << Error << std::endl;
+        return;
+    }
+
+    std::cout << Error << std::endl;
     auto CPU = "generic";
     auto Features = "";
 
     llvm::TargetOptions opt;
     auto TargetMachine = Target->createTargetMachine(TargetTriple, CPU, Features, opt, llvm::Reloc::PIC_);
     module.setDataLayout(TargetMachine->createDataLayout());
-    module.setTargetTriple(TargetTriple);
+
+    std::cout << "aaa" << std::endl;
+    module.print(llvm::outs(), nullptr);
 
     auto Filename = "output.o";
     std::error_code EC;
@@ -83,7 +93,6 @@ void InitCompiler(std::string file_name, std::vector<std::shared_ptr<ModuleNode>
         llvm::errs() << "TargetMachine can't emit a file of this type";
         return;
     }
-
     pass.run(module);
     dest.flush();
 }

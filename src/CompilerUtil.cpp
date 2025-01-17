@@ -28,14 +28,15 @@ llvm::Type *compileType(llvm::IRBuilder<> &builder, std::shared_ptr<Type> ty)
     }
     return builder.getVoidTy();
 }
+
 llvm::FunctionType *CompileFunctionType(llvm::IRBuilder<> &builder, std::shared_ptr<FunctionRefNode> n)
 {
     auto c = n->RetType;
     std::vector<llvm::Type *> a;
     for (int i = 0; i < n->params.size(); i++)
     {
-
-        a.push_back(CompileFunctionType(builder, n->params[i]));
+        auto funct = CompileFunctionType(builder, n->params[i]);
+        a.push_back(llvm::PointerType::getUnqual(funct));
     }
     llvm::FunctionType *functype = llvm::FunctionType::get(
         compileType(builder, c), a, false);
