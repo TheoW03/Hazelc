@@ -21,7 +21,6 @@ int main(int argc, char *argv[])
     std::cout << "lexxed" << std::endl;
 
     // std::cout << "" << std::endl;
-    // print_tokens(a);
     auto p = parse_node(a);
     std::cout << "parsed" << std::endl;
     // std::cout << "" << std::endl;

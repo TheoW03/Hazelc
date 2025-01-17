@@ -181,12 +181,16 @@ std::vector<std::shared_ptr<ASTNode>> parse_scope(std::vector<Tokens> &tokens)
     std::vector<std::shared_ptr<ASTNode>> ast;
     if (match_and_remove(TokenType::Indents, tokens))
     {
-        while (match_and_remove(TokenType::Dedents, tokens).has_value())
+        while (!match_and_remove(TokenType::Dedents, tokens).has_value() && get_next_token(tokens).type != TokenType::EndOfFile)
         {
-            std::optional<std::shared_ptr<ASTNode>> parse_stmnts(std::vector<Tokens> & tokens);
+            /* code */
+            std::optional<std::shared_ptr<ASTNode>>
+                parse_stmnts(std::vector<Tokens> & tokens);
+
             auto v = parse_stmnts(tokens);
             ast.push_back(v.value());
         }
+        std::cout << "end" << std::endl;
     }
     else if (match_and_remove(TokenType::Arrow, tokens).has_value())
     {
@@ -217,6 +221,8 @@ std::optional<std::shared_ptr<ASTNode>> parse_stmnts(std::vector<Tokens> &tokens
     std::map<TokenType, parser> parse_map;
     parse_map.insert(make_pair(TokenType::Let, (parser)parse_function)); //
     parse_map.insert(make_pair(TokenType::Return, (parser)parse_return));
+    std::cout << get_next_token(tokens).type << std::endl;
+    print_tokens(tokens);
 
     return parse_map.at(get_next_token(tokens).type)(tokens); // meow :3
 }
@@ -238,7 +244,7 @@ std::shared_ptr<ModuleNode> parse_module(std::vector<Tokens> &tokens)
 std::vector<std::shared_ptr<ModuleNode>> parse_node(std::vector<Tokens> &tokens)
 {
     std::vector<std::shared_ptr<ModuleNode>> modules;
-    while (!match_and_remove(TokenType::EndOfFile, tokens).has_value())
+    while (!match_and_remove(TokenType::EndOfFile, tokens).has_value() && tokens.size() != 0)
     {
         if (match_and_remove(TokenType::Module, tokens).has_value())
         {

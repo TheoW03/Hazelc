@@ -2,57 +2,8 @@
 #include <map>
 #include <iostream>
 #include <unordered_set>
+#include <Frontend/Token.h>
 
-enum TokenType
-{
-    Addition,
-    Subtraction,
-    Multiplication,
-    Division,
-    Tab,
-    Identifier,
-    HexDigit,
-    BinaryDigit,
-    BaseTenDigit,
-    Open_Parenthesis,
-    Close_Parenthesis,
-    Let,
-    Integer,
-    Decimal,
-    Conditional,
-    Indents,
-    Dedents,
-    Return,
-    cont_line,
-    Colon,
-    Default,
-    Comma,
-    Arrow,
-    GT,
-    LT,
-    LTE,
-    EQ,
-    GTE,
-    None,
-    Open_Bracket,
-    Closed_Bracket,
-    EndOfFile,
-    Module,
-    Byte,
-    Uinteger,
-    Ubyte,
-    boolean,
-    character,
-    string
-
-};
-
-struct Tokens
-{
-    std::string value;
-    TokenType type;
-    int line_num;
-};
 struct Lexxer_Context
 {
     int line_num;
@@ -259,6 +210,7 @@ void is_number(Lexxer_Context &ctx, char value)
 
 void is_space(Lexxer_Context &ctx, char value)
 {
+
     if (ctx.buffer.size() == 4)
     {
         // ctx.tokens.push_back({"tab", TokenType::Tab});
@@ -267,22 +219,29 @@ void is_space(Lexxer_Context &ctx, char value)
 
         ctx.buffer = "";
     }
+    std::cout << ctx.indents_num << std::endl;
+    std::cout << ctx.indents_idx << std::endl;
+    if (ctx.indents_idx > ctx.indents_num)
+    {
+        ctx.indents_num = ctx.indents_idx;
+        ctx.tokens.push_back({"Indent", TokenType::Indents});
+        ctx.buffer = "";
+    }
+    else if (ctx.indents_idx < ctx.indents_num)
+    {
+        ctx.indents_num = ctx.indents_idx;
+        ctx.tokens.push_back({"dedent", TokenType::Dedents});
+        ctx.buffer = "";
+    }
     if (value != ' ')
     {
-        if (ctx.indents_idx > ctx.indents_num)
-        {
-            ctx.indents_num = ctx.indents_idx;
-            ctx.tokens.push_back({"Indent", TokenType::Indents});
-        }
-        else if (ctx.indents_idx < ctx.indents_num)
-        {
-            ctx.indents_num = ctx.indents_idx;
-            ctx.tokens.push_back({"dedent", TokenType::Dedents});
-        }
-        ctx.indents_idx = 0;
+
+        // ctx.indents_idx = 0;
         ctx.state = 1;
+        ctx.buffer = "";
+
+        // ctx.indents_num = 0;
         is_number(ctx, value);
-        // ctx.buffer += value;
     }
     else
         ctx.buffer += value;
@@ -329,6 +288,9 @@ std::vector<Tokens> lexxer(std::vector<std::string> lines)
             }
         }
         ctx.state = 0;
+        ctx.indents_idx = 0;
+        // ctx.indents_num = 0;
+
         is_token(ctx);
         ctx.buffer = "";
     }
