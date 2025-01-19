@@ -26,14 +26,11 @@ Output parse_cmd(std::vector<std::string> args)
                             "output file", 1};
     option_handlers["print-llvm"] = {[](std::string &value, Output &o)
                                      {
-                                         std::cout << "print-llvm" << std::endl;
-
                                          o.print_llvm = 1;
                                      },
                                      "prints the llvm output", 0};
     option_handlers["print-tokens"] = {[](std::string &value, Output &o)
                                        {
-                                           std::cout << "print-rtokens" << std::endl;
                                            o.print_tokens = 1;
                                        },
                                        "prints tokens output", 0};

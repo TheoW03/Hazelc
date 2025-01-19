@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
     InitCompiler(cli, p);
 
     std::cout << "" << std::endl;
-    std::cout << "Successfully Compiled" << std::endl;
+    std::cout << "\033[32mSuccessfully Compiled \033[0m" << std::endl;
 
     return 0;
 }

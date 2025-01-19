@@ -35,7 +35,6 @@ void InitCompiler(Output output, std::vector<std::shared_ptr<ModuleNode>> node)
             node[i]->functions[j]->Accept(c);
         }
     }
-    std::cout << "compiled functions" << std::endl;
     CompileStatement *c2 = new CompileStatement(module, builder, context, c->func_map);
     for (int i = 0; i < node.size(); i++)
     {
@@ -74,7 +73,7 @@ void InitCompiler(Output output, std::vector<std::shared_ptr<ModuleNode>> node)
     auto TargetMachine = Target->createTargetMachine(TargetTriple, CPU, Features, opt, llvm::Reloc::PIC_);
     module.setDataLayout(TargetMachine->createDataLayout());
 
-    std::cout << "aaa" << std::endl;
+    // std::cout << "aaa" << std::endl;
     if (output.print_llvm == 1)
         module.print(llvm::outs(), nullptr);
 
