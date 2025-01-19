@@ -67,6 +67,7 @@
         "stop_token": "cpp",
         "thread": "cpp",
         "*.def": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "any": "cpp"
     }
 }

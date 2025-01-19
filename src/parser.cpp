@@ -190,13 +190,16 @@ std::vector<std::shared_ptr<ASTNode>> parse_scope(std::vector<Tokens> &tokens)
             auto v = parse_stmnts(tokens);
             ast.push_back(v.value());
         }
-        std::cout << "end" << std::endl;
     }
     else if (match_and_remove(TokenType::Arrow, tokens).has_value())
     {
         ast.push_back(std::make_shared<ReturnNode>(expression(tokens).value()));
     }
-
+    else
+    {
+        std::cout << "missing dedent or arrow on line or indent " << tokens[0].line_num << std::endl;
+        exit(EXIT_FAILURE);
+    }
     return ast;
 }
 std::optional<std::shared_ptr<ASTNode>> parse_function(std::vector<Tokens> &tokens)
@@ -221,10 +224,15 @@ std::optional<std::shared_ptr<ASTNode>> parse_stmnts(std::vector<Tokens> &tokens
     std::map<TokenType, parser> parse_map;
     parse_map.insert(make_pair(TokenType::Let, (parser)parse_function)); //
     parse_map.insert(make_pair(TokenType::Return, (parser)parse_return));
-    std::cout << get_next_token(tokens).type << std::endl;
-    print_tokens(tokens);
-
-    return parse_map.at(get_next_token(tokens).type)(tokens); // meow :3
+    if (parse_map.count(get_next_token(tokens).type))
+    {
+        return parse_map.at(get_next_token(tokens).type)(tokens); // meow :3
+    }
+    else
+    {
+        std::cout << "unexpected identifier \"" << get_next_token(tokens).value << "\" on line " << tokens[0].line_num << std::endl;
+        exit(EXIT_FAILURE);
+    }
 }
 std::shared_ptr<ModuleNode> parse_module(std::vector<Tokens> &tokens)
 {

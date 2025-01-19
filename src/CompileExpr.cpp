@@ -23,6 +23,12 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         {
         case Addition:
             return builder.CreateAdd(lhs, rhs, "addition");
+        case Multiplication:
+            return builder.CreateMul(lhs, rhs, "addition");
+        case Division:
+            return builder.CreateSDiv(lhs, rhs, "addition");
+        case Subtraction:
+            return builder.CreateSub(lhs, rhs, "addition");
         default:
             break;
         }

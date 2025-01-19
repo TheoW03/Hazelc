@@ -4,6 +4,7 @@
 #include <backend/Compiler.h>
 #include <fstream>
 #include <cstdlib>
+#include <cli.h>
 #include <stdexcept>
 
 int main(int argc, char *argv[])
@@ -13,6 +14,13 @@ int main(int argc, char *argv[])
     std::ifstream file(argv[1]);
     std::string str;
     std::vector<std::string> lines;
+    std::vector<std::string> args;
+
+    for (int i = 0; i < argc; i++)
+    {
+        args.push_back(argv[i]);
+    }
+    parse_cmd({}, args);
     while (std::getline(file, str))
     {
         lines.push_back(str);

@@ -34,6 +34,7 @@ add_llvm_executable(${EXECUTABLE_NAME}
    src/visitor.cpp
    src/CompileStatement.cpp
    src/CompileExpr.cpp
+   src/cli.cpp
    src/CompileHighLevel.cpp
    src/CompilerUtil.cpp
 

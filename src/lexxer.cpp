@@ -143,15 +143,17 @@ void is_token(Lexxer_Context &ctx)
     token_map["module"] = TokenType::Module;
 
     if (token_map.find(ctx.buffer) != token_map.end())
-        ctx.tokens.push_back({ctx.buffer, token_map[ctx.buffer]});
+        ctx.tokens.push_back({ctx.buffer, token_map[ctx.buffer], ctx.line_num});
     else if (is_hex_digit(ctx.buffer))
-        ctx.tokens.push_back({ctx.buffer.substr(2, ctx.buffer.size()), TokenType::HexDigit});
+        ctx.tokens.push_back({ctx.buffer.substr(2, ctx.buffer.size()), TokenType::HexDigit, ctx.line_num});
     else if (is_binary_digit(ctx.buffer))
-        ctx.tokens.push_back({ctx.buffer.substr(2, ctx.buffer.size()), TokenType::BinaryDigit});
+        ctx.tokens.push_back({ctx.buffer.substr(2, ctx.buffer.size()), TokenType::BinaryDigit, ctx.line_num});
     else if (is_base_ten(ctx.buffer))
-        ctx.tokens.push_back({ctx.buffer, TokenType::BaseTenDigit});
+        ctx.tokens.push_back({ctx.buffer, TokenType::BaseTenDigit, ctx.line_num});
     else
-        ctx.tokens.push_back({ctx.buffer, TokenType::Identifier});
+        ctx.tokens.push_back({ctx.buffer,
+                              TokenType::Identifier,
+                              ctx.line_num});
     ctx.buffer = "";
 }
 
@@ -219,8 +221,8 @@ void is_space(Lexxer_Context &ctx, char value)
 
         ctx.buffer = "";
     }
-    std::cout << ctx.indents_num << std::endl;
-    std::cout << ctx.indents_idx << std::endl;
+    // std::cout << ctx.indents_num << std::endl;
+    // std::cout << ctx.indents_idx << std::endl;
     if (ctx.indents_idx > ctx.indents_num)
     {
         ctx.indents_num = ctx.indents_idx;
@@ -287,10 +289,9 @@ std::vector<Tokens> lexxer(std::vector<std::string> lines)
                 is_equal(ctx, current_char);
             }
         }
+        ctx.line_num++;
         ctx.state = 0;
         ctx.indents_idx = 0;
-        // ctx.indents_num = 0;
-
         is_token(ctx);
         ctx.buffer = "";
     }
