@@ -17,7 +17,8 @@
 
 #include "llvm/IR/LLVMContext.h"
 
-void InitCompiler(std::string file_name, std::vector<std::shared_ptr<ModuleNode>> node)
+#include <cli.h>
+void InitCompiler(Output output, std::vector<std::shared_ptr<ModuleNode>> node)
 {
     llvm::LLVMContext context;
     llvm::Module module("MyModule", context); // Module tied to context
@@ -74,25 +75,28 @@ void InitCompiler(std::string file_name, std::vector<std::shared_ptr<ModuleNode>
     module.setDataLayout(TargetMachine->createDataLayout());
 
     std::cout << "aaa" << std::endl;
-    module.print(llvm::outs(), nullptr);
+    if (output.print_llvm == 1)
+        module.print(llvm::outs(), nullptr);
 
-    auto Filename = "output.o";
     std::error_code EC;
-    llvm::raw_fd_ostream dest(Filename, EC, llvm::sys::fs::OF_None);
-
-    if (EC)
+    for (int i = 0; i < output.output_files.size(); i++)
     {
-        llvm::errs() << "Could not open file: " << EC.message();
-        return;
-    }
+        llvm::raw_fd_ostream dest(output.output_files[i], EC, llvm::sys::fs::OF_None);
 
-    llvm::legacy::PassManager pass;
-    auto FileType = llvm::CodeGenFileType::CGFT_ObjectFile;
-    if (TargetMachine->addPassesToEmitFile(pass, dest, nullptr, FileType))
-    {
-        llvm::errs() << "TargetMachine can't emit a file of this type";
-        return;
+        if (EC)
+        {
+            llvm::errs() << "Could not open file: " << EC.message();
+            return;
+        }
+
+        llvm::legacy::PassManager pass;
+        auto FileType = llvm::CodeGenFileType::CGFT_ObjectFile;
+        if (TargetMachine->addPassesToEmitFile(pass, dest, nullptr, FileType))
+        {
+            llvm::errs() << "TargetMachine can't emit a file of this type";
+            return;
+        }
+        pass.run(module);
+        dest.flush();
     }
-    pass.run(module);
-    dest.flush();
 }

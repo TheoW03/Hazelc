@@ -11,22 +11,24 @@ int main(int argc, char *argv[])
 {
     /* code */
 
-    std::ifstream file(argv[1]);
-    std::string str;
     std::vector<std::string> lines;
     std::vector<std::string> args;
 
-    for (int i = 0; i < argc; i++)
+    for (int i = 1; i < argc; i++)
     {
         args.push_back(argv[i]);
     }
-    parse_cmd({}, args);
+    auto cli = parse_cmd(args);
+    std::string str;
+    std::ifstream file(cli.files[0]);
     while (std::getline(file, str))
     {
         lines.push_back(str);
     }
     auto a = lexxer(lines);
     std::cout << "lexxed" << std::endl;
+    if (cli.print_tokens == 1)
+        print_tokens(a);
 
     // std::cout << "" << std::endl;
     auto p = parse_node(a);
@@ -34,7 +36,7 @@ int main(int argc, char *argv[])
     // std::cout << "" << std::endl;
     // std::cout << "parsed expr: " << p.value()->to_string() << std::endl;
     // std::cout << "" << std::endl;
-    InitCompiler("file", p);
+    InitCompiler(cli, p);
 
     std::cout << "" << std::endl;
     std::cout << "Successfully Compiled" << std::endl;

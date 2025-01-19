@@ -17,7 +17,9 @@ struct Output
 {
     std::vector<std::string> files;
     std::vector<std::string> output_files;
+    int print_llvm;
+    int print_tokens;
 };
 
 #endif
-Output parse_cmd(std::vector<Option> parsed_options, std::vector<std::string> args);
+Output parse_cmd(std::vector<std::string> args);

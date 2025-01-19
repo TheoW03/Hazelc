@@ -1,4 +1,4 @@
 #include <iostream>
 #include <Frontend/parser.h>
-
-void InitCompiler(std::string file_name, std::vector<std::shared_ptr<ModuleNode>> node);
+#include <cli.h>
+void InitCompiler(Output output, std::vector<std::shared_ptr<ModuleNode>> node);
