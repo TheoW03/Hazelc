@@ -65,7 +65,7 @@ void InitCompiler(Output output, std::vector<std::shared_ptr<ModuleNode>> node)
         return;
     }
 
-    std::cout << Error << std::endl;
+    // std::cout << Error << std::endl;
     auto CPU = "generic";
     auto Features = "";
 

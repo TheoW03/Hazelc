@@ -28,12 +28,33 @@ Output parse_cmd(std::vector<std::string> args)
                                      {
                                          o.print_llvm = 1;
                                      },
-                                     "prints the llvm output", 0};
+                                     "prints the llvm IR", 0};
     option_handlers["print-tokens"] = {[](std::string &value, Output &o)
                                        {
                                            o.print_tokens = 1;
                                        },
-                                       "prints tokens output", 0};
+                                       "prints tokens taken by the lexxer", 0};
+    option_handlers["help"] = {[&option_handlers](std::string &value, Output &o)
+                               {
+                                   std::cout << "hazelc v1.0.0" << std::endl;
+                                   std::cout << "" << std::endl;
+                                   std::cout << "   hazelc is a LLVM compiler for hazel, a functional paradigm programming langauge." << std::endl;
+                                   std::cout << "" << std::endl;
+                                   std::cout << "usage: hazelc file.. [options] or hazelc [options] file..." << std::endl;
+                                   std::cout << "" << std::endl;
+
+                                   for (const auto &[key, value] : option_handlers)
+                                   {
+                                       std::cout << "   -" << key << ": " << value.help_text << std::endl; // Access the key
+                                       std::cout << "" << std::endl;
+                                   }
+                               },
+                               "cli documentation", 0};
+    option_handlers["v"] = {[](std::string &value, Output &o)
+                            {
+                                std::cout << "1.0.0" << std::endl;
+                            },
+                            "prints version", 0};
 
     // func_c(2017);
     std::optional<Parse_F> current;

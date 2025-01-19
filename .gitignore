@@ -1,5 +1,5 @@
 psuedoc
-test.txt
+test.hz
 /build/
 *.o
 LazyEvalInt.c

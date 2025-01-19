@@ -20,10 +20,13 @@ int main(int argc, char *argv[])
     }
     auto cli = parse_cmd(args);
     std::string str;
-    std::ifstream file(cli.files[0]);
-    while (std::getline(file, str))
+    for (int i = 0; i < cli.files.size(); i++)
     {
-        lines.push_back(str);
+        std::ifstream file(cli.files[i]);
+        while (std::getline(file, str))
+        {
+            lines.push_back(str);
+        }
     }
     auto a = lexxer(lines);
     std::cout << "lexxed" << std::endl;
@@ -35,10 +38,9 @@ int main(int argc, char *argv[])
     std::cout << "parsed" << std::endl;
     // std::cout << "" << std::endl;
     // std::cout << "parsed expr: " << p.value()->to_string() << std::endl;
-    // std::cout << "" << std::endl;
     InitCompiler(cli, p);
-
     std::cout << "" << std::endl;
+
     std::cout << "\033[32mSuccessfully Compiled \033[0m" << std::endl;
 
     return 0;
