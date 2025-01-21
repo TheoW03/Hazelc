@@ -42,6 +42,6 @@ int main(int argc, char *argv[])
     std::cout << "" << std::endl;
 
     std::cout << "\033[32mSuccessfully Compiled \033[0m" << std::endl;
-
+    int a = 10 & 1;
     return 0;
 }

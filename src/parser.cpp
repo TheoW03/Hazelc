@@ -87,12 +87,22 @@ std::optional<std::shared_ptr<ASTNode>> factor(std::vector<Tokens> &tokens)
 std::optional<std::shared_ptr<ASTNode>> term(std::vector<Tokens> &tokens)
 {
     auto lhs = factor(tokens);
-    auto op = match_and_remove({TokenType::Multiplication, TokenType::Division}, tokens);
+    auto op = match_and_remove({TokenType::Multiplication,
+                                TokenType::Division,
+                                TokenType::Modulas,
+                                TokenType::And,
+                                TokenType::Or},
+                               tokens);
     while (op.has_value())
     {
         auto rhs = factor(tokens);
         lhs = std::make_shared<ExprNode>(lhs.value(), op.value(), rhs.value());
-        op = match_and_remove({TokenType::Multiplication, TokenType::Division}, tokens);
+        op = match_and_remove({TokenType::Multiplication,
+                               TokenType::Division,
+                               TokenType::Modulas,
+                               TokenType::And,
+                               TokenType::Or},
+                              tokens);
     }
     return lhs;
 }

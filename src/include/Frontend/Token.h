@@ -42,7 +42,10 @@ enum TokenType
     Ubyte,
     boolean,
     character,
-    string
+    string,
+    Modulas,
+    And,
+    Or,
 
 };
 #endif

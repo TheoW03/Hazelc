@@ -112,8 +112,13 @@ void is_token(Lexxer_Context &ctx)
     token_map["-"] = TokenType::Subtraction;
     token_map["*"] = TokenType::Multiplication;
     token_map["/"] = TokenType::Division;
+    token_map["%"] = TokenType::Modulas;
+    token_map["and"] = TokenType::And;
+    token_map["or"] = TokenType::Or;
+
     token_map["("] = TokenType::Open_Parenthesis;
     token_map[")"] = TokenType::Close_Parenthesis;
+
     token_map["let"] = TokenType::Let;
     token_map["conditional"] = TokenType::Conditional;
     token_map["integer"] = TokenType::Integer;
@@ -182,7 +187,7 @@ void is_number(Lexxer_Context &ctx, char value)
     {
         ctx.buffer += value;
     }
-    else if (value == '+' || value == '*' || value == '-' || value == '/' || value == '(' || value == ')')
+    else if (value == '+' || value == '*' || value == '-' || value == '/' || value == '%' || value == '(' || value == ')')
     {
 
         is_token(ctx);

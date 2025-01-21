@@ -29,6 +29,12 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
             return builder.CreateSDiv(lhs, rhs, "addition");
         case Subtraction:
             return builder.CreateSub(lhs, rhs, "addition");
+        case Modulas:
+            return builder.CreateSRem(lhs, rhs, "modulas");
+        case And:
+            return builder.CreateAnd(lhs, rhs, "modulas");
+        case Or:
+            return builder.CreateOr(lhs, rhs, "modulas");
         default:
             break;
         }
