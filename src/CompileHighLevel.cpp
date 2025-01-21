@@ -24,6 +24,14 @@ void CompileHighLevel::Visit(FunctionNode *node)
     func_map.insert(make_pair(node->f->FunctionName.value, CompileFunctionHeader(node->f)));
 }
 
+void CompileHighLevel::Visit(ModuleNode *node)
+{
+    for (int i = 0; i < node->functions.size(); i++)
+    {
+        node->functions[i]->Accept(this);
+    }
+}
+
 void CompileHighLevel::Visit(ReturnNode *node)
 {
 }

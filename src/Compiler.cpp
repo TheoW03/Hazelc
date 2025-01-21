@@ -27,24 +27,20 @@ void InitCompiler(Output output, std::vector<std::shared_ptr<ModuleNode>> node)
 
     std::map<std::string, llvm::Function *> func_map;
     // CompileHighLevel c(module, builder, context);
-    CompileHighLevel *c = new CompileHighLevel(module, builder, context);
+    // compiles function body
+    CompileHighLevel *compile_top = new CompileHighLevel(module, builder, context);
     for (int i = 0; i < node.size(); i++)
     {
-        for (int j = 0; j < node[i]->functions.size(); j++)
-        {
-            node[i]->functions[j]->Accept(c);
-        }
+        node[i]->Accept(compile_top);
     }
-    CompileStatement *c2 = new CompileStatement(module, builder, context, c->func_map);
+    // compiles the returns
+    CompileStatement *compile_statement = new CompileStatement(module, builder, context, compile_top->func_map);
     for (int i = 0; i < node.size(); i++)
     {
-        for (int j = 0; j < node[i]->functions.size(); j++)
-        {
-            node[i]->functions[j]->Accept(c2);
-        }
+        node[i]->Accept(compile_statement);
     }
-    delete c;
-    delete c2;
+    delete compile_top;
+    delete compile_statement;
     // Initialize the target registry etc.llvm::InitializeAllTargets();
 
     llvm::InitializeAllTargetInfos();
@@ -58,6 +54,10 @@ void InitCompiler(Output output, std::vector<std::shared_ptr<ModuleNode>> node)
 
     auto Target = llvm::TargetRegistry::lookupTarget(TargetTriple, Error);
     module.setTargetTriple(TargetTriple);
+    if (output.print_llvm == 1)
+    {
+        module.print(llvm::outs(), nullptr);
+    }
 
     if (!Target)
     {
@@ -74,8 +74,6 @@ void InitCompiler(Output output, std::vector<std::shared_ptr<ModuleNode>> node)
     module.setDataLayout(TargetMachine->createDataLayout());
 
     // std::cout << "aaa" << std::endl;
-    if (output.print_llvm == 1)
-        module.print(llvm::outs(), nullptr);
 
     std::error_code EC;
     for (int i = 0; i < output.output_files.size(); i++)

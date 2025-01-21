@@ -158,6 +158,7 @@ ModuleNode::ModuleNode(std::vector<std::shared_ptr<ASTNode>> functions, Tokens n
 
 void ModuleNode::Accept(Visitor *v)
 {
+    v->Visit(this);
 }
 
 std::string ModuleNode::to_string()

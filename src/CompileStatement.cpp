@@ -23,6 +23,14 @@ void CompileStatement::Visit(FunctionNode *node)
     }
 }
 
+void CompileStatement::Visit(ModuleNode *node)
+{
+    for (int i = 0; i < node->functions.size(); i++)
+    {
+        node->functions[i]->Accept(this);
+    }
+}
+
 void CompileStatement::Visit(ReturnNode *node)
 {
     CompileExpr c(module, builder, context, func_map);
