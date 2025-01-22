@@ -228,9 +228,10 @@ void is_number(Lexxer_Context &ctx, char value)
 
 void is_space(Lexxer_Context &ctx, char value)
 {
-    std::cout << "num: " << ctx.indents_num << std::endl;
-    std::cout << "indnets idx: " << ctx.indents_idx << std::endl;
-    std::cout << "line num: " << ctx.line_num << std::endl;
+    // DEBUG:
+    //      std::cout << "num: " << ctx.indents_num << std::endl;
+    //      std::cout << "indnets idx: " << ctx.indents_idx << std::endl;
+    //      std::cout << "line num: " << ctx.line_num << std::endl;
     if (ctx.buffer.size() == 4)
     {
         // ctx.tokens.push_back({"tab", TokenType::Tab});
