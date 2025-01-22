@@ -87,12 +87,23 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
 
         auto lhs = Expression(c->lhs);
         auto rhs = Expression(c->rhs);
+        auto get_type = get_expr_type(node);
+        switch (get_type)
+        {
+        case Integer_Type:
+            return IntMathExpression(lhs, c->operation, rhs);
+        case Float_Type:
+            return FloatMathExpression(lhs, c->operation, rhs);
+        default:
+            break;
+        }
+
         // TODO:
         // very temporary solution. need to fix later to include functions
-        if (dynamic_cast<IntegerNode *>(c->lhs.get()) && dynamic_cast<IntegerNode *>(c->rhs.get()))
-            return IntMathExpression(lhs, c->operation, rhs);
-        else if (dynamic_cast<DecimalNode *>(c->lhs.get()) && dynamic_cast<DecimalNode *>(c->rhs.get()))
-            return FloatMathExpression(lhs, c->operation, rhs);
+        // if (dynamic_cast<IntegerNode *>(c->lhs.get()) && dynamic_cast<IntegerNode *>(c->rhs.get()))
+        //     return IntMathExpression(lhs, c->operation, rhs);
+        // else if (dynamic_cast<DecimalNode *>(c->lhs.get()) && dynamic_cast<DecimalNode *>(c->rhs.get()))
+        //     return FloatMathExpression(lhs, c->operation, rhs);
     }
     return nullptr;
 }

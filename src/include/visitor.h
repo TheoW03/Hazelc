@@ -87,7 +87,6 @@ public:
     llvm::Value *FloatMathExpression(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
     llvm::Value *BoolIntMathExpr(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
     llvm::Value *BoolFloatMathExpr(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
-
     llvm::Value *Expression(std::shared_ptr<ASTNode> node);
 };
 #endif

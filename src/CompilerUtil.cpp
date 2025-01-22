@@ -3,6 +3,7 @@
 #include <Frontend/Ast.h>
 #include "llvm/IR/LLVMContext.h"
 #include <memory>
+#include <backend/CompilerUtil.h>
 
 llvm::Type *compileType(llvm::IRBuilder<> &builder, std::shared_ptr<Type> ty)
 {
@@ -41,4 +42,17 @@ llvm::FunctionType *CompileFunctionType(llvm::IRBuilder<> &builder, std::shared_
     llvm::FunctionType *functype = llvm::FunctionType::get(
         compileType(builder, c), a, false);
     return functype;
+}
+
+TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n)
+{
+    auto c = dynamic_cast<ExprNode *>(n.get());
+    if (dynamic_cast<IntegerNode *>(c->lhs.get()) && dynamic_cast<IntegerNode *>(c->rhs.get()))
+        return TypeOfExpr::Integer_Type;
+    else if (dynamic_cast<DecimalNode *>(c->lhs.get()) && dynamic_cast<DecimalNode *>(c->rhs.get()))
+        return TypeOfExpr::Float_Type;
+    if (dynamic_cast<ExprNode *>(c->lhs.get()))
+        return get_expr_type(c->lhs);
+    if (dynamic_cast<ExprNode *>(c->rhs.get()))
+        return get_expr_type(c->rhs);
 }
