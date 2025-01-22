@@ -15,7 +15,7 @@ llvm::Type *compileType(llvm::IRBuilder<> &builder, std::shared_ptr<Type> ty)
         }
         else if (p->type.type == TokenType::Decimal)
         {
-            return builder.getFloatTy();
+            return builder.getDoubleTy();
         }
         else if (p->type.type == TokenType::Byte || p->type.type == TokenType::character || p->type.type == TokenType::Ubyte)
         {

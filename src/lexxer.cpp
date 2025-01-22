@@ -143,8 +143,8 @@ void is_token(Lexxer_Context &ctx)
     token_map["character"] = TokenType::character;
     token_map["string"] = TokenType::string;
 
-    token_map["true"] = TokenType::character;
-    token_map["false"] = TokenType::string;
+    token_map["true"] = TokenType::True;
+    token_map["false"] = TokenType::False;
 
     token_map["return"] = TokenType::Return;
     token_map["|"] = TokenType::cont_line;
