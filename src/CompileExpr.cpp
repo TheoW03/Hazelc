@@ -13,6 +13,11 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         auto c = dynamic_cast<IntegerNode *>(node.get());
         return llvm::ConstantInt::get(llvm::Type::getInt64Ty(context), c->number);
     }
+    else if (dynamic_cast<DecimalNode *>(node.get()))
+    {
+        auto c = dynamic_cast<DecimalNode *>(node.get());
+        return llvm::ConstantFP::get(context, llvm::APFloat(c->number));
+    }
     else if (dynamic_cast<ExprNode *>(node.get()))
     {
         auto c = dynamic_cast<ExprNode *>(node.get());
@@ -35,7 +40,12 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
             return builder.CreateAnd(lhs, rhs, "modulas");
         case Or:
             return builder.CreateOr(lhs, rhs, "modulas");
+        case Left_Shift:
+            return builder.CreateShl(lhs, rhs, "leftshoit");
+        case Right_Shift:
+            return builder.CreateLShr(lhs, rhs, "right_shift");
         default:
+
             break;
         }
     }

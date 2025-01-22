@@ -75,6 +75,45 @@ public:
 };
 #endif
 
+#ifndef DECIMAL_H
+#define DECIMAL_H
+class Visitor;
+class DecimalNode : public ASTNode
+{
+public:
+    double number;
+    DecimalNode(Tokens num);
+    void Accept(Visitor *v);
+    std::string to_string();
+};
+#endif
+
+#ifndef BOOL_EXPR_NODe_H
+#define BOOL_EXPR_NODe_H
+class Visitor;
+class BooleanExprNode : public ASTNode
+{
+public:
+    std::shared_ptr<ASTNode> lhs;
+    std::shared_ptr<ASTNode> rhs;
+    Tokens op;
+    BooleanExprNode(std::shared_ptr<ASTNode> lhs, Tokens operation, std::shared_ptr<ASTNode> rhs);
+    void Accept(Visitor *v);
+    std::string to_string();
+};
+#endif
+#ifndef BOOL_CONST_NODE_H
+#define BOOL_CONST_NODE_H
+class Visitor;
+class BooleanConstNode : public ASTNode
+{
+public:
+    Tokens value;
+    BooleanConstNode(Tokens value);
+    void Accept(Visitor *v);
+    std::string to_string();
+};
+#endif
 #ifndef FUNCTION_REF_NODE_H
 #define FUNCTION_REF_NODE_H
 class FunctionRefNode : public ASTNode

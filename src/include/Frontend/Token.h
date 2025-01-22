@@ -46,6 +46,10 @@ enum TokenType
     Modulas,
     And,
     Or,
+    True,
+    False,
+    Left_Shift,
+    Right_Shift
 
 };
 #endif

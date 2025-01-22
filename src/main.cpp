@@ -28,20 +28,19 @@ int main(int argc, char *argv[])
             lines.push_back(str);
         }
     }
-    auto a = lexxer(lines);
+    auto tokens = lexxer(lines);
     std::cout << "lexxed" << std::endl;
     if (cli.print_tokens == 1)
-        print_tokens(a);
+        print_tokens(tokens);
 
     // std::cout << "" << std::endl;
-    auto p = parse_node(a);
+    auto modules = parse_node(tokens);
     std::cout << "parsed" << std::endl;
     // std::cout << "" << std::endl;
     // std::cout << "parsed expr: " << p.value()->to_string() << std::endl;
-    InitCompiler(cli, p);
+    InitCompiler(cli, modules);
     std::cout << "" << std::endl;
 
     std::cout << "\033[32mSuccessfully Compiled \033[0m" << std::endl;
-    int a = 10 & 1;
     return 0;
 }

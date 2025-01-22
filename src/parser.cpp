@@ -69,6 +69,10 @@ std::optional<std::shared_ptr<ASTNode>> factor(std::vector<Tokens> &tokens)
                                         TokenType::HexDigit,
                                         TokenType::BinaryDigit},
                                        tokens);
+        if (number.value().value.find('.') != std::string::npos)
+        {
+            return std::make_shared<DecimalNode>(number.value());
+        }
         return std::make_shared<IntegerNode>(number.value());
     }
     else if (match_and_remove(TokenType::None, tokens).has_value())
@@ -86,22 +90,21 @@ std::optional<std::shared_ptr<ASTNode>> factor(std::vector<Tokens> &tokens)
 }
 std::optional<std::shared_ptr<ASTNode>> term(std::vector<Tokens> &tokens)
 {
+    auto term_tokens = {TokenType::Multiplication,
+                        TokenType::Division,
+                        TokenType::Modulas,
+                        TokenType::And,
+                        TokenType::Or,
+                        TokenType::Left_Shift,
+                        TokenType::Right_Shift};
     auto lhs = factor(tokens);
-    auto op = match_and_remove({TokenType::Multiplication,
-                                TokenType::Division,
-                                TokenType::Modulas,
-                                TokenType::And,
-                                TokenType::Or},
+    auto op = match_and_remove(term_tokens,
                                tokens);
     while (op.has_value())
     {
         auto rhs = factor(tokens);
         lhs = std::make_shared<ExprNode>(lhs.value(), op.value(), rhs.value());
-        op = match_and_remove({TokenType::Multiplication,
-                               TokenType::Division,
-                               TokenType::Modulas,
-                               TokenType::And,
-                               TokenType::Or},
+        op = match_and_remove(term_tokens,
                               tokens);
     }
     return lhs;
@@ -109,12 +112,13 @@ std::optional<std::shared_ptr<ASTNode>> term(std::vector<Tokens> &tokens)
 std::optional<std::shared_ptr<ASTNode>> expression(std::vector<Tokens> &tokens)
 {
     auto lhs = term(tokens);
-    auto op = match_and_remove({TokenType::Addition, TokenType::Subtraction}, tokens);
+    auto expression_tokens = {TokenType::Addition, TokenType::Subtraction};
+    auto op = match_and_remove(expression_tokens, tokens);
     while (op.has_value())
     {
         auto rhs = term(tokens);
         lhs = std::make_shared<ExprNode>(lhs.value(), op.value(), rhs.value());
-        op = match_and_remove({TokenType::Addition, TokenType::Subtraction}, tokens);
+        op = match_and_remove(expression_tokens, tokens);
     }
     return lhs;
 }

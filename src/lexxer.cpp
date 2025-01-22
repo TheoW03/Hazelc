@@ -113,11 +113,24 @@ void is_token(Lexxer_Context &ctx)
     token_map["*"] = TokenType::Multiplication;
     token_map["/"] = TokenType::Division;
     token_map["%"] = TokenType::Modulas;
+
+    token_map[">>"] = TokenType::Right_Shift;
+    token_map["<<"] = TokenType::Left_Shift;
     token_map["and"] = TokenType::And;
     token_map["or"] = TokenType::Or;
 
     token_map["("] = TokenType::Open_Parenthesis;
     token_map[")"] = TokenType::Close_Parenthesis;
+
+    token_map["="] = TokenType::EQ;
+    token_map["=>"] = TokenType::Arrow;
+    token_map["<="] = TokenType::LTE;
+    token_map[">="] = TokenType::GTE;
+    token_map[">"] = TokenType::GT;
+    token_map["<"] = TokenType::LT;
+
+    token_map["true"] = TokenType::True;
+    token_map["false"] = TokenType::False;
 
     token_map["let"] = TokenType::Let;
     token_map["conditional"] = TokenType::Conditional;
@@ -130,18 +143,16 @@ void is_token(Lexxer_Context &ctx)
     token_map["character"] = TokenType::character;
     token_map["string"] = TokenType::string;
 
+    token_map["true"] = TokenType::character;
+    token_map["false"] = TokenType::string;
+
     token_map["return"] = TokenType::Return;
     token_map["|"] = TokenType::cont_line;
     token_map[":"] = TokenType::Colon;
     token_map[","] = TokenType::Comma;
 
     token_map["$default"] = TokenType::Default;
-    token_map["="] = TokenType::EQ;
-    token_map["=>"] = TokenType::Arrow;
-    token_map["<="] = TokenType::LTE;
-    token_map[">="] = TokenType::GTE;
-    token_map[">"] = TokenType::GT;
-    token_map["<"] = TokenType::LT;
+
     token_map["None"] = TokenType::None;
     token_map["["] = TokenType::Open_Bracket;
     token_map["]"] = TokenType::Closed_Bracket;
@@ -334,6 +345,12 @@ void print_tokens(std::vector<Tokens> tokens)
     token_map[TokenType::LT] = "Lt";
     token_map[TokenType::LTE] = "LTE";
     token_map[TokenType::EQ] = "EQ";
+    token_map[TokenType::Right_Shift] = "right_shift";
+    token_map[TokenType::Left_Shift] = "left_shift";
+    token_map[TokenType::And] = "and";
+    token_map[TokenType::Or] = "or";
+    token_map[TokenType::True] = "true";
+
     token_map[TokenType::cont_line] = "contine";
     token_map[TokenType::Open_Bracket] = "Open bracket";
     token_map[TokenType::Closed_Bracket] = "Closed bracket";

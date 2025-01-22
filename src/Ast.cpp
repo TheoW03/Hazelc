@@ -165,3 +165,47 @@ std::string ModuleNode::to_string()
 {
     return std::string();
 }
+
+DecimalNode::DecimalNode(Tokens num)
+{
+    this->number = std::stod(num.value);
+}
+
+void DecimalNode::Accept(Visitor *v)
+{
+}
+
+std::string DecimalNode::to_string()
+{
+    return std::string();
+}
+
+BooleanExprNode::BooleanExprNode(std::shared_ptr<ASTNode> lhs, Tokens operation, std::shared_ptr<ASTNode> rhs)
+{
+    this->lhs = lhs;
+    this->rhs = rhs;
+    this->op = op;
+}
+
+void BooleanExprNode::Accept(Visitor *v)
+{
+}
+
+std::string BooleanExprNode::to_string()
+{
+    return std::string();
+}
+
+BooleanConstNode::BooleanConstNode(Tokens value)
+{
+    this->value = value;
+}
+
+void BooleanConstNode::Accept(Visitor *v)
+{
+}
+
+std::string BooleanConstNode::to_string()
+{
+    return std::string();
+}
