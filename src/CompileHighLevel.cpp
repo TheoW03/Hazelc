@@ -22,6 +22,12 @@ void CompileHighLevel::Visit(FunctionNode *node)
     //     functype, llvm::Function::ExternalLinkage, node->f->FunctionName.value, module);
     // func_map.insert(, node->f->FunctionName.value, );
     func_map.insert(make_pair(node->f->FunctionName.value, CompileFunctionHeader(node->f)));
+
+    for (int i = 0; i < node->stmnts.size(); i++)
+    {
+
+        node->stmnts[i]->Accept(this);
+    }
 }
 
 void CompileHighLevel::Visit(ModuleNode *node)
@@ -51,6 +57,7 @@ Function CompileHighLevel::CompileFunctionHeader(std::shared_ptr<FunctionRefNode
     llvm::FunctionType *functype = CompileFunctionType(builder, n);
     llvm::Function *function = llvm::Function::Create(
         functype, llvm::Function::ExternalLinkage, n->FunctionName.value, module);
+
     return {function, f};
 }
 
