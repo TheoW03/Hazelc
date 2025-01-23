@@ -234,7 +234,6 @@ void is_space(Lexxer_Context &ctx, char value)
     //      std::cout << "line num: " << ctx.line_num << std::endl;
     if (ctx.buffer.size() == 4)
     {
-        // ctx.tokens.push_back({"tab", TokenType::Tab});
 
         ctx.indents_idx++;
 

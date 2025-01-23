@@ -1,16 +1,30 @@
 # Hazel
 
-hazel is a functional langauge thats supposed to be a way more easier form of haskell
-just like haskell, it uses lazy eval and immutability
+hazel is a declartive functional paradigm programming langauge. its syntax and name is inpsired by haskell.
 
-It uses a LLVM compiler this is it. this is a very early staged project so bnot to many things are implemented yet
+It uses a LLVM compiler, hazelc.
+
+
 ## build instrcutions
 
-make sure you have CMake and the LLVM I use version 14.
+make sure you have CMake v3.22.1 and the LLVM version 14.0.0
+if not download them here
 
-and run the build script ./build.sh
+- [cmake]
+- [llvm]
+
+
+now run this in your terminal
+
+```sh
+cmake -S . -B build 
+cmake --build build --config Release
+./hazelc --help
+```
 
 [documentation]
 
 [documentation]: <https://docs.google.com/document/d/12JWLuCte1r-tfAHKesndeBFRdnv7tT663QnIC2gSafY/edit?tab=t.0#heading=h.85eivsfcywf4>
 
+[cmake]: <https://cmake.org/download/>
+[llvm]:<https://releases.llvm.org/download.html>
