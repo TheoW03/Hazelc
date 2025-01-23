@@ -229,9 +229,9 @@ void is_number(Lexxer_Context &ctx, char value)
 void is_space(Lexxer_Context &ctx, char value)
 {
     // DEBUG:
-    //      std::cout << "num: " << ctx.indents_num << std::endl;
-    //      std::cout << "indnets idx: " << ctx.indents_idx << std::endl;
-    //      std::cout << "line num: " << ctx.line_num << std::endl;
+    // std::cout << "num: " << ctx.indents_num << std::endl;
+    // std::cout << "indnets idx: " << ctx.indents_idx << std::endl;
+    // std::cout << "line num: " << ctx.line_num << std::endl;
     if (ctx.buffer.size() == 4)
     {
 
@@ -257,7 +257,7 @@ void is_space(Lexxer_Context &ctx, char value)
             ctx.tokens.push_back({"dedent", TokenType::Dedents});
             ctx.buffer = "";
         }
-        // ctx.indents_idx = 0;
+        ctx.indents_idx = 0;
         ctx.state = 1;
         ctx.buffer = "";
 
