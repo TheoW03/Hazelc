@@ -14,11 +14,17 @@ Output parse_cmd(std::vector<std::string> args)
 {
     int state = 0;
     Output o;
-    std::string optop;
     /* A function wrapper to a lambda function. */
     std::map<std::string,
              Parse_F>
         option_handlers;
+    std::string optop;
+    std::map<char, std::string> short_hand;
+    short_hand['c'] = "linker-off";
+    short_hand['o'] = "output-file";
+    short_hand['v'] = "version";
+    short_hand['h'] = "help";
+
     option_handlers["output-file"] = {[](std::string &value, Output &o)
                                       {
                                           o.output_files.push_back(value);
@@ -76,8 +82,25 @@ Output parse_cmd(std::vector<std::string> args)
     std::optional<Parse_F> current;
     for (int i = 0; i < args.size(); i++)
     {
-
-        if (args[i].at(0) == '-' && args[i].at(1) == '-')
+        if (args[i].at(0) == '-' && args[i].at(1) != '-')
+        {
+            char short_optop = args[i].at(1);
+            if (short_hand.find(short_optop) != short_hand.end())
+            {
+                current = option_handlers[short_hand[short_optop]];
+                if (current.value().takes_args == 0)
+                {
+                    current.value().function(args[i], o);
+                    current = {};
+                }
+            }
+            else
+            {
+                std::cout << "unknown option \"" << short_optop << "\"" << std::endl;
+                exit(EXIT_FAILURE);
+            }
+        }
+        else if (args[i].at(0) == '-' && args[i].at(1) == '-')
         {
             optop = args[i].substr(2, args[i].size());
             if (option_handlers.find(optop) != option_handlers.end())
