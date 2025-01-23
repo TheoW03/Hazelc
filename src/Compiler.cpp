@@ -35,9 +35,9 @@ void InitCompiler(Output output, std::vector<std::shared_ptr<ModuleNode>> node)
     }
     // compiles the returns
     CompileStatement *compile_statement = new CompileStatement(module, builder, context, compile_top->func_map);
-    for (int i = 0; i < node.size(); i++)
+    for (int i = 0; i < compile_top->functions.size(); i++)
     {
-        node[i]->Accept(compile_statement);
+        compile_top->functions[i]->Accept(compile_statement);
     }
     delete compile_top;
     delete compile_statement;

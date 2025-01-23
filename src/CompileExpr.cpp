@@ -97,13 +97,6 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         default:
             break;
         }
-
-        // TODO:
-        // very temporary solution. need to fix later to include functions
-        // if (dynamic_cast<IntegerNode *>(c->lhs.get()) && dynamic_cast<IntegerNode *>(c->rhs.get()))
-        //     return IntMathExpression(lhs, c->operation, rhs);
-        // else if (dynamic_cast<DecimalNode *>(c->lhs.get()) && dynamic_cast<DecimalNode *>(c->rhs.get()))
-        //     return FloatMathExpression(lhs, c->operation, rhs);
     }
     return nullptr;
 }

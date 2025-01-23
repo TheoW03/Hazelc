@@ -39,6 +39,8 @@ class CompileHighLevel : public Visitor
 {
 public:
     llvm::Module &module;
+    std::vector<std::shared_ptr<ASTNode>> functions;
+
     std::map<std::string, Function> func_map;
     llvm::IRBuilder<> &builder;
     llvm::LLVMContext &context;

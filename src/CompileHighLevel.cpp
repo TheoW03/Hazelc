@@ -21,19 +21,32 @@ void CompileHighLevel::Visit(FunctionNode *node)
     // llvm::Function *function = llvm::Function::Create(
     //     functype, llvm::Function::ExternalLinkage, node->f->FunctionName.value, module);
     // func_map.insert(, node->f->FunctionName.value, );
+    std::vector<std::shared_ptr<ASTNode>> filter_functions;
+
     func_map.insert(make_pair(node->f->FunctionName.value, CompileFunctionHeader(node->f)));
 
     for (int i = 0; i < node->stmnts.size(); i++)
     {
 
         node->stmnts[i]->Accept(this);
+        if (!dynamic_cast<FunctionNode *>(node->stmnts[i].get()))
+        {
+            filter_functions.push_back(node->stmnts[i]);
+        }
+        else
+        {
+            functions.push_back(node->stmnts[i]);
+        }
     }
+    node->stmnts = filter_functions;
 }
 
 void CompileHighLevel::Visit(ModuleNode *node)
 {
     for (int i = 0; i < node->functions.size(); i++)
     {
+        functions.push_back(node->functions[i]);
+
         node->functions[i]->Accept(this);
     }
 }

@@ -7,6 +7,9 @@
 
 llvm::Type *compileType(llvm::IRBuilder<> &builder, std::shared_ptr<Type> ty)
 {
+
+    // TODO:
+    // very temporary solution. need to fix later to include functions
     if (dynamic_cast<NativeType *>(ty.get()))
     {
         auto p = dynamic_cast<NativeType *>(ty.get());
