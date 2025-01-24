@@ -8,3 +8,5 @@ LazyEvalInt.c
 *.hi
 test
 hazelc
+*.s
+*.ll

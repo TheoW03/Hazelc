@@ -93,14 +93,16 @@ void InitCompiler(Output output, std::vector<std::shared_ptr<ModuleNode>> node)
             }
 
             auto FileType = llvm::CodeGenFileType::CGFT_ObjectFile;
-            pass.run(module);
 
             if (TargetMachine->addPassesToEmitFile(pass, dest, nullptr, FileType))
             {
                 llvm::errs() << "TargetMachine can't emit a file of this type";
                 return;
             }
+            pass.run(module);
+
             dest.flush();
+            break;
         }
         case Assembly_File:
         {
