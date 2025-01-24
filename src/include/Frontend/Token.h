@@ -8,7 +8,6 @@ enum TokenType
     Subtraction,
     Multiplication,
     Division,
-    Tab,
     Identifier,
     HexDigit,
     BinaryDigit,

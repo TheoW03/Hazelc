@@ -10,7 +10,15 @@ struct Option
 };
 
 #endif
-
+#ifndef FILE_TYPE_H
+#define FILE_TYPE_H
+enum FileType
+{
+    Assembly_File,
+    Object_file,
+    Ir_file
+};
+#endif
 #ifndef OUT_H
 #define OUT_H
 struct Output
@@ -19,6 +27,7 @@ struct Output
     std::vector<std::string> output_files;
     int print_llvm;
     int print_tokens;
+    FileType gen_file;
 };
 
 #endif

@@ -14,7 +14,7 @@
 #include <map>
 #include <visitor.h>
 #include "llvm/Support/Host.h"
-
+#include <fstream>
 #include "llvm/IR/LLVMContext.h"
 
 #include <cli.h>
@@ -78,22 +78,83 @@ void InitCompiler(Output output, std::vector<std::shared_ptr<ModuleNode>> node)
     std::error_code EC;
     for (int i = 0; i < output.output_files.size(); i++)
     {
-        llvm::raw_fd_ostream dest(output.output_files[i], EC, llvm::sys::fs::OF_None);
-
-        if (EC)
-        {
-            llvm::errs() << "Could not open file: " << EC.message();
-            return;
-        }
 
         llvm::legacy::PassManager pass;
-        auto FileType = llvm::CodeGenFileType::CGFT_ObjectFile;
-        if (TargetMachine->addPassesToEmitFile(pass, dest, nullptr, FileType))
+
+        switch (output.gen_file)
         {
-            llvm::errs() << "TargetMachine can't emit a file of this type";
-            return;
+        case Object_file:
+        {
+            llvm::raw_fd_ostream dest(output.output_files[i], EC, llvm::sys::fs::OF_None);
+            if (EC)
+            {
+                llvm::errs() << "Could not open file: " << EC.message();
+                return;
+            }
+
+            auto FileType = llvm::CodeGenFileType::CGFT_ObjectFile;
+            pass.run(module);
+
+            if (TargetMachine->addPassesToEmitFile(pass, dest, nullptr, FileType))
+            {
+                llvm::errs() << "TargetMachine can't emit a file of this type";
+                return;
+            }
+            dest.flush();
         }
-        pass.run(module);
-        dest.flush();
+        case Assembly_File:
+        {
+            llvm::raw_fd_ostream dest(output.output_files[i], EC, llvm::sys::fs::OF_None);
+            if (EC)
+            {
+                llvm::errs() << "Could not open file: " << EC.message();
+                return;
+            }
+
+            auto FileType = llvm::CodeGenFileType::CGFT_AssemblyFile;
+
+            if (TargetMachine->addPassesToEmitFile(pass, dest, nullptr, FileType))
+            {
+                llvm::errs() << "TargetMachine can't emit a file of this type";
+                return;
+            }
+            pass.run(module);
+
+            dest.flush();
+            break;
+        }
+        case Ir_file:
+        {
+            std::string irString;
+            llvm::raw_string_ostream llvmStringStream(irString);
+
+            std::ofstream outfile(output.output_files[i]);
+            module.print(llvmStringStream, nullptr);
+            outfile << irString << std::endl;
+            std::cout << "ir" << std::endl;
+            outfile.close();
+            break;
+        }
+        default:
+        {
+            llvm::raw_fd_ostream dest("a.o", EC, llvm::sys::fs::OF_None);
+            if (EC)
+            {
+                llvm::errs() << "Could not open file: " << EC.message();
+                return;
+            }
+            auto FileType = llvm::CodeGenFileType::CGFT_ObjectFile;
+
+            if (TargetMachine->addPassesToEmitFile(pass, dest, nullptr, FileType))
+            {
+                llvm::errs() << "TargetMachine can't emit a file of this type";
+                return;
+            }
+            pass.run(module);
+            int returnCode = std::system(("clang a.o -o " + output.output_files[i]).c_str());
+            dest.flush();
+            break;
+        }
+        }
     }
 }

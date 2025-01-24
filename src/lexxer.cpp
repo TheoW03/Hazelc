@@ -246,7 +246,7 @@ void is_space(Lexxer_Context &ctx, char value)
         {
             ctx.indents_num = ctx.indents_idx;
             ctx.indents_idx = 0;
-            ctx.tokens.push_back({"Indent", TokenType::Indents});
+            ctx.tokens.push_back({"Indent", TokenType::Indents, ctx.line_num});
             ctx.buffer = "";
         }
         else if (ctx.indents_idx < ctx.indents_num)
@@ -254,7 +254,7 @@ void is_space(Lexxer_Context &ctx, char value)
             ctx.indents_num = ctx.indents_idx;
             ctx.indents_idx = 0;
 
-            ctx.tokens.push_back({"dedent", TokenType::Dedents});
+            ctx.tokens.push_back({"dedent", TokenType::Dedents, ctx.line_num});
             ctx.buffer = "";
         }
         ctx.indents_idx = 0;
@@ -327,7 +327,6 @@ void print_tokens(std::vector<Tokens> tokens)
     token_map[TokenType::Multiplication] = "Multiplication";
     token_map[TokenType::Division] = "Division";
 
-    token_map[TokenType::Tab] = "Tab";
     token_map[TokenType::Identifier] = "Identifier";
     token_map[TokenType::Open_Parenthesis] = "Open_paren";
     token_map[TokenType::Close_Parenthesis] = "Close_paren";

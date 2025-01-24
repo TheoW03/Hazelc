@@ -20,7 +20,7 @@ Output parse_cmd(std::vector<std::string> args)
         option_handlers;
     std::string optop;
     std::map<char, std::string> short_hand;
-    short_hand['c'] = "linker-off";
+    short_hand['c'] = "object-file";
     short_hand['o'] = "output-file";
     short_hand['v'] = "version";
     short_hand['h'] = "help";
@@ -61,18 +61,22 @@ Output parse_cmd(std::vector<std::string> args)
                                       std::cout << "1.0.0" << std::endl;
                                   },
                                   "prints version", 0};
-    option_handlers["linker-off"] = {[](std::string &value, Output &o) {
+    option_handlers["object-file"] = {[](std::string &value, Output &o)
+                                      {
+                                          o.gen_file = FileType::Object_file;
+                                      },
+                                      "out puts an non linked binary file", 0};
 
-                                     },
-                                     "out puts an non linked binary file", 0};
-    option_handlers["assemble-off"] = {[](std::string &value, Output &o) {
-
-                                       },
-                                       "out puts a .s/.asm file", 0};
-    option_handlers["ir-stage-off"] = {[](std::string &value, Output &o) {
-
-                                       },
-                                       "out puts an unoptimized ir file", 0};
+    option_handlers["assembly-file"] = {[](std::string &value, Output &o)
+                                        {
+                                            o.gen_file = FileType::Assembly_File;
+                                        },
+                                        "out puts a .s/.asm file", 0};
+    option_handlers["ir-file"] = {[](std::string &value, Output &o)
+                                  {
+                                      o.gen_file = FileType::Ir_file;
+                                  },
+                                  "out puts an unoptimized ir file", 0};
     option_handlers["optimize"] = {[](std::string &value, Output &o) {
 
                                    },
