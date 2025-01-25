@@ -143,6 +143,7 @@ std::string ReturnNode::to_string()
 
 ListType::ListType(std::shared_ptr<Type> inner)
 {
+    this->inner_type = inner;
 }
 
 std::string ListType::to_string()
@@ -206,6 +207,20 @@ void BooleanConstNode::Accept(Visitor *v)
 }
 
 std::string BooleanConstNode::to_string()
+{
+    return std::string();
+}
+
+ListNode::ListNode(std::vector<std::shared_ptr<ASTNode>> values)
+{
+    this->values = values;
+}
+
+void ListNode::Accept(Visitor *v)
+{
+}
+
+std::string ListNode::to_string()
 {
     return std::string();
 }

@@ -56,6 +56,7 @@ public:
 class ListType : public Type
 {
 public:
+    std::shared_ptr<Type> inner_type;
     ListType(std::shared_ptr<Type> inner);
     std::string to_string();
 };
@@ -197,6 +198,19 @@ public:
     std::vector<std::shared_ptr<ASTNode>> functions;
     Tokens name;
     ModuleNode(std::vector<std::shared_ptr<ASTNode>> functions, Tokens name);
+    void Accept(Visitor *v);
+    std::string to_string();
+};
+#endif
+#ifndef LIST_NODE_H
+#define LIST_NODE_H
+class Visitor;
+
+class ListNode : public ASTNode
+{
+public:
+    std::vector<std::shared_ptr<ASTNode>> values;
+    ListNode(std::vector<std::shared_ptr<ASTNode>> values);
     void Accept(Visitor *v);
     std::string to_string();
 };

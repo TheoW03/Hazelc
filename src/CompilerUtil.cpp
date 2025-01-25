@@ -5,7 +5,7 @@
 #include <memory>
 #include <backend/CompilerUtil.h>
 
-llvm::Type *compileType(llvm::IRBuilder<> &builder, std::shared_ptr<Type> ty)
+llvm::Type *compileType(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<Type> ty)
 {
 
     // TODO:
@@ -30,20 +30,31 @@ llvm::Type *compileType(llvm::IRBuilder<> &builder, std::shared_ptr<Type> ty)
             return builder.getInt1Ty();
         }
     }
+    else if (dynamic_cast<ListType *>(ty.get()))
+    {
+        auto p = dynamic_cast<ListType *>(ty.get());
+
+        auto c = compileType(builder, context, p->inner_type);
+        llvm::StructType *nodeType = llvm::StructType::create(context, "Node");
+        std::vector<llvm::Type *> elements = {c, nodeType};
+        nodeType->setBody(elements);
+        return nodeType;
+        // return
+    }
     return builder.getVoidTy();
 }
 
-llvm::FunctionType *CompileFunctionType(llvm::IRBuilder<> &builder, std::shared_ptr<FunctionRefNode> n)
+llvm::FunctionType *CompileFunctionType(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<FunctionRefNode> n)
 {
     auto c = n->RetType;
     std::vector<llvm::Type *> a;
     for (int i = 0; i < n->params.size(); i++)
     {
-        auto funct = CompileFunctionType(builder, n->params[i]);
+        auto funct = CompileFunctionType(builder, context, n->params[i]);
         a.push_back(llvm::PointerType::getUnqual(funct));
     }
     llvm::FunctionType *functype = llvm::FunctionType::get(
-        compileType(builder, c), a, false);
+        compileType(builder, context, c), a, false);
     return functype;
 }
 TypeOfExpr get_bool_expr_type(std::shared_ptr<ASTNode> n)

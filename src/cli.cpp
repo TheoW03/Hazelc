@@ -100,7 +100,7 @@ Output parse_cmd(std::vector<std::string> args)
             }
             else
             {
-                std::cout << "unknown option \"" << short_optop << "\"" << std::endl;
+                std::cout << "unknown option \"" << short_optop << "\" run -h or --help for a list of commands" << std::endl;
                 exit(EXIT_FAILURE);
             }
         }
@@ -118,7 +118,7 @@ Output parse_cmd(std::vector<std::string> args)
             }
             else
             {
-                std::cout << "unknown option \"" << optop << "\"" << std::endl;
+                std::cout << "unknown option \"" << optop << "\"run -h or --help for a list of commands" << std::endl;
                 exit(EXIT_FAILURE);
             }
         }

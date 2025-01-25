@@ -60,6 +60,19 @@ bool look_ahead(std::vector<TokenType> token, std::vector<Tokens> &tokens)
     }
     return false;
 }
+std::optional<std::shared_ptr<ASTNode>> parse_list(std::vector<Tokens> &tokens)
+{
+    std::vector<std::shared_ptr<ASTNode>> values;
+    print_tokens(tokens);
+    while (!match_and_remove(TokenType::Closed_Bracket, tokens).has_value())
+    {
+        values.push_back(expression(tokens)
+                             .value());
+        match_and_remove(TokenType::Comma, tokens);
+    }
+    return std::make_shared<ListNode>(values);
+}
+
 std::optional<std::shared_ptr<ASTNode>> factor(std::vector<Tokens> &tokens)
 {
 
@@ -78,6 +91,11 @@ std::optional<std::shared_ptr<ASTNode>> factor(std::vector<Tokens> &tokens)
     else if (match_and_remove(TokenType::None, tokens).has_value())
     {
         return std::make_shared<NoneNode>();
+    }
+    else if (match_and_remove(TokenType::Open_Bracket, tokens).has_value())
+    {
+        print_tokens(tokens);
+        return parse_list(tokens);
     }
     else if (match_and_remove({TokenType::True, TokenType::False}, tokens).has_value())
     {
@@ -146,7 +164,16 @@ std::optional<std::shared_ptr<ASTNode>> expression(std::vector<Tokens> &tokens)
     }
     return lhs;
 }
-
+std::optional<std::shared_ptr<ASTNode>> expr_parse(std::vector<Tokens> &tokens)
+{
+    if (look_ahead(TokenType::Conditional, tokens))
+    {
+    }
+    else
+    {
+        return expression(tokens);
+    }
+}
 std::vector<std::shared_ptr<FunctionRefNode>> parse_params(std::vector<Tokens> &tokens)
 {
     std::vector<std::shared_ptr<FunctionRefNode>> params;
@@ -198,10 +225,12 @@ std::optional<std::shared_ptr<Type>> parse_type(std::vector<Tokens> &tokens)
         auto retty = parse_type(tokens).value();
         return std::make_shared<FunctionType>(type_params, retty);
     }
-    else if (look_ahead(TokenType::Open_Bracket, tokens))
+    else if (match_and_remove(TokenType::Open_Bracket, tokens).has_value())
     {
         // print_tokens(tokens);
-        return std::make_shared<ListType>(parse_type(tokens).value());
+        auto d = std::make_shared<ListType>(parse_type(tokens).value());
+        match_and_remove(TokenType::Closed_Bracket, tokens);
+        return d;
     }
     return {};
 }
@@ -233,7 +262,7 @@ std::vector<std::shared_ptr<ASTNode>> parse_scope(std::vector<Tokens> &tokens)
     }
     else if (match_and_remove(TokenType::Arrow, tokens).has_value())
     {
-        ast.push_back(std::make_shared<ReturnNode>(expression(tokens).value()));
+        ast.push_back(std::make_shared<ReturnNode>(expr_parse(tokens).value()));
     }
     else
     {
@@ -254,7 +283,7 @@ std::optional<std::shared_ptr<ASTNode>> parse_function(std::vector<Tokens> &toke
 std::optional<std::shared_ptr<ASTNode>> parse_return(std::vector<Tokens> &tokens)
 {
     match_and_remove(TokenType::Return, tokens);
-    return std::make_shared<ReturnNode>(expression(tokens).value());
+    return std::make_shared<ReturnNode>(expr_parse(tokens).value());
 }
 
 std::optional<std::shared_ptr<ASTNode>> parse_stmnts(std::vector<Tokens> &tokens)

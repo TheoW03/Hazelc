@@ -19,8 +19,8 @@ struct Function
     std::vector<Function> params;
 };
 #endif
-llvm::Type *compileType(llvm::IRBuilder<> &builder, std::shared_ptr<Type> ty);
-llvm::FunctionType *CompileFunctionType(llvm::IRBuilder<> &builder, std::shared_ptr<FunctionRefNode> n);
+llvm::Type *compileType(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<Type> ty);
+llvm::FunctionType *CompileFunctionType(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<FunctionRefNode> n);
 
 TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n);
 TypeOfExpr get_bool_expr_type(std::shared_ptr<ASTNode> n);
