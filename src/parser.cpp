@@ -92,6 +92,26 @@ std::optional<std::shared_ptr<ASTNode>> factor(std::vector<Tokens> &tokens)
     }
     return {};
 }
+std::optional<std::shared_ptr<ASTNode>> BoolExpr(std::vector<Tokens> &tokens)
+{
+    auto bool_expr_tokens = {
+        TokenType::LT,
+        TokenType::GT,
+        TokenType::LTE,
+        TokenType::GTE,
+        TokenType::EQ};
+    auto lhs = factor(tokens);
+    auto op = match_and_remove(bool_expr_tokens,
+                               tokens);
+    if (op.has_value())
+    {
+        auto rhs = factor(tokens);
+        lhs = std::make_shared<BooleanExprNode>(lhs.value(), op.value(), rhs.value());
+        // op = match_and_remove(bool_expr_tokens,
+        //   tokens);
+    }
+    return lhs;
+}
 std::optional<std::shared_ptr<ASTNode>> term(std::vector<Tokens> &tokens)
 {
     auto term_tokens = {TokenType::Multiplication,
@@ -101,12 +121,12 @@ std::optional<std::shared_ptr<ASTNode>> term(std::vector<Tokens> &tokens)
                         TokenType::Or,
                         TokenType::Left_Shift,
                         TokenType::Right_Shift};
-    auto lhs = factor(tokens);
+    auto lhs = BoolExpr(tokens);
     auto op = match_and_remove(term_tokens,
                                tokens);
     while (op.has_value())
     {
-        auto rhs = factor(tokens);
+        auto rhs = BoolExpr(tokens);
         lhs = std::make_shared<ExprNode>(lhs.value(), op.value(), rhs.value());
         op = match_and_remove(term_tokens,
                               tokens);

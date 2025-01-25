@@ -56,7 +56,22 @@ llvm::Value *CompileExpr::FloatMathExpression(llvm::Value *lhs, Tokens op, llvm:
 
 llvm::Value *CompileExpr::BoolIntMathExpr(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
 {
-    return nullptr;
+    switch (op.type)
+    {
+    case EQ:
+        return builder.CreateICmp(llvm::CmpInst::ICMP_EQ, lhs, rhs, "eq");
+    case LT:
+        return builder.CreateICmp(llvm::CmpInst::ICMP_SLT, lhs, rhs, "LT");
+    case LTE:
+        return builder.CreateICmp(llvm::CmpInst::ICMP_SLE, lhs, rhs, "LE");
+    case GT:
+        return builder.CreateICmp(llvm::CmpInst::ICMP_SGT, lhs, rhs, "GT");
+    case GTE:
+        return builder.CreateICmp(llvm::CmpInst::ICMP_SGE, lhs, rhs, "GE");
+    default:
+        std::cout << "semantic anaylsis bug perhaps in boolean \"" << op.value << "\"" << std::endl;
+        exit(EXIT_FAILURE);
+    }
 }
 
 llvm::Value *CompileExpr::BoolFloatMathExpr(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
@@ -93,7 +108,24 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         case Integer_Type:
             return IntMathExpression(lhs, c->operation, rhs);
         case Float_Type:
-            return FloatMathExpression(lhs, c->operation, rhs);
+            return IntMathExpression(lhs, c->operation, rhs);
+        default:
+            break;
+        }
+    }
+    else if (dynamic_cast<BooleanExprNode *>(node.get()))
+    {
+        auto c = dynamic_cast<BooleanExprNode *>(node.get());
+
+        auto lhs = Expression(c->lhs);
+        auto rhs = Expression(c->rhs);
+        auto get_type = get_bool_expr_type(node);
+        switch (get_type)
+        {
+        case Integer_Type:
+            return BoolIntMathExpr(lhs, c->op, rhs);
+        case Float_Type:
+            return BoolFloatMathExpr(lhs, c->op, rhs);
         default:
             break;
         }

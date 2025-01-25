@@ -187,8 +187,12 @@ void is_equal(Lexxer_Context &ctx, char value)
     {
         ctx.buffer += value;
     }
-    is_token(ctx);
-    ctx.state = 1;
+    else
+    {
+        is_token(ctx);
+        ctx.state = 1;
+        ctx.buffer += value;
+    }
 }
 
 void is_number(Lexxer_Context &ctx, char value)

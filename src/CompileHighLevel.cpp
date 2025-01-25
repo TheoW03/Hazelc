@@ -29,13 +29,13 @@ void CompileHighLevel::Visit(FunctionNode *node)
     {
 
         node->stmnts[i]->Accept(this);
-        if (!dynamic_cast<FunctionNode *>(node->stmnts[i].get()))
+        if (dynamic_cast<FunctionNode *>(node->stmnts[i].get()))
         {
-            filter_functions.push_back(node->stmnts[i]);
+            functions.push_back(node->stmnts[i]);
         }
         else
         {
-            functions.push_back(node->stmnts[i]);
+            filter_functions.push_back(node->stmnts[i]);
         }
     }
     node->stmnts = filter_functions;

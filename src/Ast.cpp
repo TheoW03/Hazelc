@@ -184,7 +184,7 @@ BooleanExprNode::BooleanExprNode(std::shared_ptr<ASTNode> lhs, Tokens operation,
 {
     this->lhs = lhs;
     this->rhs = rhs;
-    this->op = op;
+    this->op = operation;
 }
 
 void BooleanExprNode::Accept(Visitor *v)
