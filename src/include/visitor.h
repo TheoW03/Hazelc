@@ -40,8 +40,9 @@ class CompileHighLevel : public Visitor
 public:
     llvm::Module &module;
     std::vector<std::shared_ptr<ASTNode>> functions;
+    CompilerContext compiler_context;
+    // std::map<std::string, Function> func_map;
 
-    std::map<std::string, Function> func_map;
     llvm::IRBuilder<> &builder;
     llvm::LLVMContext &context;
     CompileHighLevel(llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context);
@@ -52,7 +53,6 @@ public:
     void Visit(ReturnNode *node) override;
 
     Function CompileFunctionHeader(std::shared_ptr<FunctionRefNode> n);
-    std::map<std::string, Function> get_map();
 };
 
 #endif
@@ -62,10 +62,10 @@ class CompileStatement : public Visitor
 {
 public:
     llvm::Module &module;
-    std::map<std::string, Function> func_map;
+    CompilerContext compiler_context;
     llvm::IRBuilder<> &builder;
     llvm::LLVMContext &context;
-    CompileStatement(llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::map<std::string, Function> func_map);
+    CompileStatement(llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context, CompilerContext &compiler_context);
     void Visit(ASTNode *node) override;
     void Visit(FunctionNode *node) override;
     void Visit(ModuleNode *node) override;
@@ -81,10 +81,11 @@ class CompileExpr
 {
 public:
     llvm::Module &module;
-    std::map<std::string, Function> func_map;
+    // std::map<std::string, Function> func_map;
+    CompilerContext &compiler_context;
     llvm::IRBuilder<> &builder;
     llvm::LLVMContext &context;
-    CompileExpr(llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::map<std::string, Function> func_map);
+    CompileExpr(llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context, CompilerContext &compiler_context);
     llvm::Value *IntMathExpression(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
     llvm::Value *FloatMathExpression(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
     llvm::Value *BoolIntMathExpr(llvm::Value *lhs, Tokens op, llvm::Value *rhs);

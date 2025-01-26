@@ -98,9 +98,18 @@ FunctionType::FunctionType(std::vector<std::shared_ptr<Type>> params,
                            std::shared_ptr<Type> returnType)
 {
 }
+std::string FunctionType::get_type_value()
+{
+    return std::string();
+}
 NativeType::NativeType(Tokens type)
 {
     this->type = type;
+}
+
+std::string NativeType::get_type_value()
+{
+    return type.value;
 }
 std::string FunctionType::to_string()
 {
@@ -144,6 +153,11 @@ std::string ReturnNode::to_string()
 ListType::ListType(std::shared_ptr<Type> inner)
 {
     this->inner_type = inner;
+}
+
+std::string ListType::get_type_value()
+{
+    return inner_type->get_type_value();
 }
 
 std::string ListType::to_string()

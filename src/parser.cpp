@@ -93,7 +93,6 @@ std::optional<std::shared_ptr<ASTNode>> factor(std::vector<Tokens> &tokens)
     }
     else if (match_and_remove(TokenType::Open_Bracket, tokens).has_value())
     {
-        //  print_tokens(tokens);
         return parse_list(tokens);
     }
     else if (match_and_remove({TokenType::True, TokenType::False}, tokens).has_value())

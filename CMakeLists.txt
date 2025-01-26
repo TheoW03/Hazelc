@@ -37,6 +37,7 @@ add_llvm_executable(${EXECUTABLE_NAME}
    src/cli.cpp
    src/CompileHighLevel.cpp
    src/CompilerUtil.cpp
+   src/CompilerContext.cpp
 
 )
 

@@ -24,6 +24,7 @@ public:
     // TODO: add constrctor
     Type();
     ~Type();
+    virtual std::string get_type_value() = 0;
     virtual std::string to_string() = 0;
 };
 #endif
@@ -35,6 +36,7 @@ class NativeType : public Type
 public:
     Tokens type;
     NativeType(Tokens type);
+    std::string get_type_value() override;
 
     std::string to_string();
 };
@@ -47,6 +49,7 @@ class FunctionType : public Type
 {
 public:
     FunctionType(std::vector<std::shared_ptr<Type>> params, std::shared_ptr<Type> returnType);
+    std::string get_type_value() override;
     std::string to_string();
 };
 #endif
@@ -59,6 +62,8 @@ class ListType : public Type
 public:
     std::shared_ptr<Type> inner_type;
     ListType(std::shared_ptr<Type> inner);
+    std::string get_type_value() override;
+
     std::string to_string();
 };
 #endif

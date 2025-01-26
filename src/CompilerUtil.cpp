@@ -5,7 +5,7 @@
 #include <memory>
 #include <backend/CompilerUtil.h>
 
-llvm::Type *compileType(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<Type> ty)
+llvm::Type *compileType(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<Type> ty, CompilerContext &ctx)
 {
 
     // TODO:
@@ -34,27 +34,36 @@ llvm::Type *compileType(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, 
     {
         auto p = dynamic_cast<ListType *>(ty.get());
 
-        auto c = compileType(builder, context, p->inner_type);
+        auto c = compileType(builder, context, p->inner_type, ctx);
+        for (int i = 0; i < ctx.lists.size(); i++)
+        {
+            if (ctx.lists[i]->getElementType(0) == c)
+            {
+                std::cout << "aaa" << std::endl;
+                return llvm::PointerType::getUnqual(ctx.lists[i]);
+            }
+        }
         llvm::StructType *nodeType = llvm::StructType::create(context, "Node");
-        std::vector<llvm::Type *> elements = {c, nodeType};
+        std::vector<llvm::Type *> elements = {c, llvm::PointerType::getUnqual(nodeType)};
         nodeType->setBody(elements);
-        return nodeType;
-        // return
+
+        ctx.lists.push_back((nodeType));
+        return llvm::PointerType::getUnqual(nodeType);
     }
     return builder.getVoidTy();
 }
 
-llvm::FunctionType *CompileFunctionType(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<FunctionRefNode> n)
+llvm::FunctionType *CompileFunctionType(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<FunctionRefNode> n, CompilerContext &ctx)
 {
     auto c = n->RetType;
     std::vector<llvm::Type *> a;
     for (int i = 0; i < n->params.size(); i++)
     {
-        auto funct = CompileFunctionType(builder, context, n->params[i]);
+        auto funct = CompileFunctionType(builder, context, n->params[i], ctx);
         a.push_back(llvm::PointerType::getUnqual(funct));
     }
     llvm::FunctionType *functype = llvm::FunctionType::get(
-        compileType(builder, context, c), a, false);
+        compileType(builder, context, c, ctx), a, false);
     return functype;
 }
 TypeOfExpr get_bool_expr_type(std::shared_ptr<ASTNode> n)

@@ -34,7 +34,8 @@ void InitCompiler(Output output, std::vector<std::shared_ptr<ModuleNode>> node)
         node[i]->Accept(compile_top);
     }
     // compiles the returns
-    CompileStatement *compile_statement = new CompileStatement(module, builder, context, compile_top->func_map);
+    // CompilerContext compiler_context;
+    CompileStatement *compile_statement = new CompileStatement(module, builder, context, compile_top->compiler_context);
     for (int i = 0; i < compile_top->functions.size(); i++)
     {
         compile_top->functions[i]->Accept(compile_statement);

@@ -1,9 +1,9 @@
 #include <visitor.h>
 #include <backend/CompilerUtil.h>
 
-CompileExpr::CompileExpr(llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::map<std::string, Function> func_map) : module(module), builder(builder), context(context)
+CompileExpr::CompileExpr(llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context, CompilerContext &compiler_context) : module(module), builder(builder), context(context), compiler_context(compiler_context)
 {
-    this->func_map = func_map;
+    // this->func_map = func_map;
 }
 
 llvm::Value *CompileExpr::IntMathExpression(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
