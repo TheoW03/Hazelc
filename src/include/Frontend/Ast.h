@@ -35,6 +35,7 @@ class NativeType : public Type
 public:
     Tokens type;
     NativeType(Tokens type);
+
     std::string to_string();
 };
 #endif

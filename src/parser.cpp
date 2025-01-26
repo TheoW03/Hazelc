@@ -63,7 +63,6 @@ bool look_ahead(std::vector<TokenType> token, std::vector<Tokens> &tokens)
 std::optional<std::shared_ptr<ASTNode>> parse_list(std::vector<Tokens> &tokens)
 {
     std::vector<std::shared_ptr<ASTNode>> values;
-    print_tokens(tokens);
     while (!match_and_remove(TokenType::Closed_Bracket, tokens).has_value())
     {
         values.push_back(expression(tokens)
@@ -94,7 +93,7 @@ std::optional<std::shared_ptr<ASTNode>> factor(std::vector<Tokens> &tokens)
     }
     else if (match_and_remove(TokenType::Open_Bracket, tokens).has_value())
     {
-        print_tokens(tokens);
+        //  print_tokens(tokens);
         return parse_list(tokens);
     }
     else if (match_and_remove({TokenType::True, TokenType::False}, tokens).has_value())
