@@ -22,9 +22,10 @@ cmake --build build --config Release
 ./hazelc --help
 ```
 
+this is a fairly early project so most features are not impl yet 
+please read the Langauge definition. 
+
 [documentation]
 
 [documentation]: <https://docs.google.com/document/d/12JWLuCte1r-tfAHKesndeBFRdnv7tT663QnIC2gSafY/edit?tab=t.0#heading=h.85eivsfcywf4>
 
-[cmake]: <https://cmake.org/download/>
-[llvm]:<https://releases.llvm.org/download.html>
