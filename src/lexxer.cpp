@@ -158,6 +158,10 @@ void is_token(Lexxer_Context &ctx)
     token_map["]"] = TokenType::Closed_Bracket;
     token_map["module"] = TokenType::Module;
 
+    token_map["define"] = TokenType::Define;
+    token_map[".."] = TokenType::Range;
+    token_map["lambda"] = TokenType::Module;
+
     if (token_map.find(ctx.buffer) != token_map.end())
         ctx.tokens.push_back({ctx.buffer, token_map[ctx.buffer], ctx.line_num});
     else if (is_hex_digit(ctx.buffer))
@@ -204,6 +208,11 @@ void is_number(Lexxer_Context &ctx, char value)
     {
         ctx.buffer += value;
     }
+    else if (value == '.')
+    {
+        // ctx.buffer += value;
+        ctx.state = 4;
+    }
     else if (value == '+' || value == '*' || value == '-' || value == '/' || value == '%' || value == '(' || value == ')')
     {
 
@@ -227,7 +236,6 @@ void is_number(Lexxer_Context &ctx, char value)
     }
     else
     {
-
         ctx.buffer += value;
     }
 }
@@ -273,6 +281,22 @@ void is_space(Lexxer_Context &ctx, char value)
     else
         ctx.buffer += value;
 }
+void dot_state(Lexxer_Context &ctx, char value)
+{
+    if (value == '.')
+    {
+        is_token(ctx);
+        ctx.buffer += "..";
+        is_token(ctx);
+    }
+    else
+    {
+        ctx.buffer += '.';
+        ctx.buffer += value;
+    }
+
+    ctx.state = 1;
+}
 std::vector<Tokens> lexxer(std::vector<std::string> lines)
 {
     std::vector<Tokens> tokens;
@@ -312,6 +336,10 @@ std::vector<Tokens> lexxer(std::vector<std::string> lines)
                 // std::cout << "state 2 " << "current char: " << current_char << std::endl;
 
                 is_equal(ctx, current_char);
+            }
+            else if (ctx.state == 4)
+            {
+                dot_state(ctx, current_char);
             }
         }
         ctx.line_num++;
@@ -361,6 +389,7 @@ void print_tokens(std::vector<Tokens> tokens)
     token_map[TokenType::cont_line] = "contine";
     token_map[TokenType::Open_Bracket] = "Open bracket";
     token_map[TokenType::Closed_Bracket] = "Closed bracket";
+    token_map[TokenType::Range] = "Range";
 
     for (int i = 0; i < tokens.size(); i++)
     {

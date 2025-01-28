@@ -48,7 +48,10 @@ enum TokenType
     True,
     False,
     Left_Shift,
-    Right_Shift
+    Right_Shift,
+    Define,
+    Range,
+    Lambda
 
 };
 #endif

@@ -30,6 +30,9 @@ llvm::Type *compileType(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, 
             return builder.getInt1Ty();
         }
     }
+    // NOTE:
+    //  for lists generate the entire list and when index simply shrink down the list
+    //  and return the value indexed
     else if (dynamic_cast<ListType *>(ty.get()))
     {
         auto p = dynamic_cast<ListType *>(ty.get());

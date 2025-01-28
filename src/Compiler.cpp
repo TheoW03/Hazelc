@@ -33,6 +33,7 @@ void InitCompiler(Output output, std::vector<std::shared_ptr<ModuleNode>> node)
     {
         node[i]->Accept(compile_top);
     }
+
     // compiles the returns
     // CompilerContext compiler_context;
     CompileStatement *compile_statement = new CompileStatement(module, builder, context, compile_top->compiler_context);

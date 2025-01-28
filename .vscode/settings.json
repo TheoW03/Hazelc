@@ -68,6 +68,7 @@
         "thread": "cpp",
         "*.def": "cpp",
         "variant": "cpp",
-        "any": "cpp"
+        "any": "cpp",
+        "stdlib.h": "c"
     }
 }

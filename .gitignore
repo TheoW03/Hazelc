@@ -1,6 +1,7 @@
 psuedoc
 test.hz
 /build/
+/TestFiles/
 *.o
 LazyEvalInt.c
 *.out
@@ -10,3 +11,4 @@ test
 hazelc
 *.s
 *.ll
+test.c
