@@ -115,7 +115,8 @@ std::optional<std::shared_ptr<ASTNode>> BoolExpr(std::vector<Tokens> &tokens)
         TokenType::GT,
         TokenType::LTE,
         TokenType::GTE,
-        TokenType::EQ};
+        TokenType::EQ,
+        TokenType::NE};
     auto lhs = factor(tokens);
     auto op = match_and_remove(bool_expr_tokens,
                                tokens);

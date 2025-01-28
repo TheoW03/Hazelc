@@ -68,6 +68,8 @@ llvm::Value *CompileExpr::BoolIntMathExpr(llvm::Value *lhs, Tokens op, llvm::Val
         return builder.CreateICmp(llvm::CmpInst::ICMP_SGT, lhs, rhs, "GT");
     case GTE:
         return builder.CreateICmp(llvm::CmpInst::ICMP_SGE, lhs, rhs, "GE");
+    case NE:
+        return builder.CreateICmp(llvm::CmpInst::ICMP_NE, lhs, rhs, "NE");
     default:
         std::cout << "semantic anaylsis bug perhaps in boolean \"" << op.value << "\"" << std::endl;
         exit(EXIT_FAILURE);

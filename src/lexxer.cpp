@@ -123,6 +123,8 @@ void is_token(Lexxer_Context &ctx)
     token_map[")"] = TokenType::Close_Parenthesis;
 
     token_map["="] = TokenType::EQ;
+    token_map["/="] = TokenType::NE;
+
     token_map["=>"] = TokenType::Arrow;
     token_map["<="] = TokenType::LTE;
     token_map[">="] = TokenType::GTE;
@@ -160,8 +162,8 @@ void is_token(Lexxer_Context &ctx)
 
     token_map["define"] = TokenType::Define;
     token_map[".."] = TokenType::Range;
-    token_map["lambda"] = TokenType::Module;
-
+    token_map["lambda"] = TokenType::Lambda;
+    token_map["Type"] = TokenType::Generics;
     if (token_map.find(ctx.buffer) != token_map.end())
         ctx.tokens.push_back({ctx.buffer, token_map[ctx.buffer], ctx.line_num});
     else if (is_hex_digit(ctx.buffer))
@@ -187,7 +189,7 @@ void is_operand(Lexxer_Context &ctx, char value)
 }
 void is_equal(Lexxer_Context &ctx, char value)
 {
-    if (value == '=' || value == '>' || value == '<')
+    if (value == '=' || value == '>' || value == '<' || '/')
     {
         ctx.buffer += value;
     }
@@ -380,6 +382,8 @@ void print_tokens(std::vector<Tokens> tokens)
     token_map[TokenType::LT] = "Lt";
     token_map[TokenType::LTE] = "LTE";
     token_map[TokenType::EQ] = "EQ";
+    token_map[TokenType::NE] = "NE";
+
     token_map[TokenType::Right_Shift] = "right_shift";
     token_map[TokenType::Left_Shift] = "left_shift";
     token_map[TokenType::And] = "and";

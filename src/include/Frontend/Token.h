@@ -30,6 +30,7 @@ enum TokenType
     LT,
     LTE,
     EQ,
+    NE,
     GTE,
     None,
     Open_Bracket,
@@ -51,7 +52,8 @@ enum TokenType
     Right_Shift,
     Define,
     Range,
-    Lambda
+    Lambda,
+    Generics,
 
 };
 #endif
