@@ -54,6 +54,8 @@ enum TokenType
     Range,
     Lambda,
     Generics,
+    String_Lit,
+    Char_Lit
 
 };
 #endif

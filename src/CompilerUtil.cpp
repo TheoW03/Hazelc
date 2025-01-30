@@ -29,6 +29,10 @@ llvm::Type *compileType(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, 
         {
             return builder.getInt1Ty();
         }
+        else if (p->type.type == TokenType::string)
+        {
+            return ctx.get_string_type(context, builder);
+        }
     }
     // NOTE:
     //  for lists generate the entire list and when index simply shrink down the list

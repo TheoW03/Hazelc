@@ -221,3 +221,30 @@ public:
     std::string to_string();
 };
 #endif
+#ifndef STRING_NODE_H
+#define STRING_NODE_H
+class Visitor;
+
+class StringNode : public ASTNode
+{
+public:
+    Tokens value;
+    StringNode(Tokens value);
+    void Accept(Visitor *v);
+    std::string to_string();
+};
+#endif
+
+#ifndef CHAR_NODE_H
+#define CHAR_NODE_H
+class Visitor;
+
+class CharNode : public ASTNode
+{
+public:
+    Tokens value;
+    CharNode(Tokens value);
+    void Accept(Visitor *v);
+    std::string to_string();
+};
+#endif

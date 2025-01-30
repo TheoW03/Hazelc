@@ -99,6 +99,14 @@ std::optional<std::shared_ptr<ASTNode>> factor(std::vector<Tokens> &tokens)
     {
         return std::make_shared<BooleanConstNode>(current.value());
     }
+    else if (match_and_remove(TokenType::String_Lit, tokens).has_value())
+    {
+        return std::make_shared<StringNode>(current.value());
+    }
+    else if (match_and_remove(TokenType::Char_Lit, tokens).has_value())
+    {
+        return std::make_shared<CharNode>(current.value());
+    }
     else if (look_ahead(TokenType::Open_Parenthesis, tokens))
     {
         match_and_remove(TokenType::Open_Parenthesis, tokens);

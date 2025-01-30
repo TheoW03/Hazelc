@@ -238,3 +238,31 @@ std::string ListNode::to_string()
 {
     return std::string();
 }
+
+StringNode::StringNode(Tokens value)
+{
+    this->value = value;
+}
+
+void StringNode::Accept(Visitor *v)
+{
+}
+
+std::string StringNode::to_string()
+{
+    return std::string();
+}
+
+CharNode::CharNode(Tokens value)
+{
+    this->value = value;
+}
+
+void CharNode::Accept(Visitor *v)
+{
+}
+
+std::string CharNode::to_string()
+{
+    return std::string();
+}

@@ -98,6 +98,19 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         auto c = dynamic_cast<BooleanConstNode *>(node.get());
         return llvm::ConstantInt::get(llvm::Type::getInt1Ty(context), c->value.type == TokenType::True ? 1 : 0);
     }
+    else if (dynamic_cast<StringNode *>(node.get()))
+    {
+        auto c = dynamic_cast<StringNode *>(node.get());
+
+        auto a = compiler_context.get_string_type(context, builder);
+        llvm::Value *structPtr = builder.CreateAlloca(a);
+        auto str = builder.CreateGlobalString(c->value.value);
+        auto Field0Ptr = builder.CreateStructGEP(a, structPtr, 0, "field0Ptr");
+        builder.CreateStore(Field0Ptr, str);
+        auto Field1Ptr = builder.CreateStructGEP(a, structPtr, 1, "field1Ptr");
+        builder.CreateStore(Field1Ptr, llvm::ConstantInt::get(llvm::Type::getInt64Ty(context), c->value.value.size()));
+        return builder.CreateLoad(a, structPtr);
+    }
     else if (dynamic_cast<ExprNode *>(node.get()))
     {
         auto c = dynamic_cast<ExprNode *>(node.get());

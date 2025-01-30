@@ -305,25 +305,48 @@ std::vector<Tokens> lexxer(std::vector<std::string> lines)
     Lexxer_Context ctx = {1, 0, "", tokens};
     int state = 0;
     int is_comment = 0;
+    int is_str = 0;
     for (int i = 0; i < lines.size(); i++)
     {
         for (int j = 0; j < lines[i].size(); j++)
         {
             auto current_char = lines[i].at(j);
-            if (current_char == '(' && lines[i].at(j + 1) == '*')
-            {
-                is_comment = 1;
-            }
+
             if (current_char == ')' && lines[i].at(j - 1) == ')')
             {
                 is_comment = 0;
+                continue;
+            }
+            if (current_char == '\"' || current_char == '\'')
+            {
+                if (is_str == 1 && current_char == '\"')
+                {
+                    ctx.tokens.push_back({ctx.buffer, TokenType::String_Lit, ctx.line_num});
+                    ctx.buffer = "";
+                    is_str = 0;
+                }
+                else if (is_str == 1 && current_char == '\'')
+                {
+                    ctx.tokens.push_back({ctx.buffer, TokenType::Char_Lit, ctx.line_num});
+                    ctx.buffer = "";
+                    is_str = 0;
+                }
+                else
+                {
+                    is_token(ctx);
+                    is_str = 1;
+                }
                 continue;
             }
             if (is_comment == 1)
             {
                 continue;
             }
-
+            if (is_str == 1)
+            {
+                ctx.buffer += current_char;
+                continue;
+            }
             if (current_char == ' ' && ctx.state != 0)
             {
                 is_token(ctx);
@@ -409,6 +432,8 @@ void print_tokens(std::vector<Tokens> tokens)
     token_map[TokenType::Open_Bracket] = "Open bracket";
     token_map[TokenType::Closed_Bracket] = "Closed bracket";
     token_map[TokenType::Range] = "Range";
+    token_map[TokenType::String_Lit] = "str_lit";
+    token_map[TokenType::Char_Lit] = "char_lit";
 
     for (int i = 0; i < tokens.size(); i++)
     {

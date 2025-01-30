@@ -31,9 +31,10 @@ public:
     std::map<std::string, Function> func_map;
     std::map<std::string, llvm::Type *> types;
     std::vector<llvm::StructType *> lists;
-
+    llvm::StructType *string_type;
     Function get_function(Tokens name);
     void add_function(Tokens name, Function f);
+    llvm::StructType *get_string_type(llvm::LLVMContext &context, llvm::IRBuilder<> &builder);
 };
 #endif
 llvm::Type *compileType(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<Type> ty, CompilerContext &ctx);
