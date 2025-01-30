@@ -304,11 +304,26 @@ std::vector<Tokens> lexxer(std::vector<std::string> lines)
     std::vector<Tokens> tokens;
     Lexxer_Context ctx = {1, 0, "", tokens};
     int state = 0;
+    int is_comment = 0;
     for (int i = 0; i < lines.size(); i++)
     {
         for (int j = 0; j < lines[i].size(); j++)
         {
             auto current_char = lines[i].at(j);
+            if (current_char == '(' && lines[i].at(j + 1) == '*')
+            {
+                is_comment = 1;
+            }
+            if (current_char == ')' && lines[i].at(j - 1) == ')')
+            {
+                is_comment = 0;
+                continue;
+            }
+            if (is_comment == 1)
+            {
+                continue;
+            }
+
             if (current_char == ' ' && ctx.state != 0)
             {
                 is_token(ctx);
