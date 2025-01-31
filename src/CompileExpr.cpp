@@ -110,9 +110,9 @@ llvm::Value *CompileExpr::StringMathExpr(llvm::Value *lhs, Tokens op, llvm::Valu
     builder.CreateStore(added_lengths, destField1ptr);
 
     // DEBUG STRCAT:
-    //  builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("%s \n"),
-    //     builder.CreateLoad(builder.getInt8PtrTy(),
-    //    builder.CreateStructGEP(c, destStructPtr, 0, "destStructPtrF0"))});
+    // builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("%s \n"),
+    //                                                            builder.CreateLoad(builder.getInt8PtrTy(),
+    //                                                                               builder.CreateStructGEP(c, destStructPtr, 0, "destStructPtrF0"))});
     return destStructPtr;
 }
 

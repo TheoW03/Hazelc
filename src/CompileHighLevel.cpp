@@ -56,6 +56,10 @@ void CompileHighLevel::Visit(ReturnNode *node)
 {
 }
 
+void CompileHighLevel::Visit(FunctionCallNode *node)
+{
+}
+
 Function CompileHighLevel::CompileFunctionHeader(std::shared_ptr<FunctionRefNode> n)
 {
     auto c = n->RetType;

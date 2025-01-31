@@ -15,7 +15,19 @@ public:
     virtual std::string to_string() = 0;
 };
 #endif
-
+#ifndef CALL_H
+#define CALL_H
+class Visitor;
+class FunctionCallNode : public ASTNode
+{
+public:
+    Tokens name;
+    std::vector<std::shared_ptr<ASTNode>> params;
+    FunctionCallNode(Tokens name, std::vector<std::shared_ptr<ASTNode>> params);
+    void Accept(Visitor *v) override;
+    std::string to_string();
+};
+#endif
 #ifndef TYPE_H
 #define TYPE_H
 class Type
@@ -27,6 +39,7 @@ public:
     virtual std::string get_type_value() = 0;
     virtual std::string to_string() = 0;
 };
+
 #endif
 #ifndef NATIVE_TYPE_H
 #define NATIVE_TYPE_H

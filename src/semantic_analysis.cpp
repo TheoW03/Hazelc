@@ -12,3 +12,7 @@ void SemanticAnalysisVisit::Visit(ModuleNode *node)
 void SemanticAnalysisVisit::Visit(ReturnNode *node)
 {
 }
+
+void SemanticAnalysisVisit::Visit(FunctionCallNode *node)
+{
+}

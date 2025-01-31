@@ -39,3 +39,8 @@ void CompileStatement::Visit(ReturnNode *node)
     CompileExpr c(module, builder, context, compiler_context);
     builder.CreateRet(c.Expression(node->Expr));
 }
+
+void CompileStatement::Visit(FunctionCallNode *node)
+{
+    builder.CreateCall(compiler_context.get_function(node->name).function, {});
+}

@@ -292,6 +292,12 @@ std::optional<std::shared_ptr<ASTNode>> parse_return(std::vector<Tokens> &tokens
     match_and_remove(TokenType::Return, tokens);
     return std::make_shared<ReturnNode>(expr_parse(tokens).value());
 }
+std::optional<std::shared_ptr<ASTNode>> parse_function_call(std::vector<Tokens> &tokens)
+{
+    auto name = match_and_remove(TokenType::Identifier, tokens);
+    std::vector<std::shared_ptr<ASTNode>> params;
+    return std::make_shared<FunctionCallNode>(name.value(), params);
+}
 
 std::optional<std::shared_ptr<ASTNode>> parse_stmnts(std::vector<Tokens> &tokens)
 {
@@ -300,6 +306,8 @@ std::optional<std::shared_ptr<ASTNode>> parse_stmnts(std::vector<Tokens> &tokens
     std::map<TokenType, parser> parse_map;
     parse_map.insert(make_pair(TokenType::Let, (parser)parse_function)); //
     parse_map.insert(make_pair(TokenType::Return, (parser)parse_return));
+    parse_map.insert(make_pair(TokenType::Identifier, (parser)parse_function_call));
+
     if (parse_map.count(get_next_token(tokens).type))
     {
         return parse_map.at(get_next_token(tokens).type)(tokens); // meow :3

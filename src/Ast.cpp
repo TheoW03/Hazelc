@@ -266,3 +266,19 @@ std::string CharNode::to_string()
 {
     return std::string();
 }
+
+FunctionCallNode::FunctionCallNode(Tokens name, std::vector<std::shared_ptr<ASTNode>> params)
+{
+    this->name = name;
+    this->params = params;
+}
+
+void FunctionCallNode::Accept(Visitor *v)
+{
+    v->Visit(this);
+}
+
+std::string FunctionCallNode::to_string()
+{
+    return std::string();
+}
