@@ -11,7 +11,8 @@ enum TypeOfExpr
 {
     Boolean_Type,
     Integer_Type,
-    Float_Type
+    Float_Type,
+    String_Type
 };
 #endif
 #ifndef COMPILED_FUNCTION_H
@@ -29,11 +30,13 @@ class CompilerContext
 {
 public:
     std::map<std::string, Function> func_map;
+    std::map<std::string, llvm::Function *> CFunctions;
     std::map<std::string, llvm::Type *> types;
     std::vector<llvm::StructType *> lists;
     llvm::StructType *string_type;
     Function get_function(Tokens name);
     void add_function(Tokens name, Function f);
+    void compile_cfunctions(llvm::Module &module, llvm::LLVMContext &context, llvm::IRBuilder<> &builder);
     llvm::StructType *get_string_type(llvm::LLVMContext &context, llvm::IRBuilder<> &builder);
     llvm::Type *compile_Type(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<Type> ty);
     llvm::FunctionType *compile_Function_Type(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<FunctionRefNode> n);

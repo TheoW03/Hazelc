@@ -81,6 +81,41 @@ llvm::Value *CompileExpr::BoolFloatMathExpr(llvm::Value *lhs, Tokens op, llvm::V
     return nullptr;
 }
 
+llvm::Value *CompileExpr::StringMathExpr(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
+{
+    auto fmt = builder.CreateGlobalString("%s%s");
+    auto snprinft = compiler_context.CFunctions["snprintf"];
+    auto c = compiler_context.get_string_type(context, builder);
+    auto lenthlhs = builder.CreateLoad(builder.getInt64Ty(), builder.CreateStructGEP(c, lhs, 1, "str1"));
+    auto lenthrhs = builder.CreateLoad(builder.getInt64Ty(), builder.CreateStructGEP(c, rhs, 1, "str2"));
+    auto added_lengths = builder.CreateAdd(lenthlhs, lenthrhs);
+    //    builder.CreateStructGEP(c, rhs, 1, "str1")
+    auto dest = builder.CreateAlloca(builder.getInt8PtrTy(), added_lengths);
+    auto strRhsPtr = builder.CreateLoad(builder.getInt8PtrTy(), builder.CreateStructGEP(c, rhs, 0, "str1"));
+    auto strLhsPtr = builder.CreateLoad(builder.getInt8PtrTy(), builder.CreateStructGEP(c, lhs, 0, "str1"));
+
+    builder.CreateCall(snprinft, {
+                                     dest,
+                                     added_lengths,
+                                     fmt,
+                                     strLhsPtr,
+                                     strRhsPtr,
+
+                                 });
+    llvm::Value *destStructPtr = builder.CreateAlloca(c);
+
+    auto destField0ptr = builder.CreateStructGEP(c, destStructPtr, 0, "destStructPtrF0");
+    builder.CreateStore(dest, destField0ptr);
+    auto destField1ptr = builder.CreateStructGEP(c, destStructPtr, 1, "destStructPtrF1");
+    builder.CreateStore(added_lengths, destField1ptr);
+
+    // DEBUG STRCAT:
+    //  builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("%s \n"),
+    //     builder.CreateLoad(builder.getInt8PtrTy(),
+    //    builder.CreateStructGEP(c, destStructPtr, 0, "destStructPtrF0"))});
+    return destStructPtr;
+}
+
 llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
 {
     if (dynamic_cast<IntegerNode *>(node.get()))
@@ -112,10 +147,11 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         llvm::Value *structPtr = builder.CreateAlloca(a);
         auto str = builder.CreateGlobalString(c->value.value);
         auto Field0Ptr = builder.CreateStructGEP(a, structPtr, 0, "field0Ptr");
-        builder.CreateStore(Field0Ptr, str);
+        builder.CreateStore(str, Field0Ptr);
         auto Field1Ptr = builder.CreateStructGEP(a, structPtr, 1, "field1Ptr");
-        builder.CreateStore(Field1Ptr, llvm::ConstantInt::get(llvm::Type::getInt64Ty(context), c->value.value.size()));
-        return builder.CreateLoad(a, structPtr);
+        builder.CreateStore(llvm::ConstantInt::get(llvm::Type::getInt64Ty(context), c->value.value.size() + 1), Field1Ptr);
+        return structPtr;
+        // return builder.CreateLoad(a, structPtr);
     }
     else if (dynamic_cast<ExprNode *>(node.get()))
     {
@@ -130,6 +166,8 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
             return IntMathExpression(lhs, c->operation, rhs);
         case Float_Type:
             return IntMathExpression(lhs, c->operation, rhs);
+        case String_Type:
+            return StringMathExpr(lhs, c->operation, rhs);
         default:
             break;
         }

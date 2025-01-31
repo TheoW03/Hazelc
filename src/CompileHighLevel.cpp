@@ -6,6 +6,7 @@ CompileHighLevel::CompileHighLevel(llvm::Module &module, llvm::IRBuilder<> &buil
     // this->module = module;
     // this->builder = builder;
     // this->context = context;
+    this->compiler_context.compile_cfunctions(module, context, builder);
 }
 
 void CompileHighLevel::Visit(ASTNode *node)
@@ -22,6 +23,7 @@ void CompileHighLevel::Visit(FunctionNode *node)
     //     functype, llvm::Function::ExternalLinkage, node->f->FunctionName.value, module);
     // func_map.insert(, node->f->FunctionName.value, );
     std::vector<std::shared_ptr<ASTNode>> filter_functions;
+
     compiler_context.add_function(node->f->FunctionName, CompileFunctionHeader(node->f));
 
     for (int i = 0; i < node->stmnts.size(); i++)

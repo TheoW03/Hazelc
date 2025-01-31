@@ -26,7 +26,8 @@ void InitCompiler(Output output, std::vector<std::shared_ptr<ModuleNode>> node)
     llvm::IRBuilder<> builder(context); // Builder also tied to context
 
     std::map<std::string, llvm::Function *> func_map;
-    // CompileHighLevel c(module, builder, context);
+
+        // CompileHighLevel c(module, builder, context);
     // compiles function body
     CompileHighLevel *compile_top = new CompileHighLevel(module, builder, context);
     for (int i = 0; i < node.size(); i++)

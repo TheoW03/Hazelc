@@ -30,6 +30,8 @@ TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n)
         return TypeOfExpr::Float_Type;
     else if (dynamic_cast<BooleanConstNode *>(c->lhs.get()) && dynamic_cast<BooleanConstNode *>(c->rhs.get()))
         return TypeOfExpr::Integer_Type;
+    else if (dynamic_cast<StringNode *>(c->lhs.get()) && dynamic_cast<StringNode *>(c->rhs.get()))
+        return TypeOfExpr::String_Type;
     if (dynamic_cast<ExprNode *>(c->lhs.get()))
         return get_expr_type(c->lhs);
     if (dynamic_cast<ExprNode *>(c->rhs.get()))

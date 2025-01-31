@@ -10,6 +10,21 @@ void CompilerContext::add_function(Tokens name, Function f)
 {
     this->func_map.insert(std::make_pair(name.value, f));
 }
+void CompilerContext::compile_cfunctions(llvm::Module &module, llvm::LLVMContext &context, llvm::IRBuilder<> &builder)
+{
+    auto snprintftype = llvm::FunctionType::get(builder.getInt32Ty(), {builder.getInt8PtrTy(), builder.getInt64Ty(), builder.getInt8PtrTy()}, true);
+    auto snprintffunc = llvm::Function::Create(
+        snprintftype, llvm::Function::ExternalLinkage, "snprintf", module);
+    this->CFunctions.insert(std::make_pair("snprintf", snprintffunc));
+    auto printftype = llvm::FunctionType::get(builder.getInt32Ty(), {builder.getInt8PtrTy()}, true);
+    auto printf_func = llvm::Function::Create(
+        printftype, llvm::Function::ExternalLinkage, "printf", module);
+    this->CFunctions.insert(std::make_pair("printf", printf_func));
+    // this->CFunctions["snprintf"] = snprintf;
+
+    // llvm::Function *function = llvm::Function::Create( builder.getInt64Ty().
+    // functype, llvm::Function::ExternalLinkage, n->FunctionName.value, module);
+}
 llvm::StructType *CompilerContext::get_string_type(llvm::LLVMContext &context, llvm::IRBuilder<> &builder)
 {
     if (this->string_type == nullptr)
@@ -20,8 +35,6 @@ llvm::StructType *CompilerContext::get_string_type(llvm::LLVMContext &context, l
         this->string_type->setBody(elements);
     }
     return string_type;
-    // this->string_type =
-    // return llvm::StructType();
 }
 llvm::Type *CompilerContext::compile_Type(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<Type> ty)
 {
