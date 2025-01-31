@@ -311,10 +311,18 @@ std::vector<Tokens> lexxer(std::vector<std::string> lines)
         for (int j = 0; j < lines[i].size(); j++)
         {
             auto current_char = lines[i].at(j);
+            if (current_char == '(' && lines[i].at(j + 1) == '*')
+            {
+                is_comment = 1;
+            }
 
-            if (current_char == ')' && lines[i].at(j - 1) == ')')
+            if (current_char == ')' && lines[i].at(j - 1) == '*')
             {
                 is_comment = 0;
+                continue;
+            }
+            if (is_comment == 1)
+            {
                 continue;
             }
             if (current_char == '\"' || current_char == '\'')
@@ -338,10 +346,7 @@ std::vector<Tokens> lexxer(std::vector<std::string> lines)
                 }
                 continue;
             }
-            if (is_comment == 1)
-            {
-                continue;
-            }
+
             if (is_str == 1)
             {
                 ctx.buffer += current_char;

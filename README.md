@@ -10,8 +10,8 @@ It uses a LLVM compiler, hazelc.
 make sure you have CMake v3.22.1 and the LLVM version 14.0.0
 if not download them here
 
-- [cmake]
-- [llvm]
+[cmake]
+ [llvm]
 
 
 now run this in your terminal
@@ -29,3 +29,6 @@ please read the Langauge definition.
 
 [documentation]: <https://docs.google.com/document/d/12JWLuCte1r-tfAHKesndeBFRdnv7tT663QnIC2gSafY/edit?tab=t.0#heading=h.85eivsfcywf4>
 
+[llvm]: <https://releases.llvm.org/download.html>
+
+[cmake]: <https://cmake.org/download/>
