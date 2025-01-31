@@ -66,7 +66,7 @@ Function CompileHighLevel::CompileFunctionHeader(std::shared_ptr<FunctionRefNode
     //     f.push_back(c);
     //     a.push_back(c.function->getType());
     // }
-    llvm::FunctionType *functype = CompileFunctionType(builder, context, n, this->compiler_context);
+    llvm::FunctionType *functype = this->compiler_context.compile_Function_Type(builder, context, n);
     llvm::Function *function = llvm::Function::Create(
         functype, llvm::Function::ExternalLinkage, n->FunctionName.value, module);
 

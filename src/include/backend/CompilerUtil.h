@@ -35,10 +35,12 @@ public:
     Function get_function(Tokens name);
     void add_function(Tokens name, Function f);
     llvm::StructType *get_string_type(llvm::LLVMContext &context, llvm::IRBuilder<> &builder);
+    llvm::Type *compile_Type(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<Type> ty);
+    llvm::FunctionType *compile_Function_Type(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<FunctionRefNode> n);
 };
 #endif
-llvm::Type *compileType(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<Type> ty, CompilerContext &ctx);
-llvm::FunctionType *CompileFunctionType(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<FunctionRefNode> n, CompilerContext &ctx);
+// llvm::Type *compileType(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<Type> ty, CompilerContext &ctx);
+// llvm::FunctionType *CompileFunctionType(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<FunctionRefNode> n, CompilerContext &ctx);
 
 TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n);
 TypeOfExpr get_bool_expr_type(std::shared_ptr<ASTNode> n);

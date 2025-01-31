@@ -23,3 +23,71 @@ llvm::StructType *CompilerContext::get_string_type(llvm::LLVMContext &context, l
     // this->string_type =
     // return llvm::StructType();
 }
+llvm::Type *CompilerContext::compile_Type(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<Type> ty)
+{
+
+    //     // TODO:
+    //     // very temporary solution. need to fix later to include functions
+    if (dynamic_cast<NativeType *>(ty.get()))
+    {
+        auto p = dynamic_cast<NativeType *>(ty.get());
+        if (p->type.type == TokenType::Integer || p->type.type == TokenType::Uinteger)
+        {
+            return builder.getInt64Ty();
+        }
+        else if (p->type.type == TokenType::Decimal)
+        {
+            return builder.getDoubleTy();
+        }
+        else if (p->type.type == TokenType::Byte || p->type.type == TokenType::character || p->type.type == TokenType::Ubyte)
+        {
+            return builder.getInt8Ty();
+        }
+        else if (p->type.type == TokenType::boolean)
+        {
+            return builder.getInt1Ty();
+        }
+        else if (p->type.type == TokenType::string)
+        {
+            return this->get_string_type(context, builder);
+        }
+    }
+    // NOTE:
+    //  for lists generate the entire list and when index simply shrink down the list
+    //  and return the value indexed
+    else if (dynamic_cast<ListType *>(ty.get()))
+    {
+        auto p = dynamic_cast<ListType *>(ty.get());
+
+        auto c = this->compile_Type(builder, context, p->inner_type);
+        for (int i = 0; i < this->lists.size(); i++)
+        {
+            if (this->lists[i]->getElementType(0) == c)
+            {
+                std::cout << "aaa" << std::endl;
+                return llvm::PointerType::getUnqual(this->lists[i]);
+            }
+        }
+        llvm::StructType *nodeType = llvm::StructType::create(context, "Node");
+        std::vector<llvm::Type *> elements = {c, llvm::PointerType::getUnqual(nodeType)};
+        nodeType->setBody(elements);
+
+        this->lists.push_back((nodeType));
+        return llvm::PointerType::getUnqual(nodeType);
+    }
+    return builder.getVoidTy();
+}
+
+llvm::FunctionType *CompilerContext::compile_Function_Type(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<FunctionRefNode> n)
+{
+    auto c = n->RetType;
+    std::vector<llvm::Type *> a;
+    for (int i = 0; i < n->params.size(); i++)
+    {
+        auto funct = compile_Function_Type(builder, context, n->params[i]);
+        a.push_back(llvm::PointerType::getUnqual(funct));
+    }
+    llvm::FunctionType *functype = llvm::FunctionType::get(
+        compile_Type(builder, context, c), a, false);
+    return functype;
+}

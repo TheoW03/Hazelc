@@ -88,6 +88,12 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         auto c = dynamic_cast<IntegerNode *>(node.get());
         return llvm::ConstantInt::get(llvm::Type::getInt64Ty(context), c->number);
     }
+    else if (dynamic_cast<CharNode *>(node.get()))
+    {
+        auto c = dynamic_cast<CharNode *>(node.get());
+
+        return llvm::ConstantInt::get(llvm::Type::getInt8Ty(context), c->value.value[0]);
+    }
     else if (dynamic_cast<DecimalNode *>(node.get()))
     {
         auto c = dynamic_cast<DecimalNode *>(node.get());
