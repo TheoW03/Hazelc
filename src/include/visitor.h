@@ -83,6 +83,9 @@ public:
 #define COMPILE_EXPR_H
 class CompileExpr
 {
+private:
+    llvm::Value *CompileStr(llvm::Value *str, llvm::Value *length, llvm::Value *structure);
+
 public:
     llvm::Module &module;
     // std::map<std::string, Function> func_map;
