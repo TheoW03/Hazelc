@@ -88,7 +88,24 @@ llvm::Value *CompileExpr::BoolIntMathExpr(llvm::Value *lhs, Tokens op, llvm::Val
 
 llvm::Value *CompileExpr::BoolFloatMathExpr(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
 {
-    return nullptr;
+    switch (op.type)
+    {
+    case EQ:
+        return builder.CreateFCmp(llvm::CmpInst::FCMP_OEQ, lhs, rhs, "eq");
+    case LT:
+        return builder.CreateFCmp(llvm::CmpInst::FCMP_OLT, lhs, rhs, "LT");
+    case LTE:
+        return builder.CreateFCmp(llvm::CmpInst::FCMP_OLE, lhs, rhs, "LE");
+    case GT:
+        return builder.CreateFCmp(llvm::CmpInst::FCMP_OGT, lhs, rhs, "GT");
+    case GTE:
+        return builder.CreateFCmp(llvm::CmpInst::FCMP_OGE, lhs, rhs, "GE");
+    case NE:
+        return builder.CreateFCmp(llvm::CmpInst::FCMP_ONE, lhs, rhs, "NE");
+    default:
+        std::cout << "semantic anaylsis bug perhaps in boolean \"" << op.value << "\"" << std::endl;
+        exit(EXIT_FAILURE);
+    }
 }
 
 llvm::Value *CompileExpr::StringMathExpr(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
@@ -122,7 +139,7 @@ llvm::Value *CompileExpr::StringMathExpr(llvm::Value *lhs, Tokens op, llvm::Valu
     }
     default:
     {
-        std::cout << "semantic anaylsis bug perhaps in string opersators \"" << op.value << "\"" << std::endl;
+        std::cout << "semantic anaylsis bug perhaps in string operators \"" << op.value << "\"" << std::endl;
         exit(EXIT_FAILURE);
     }
     }
