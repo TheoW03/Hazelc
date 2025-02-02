@@ -5,6 +5,7 @@ test.hz
 *.o
 LazyEvalInt.c
 *.out
+/Test/
 *.hs
 *.hi
 test

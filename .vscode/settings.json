@@ -69,6 +69,7 @@
         "*.def": "cpp",
         "variant": "cpp",
         "any": "cpp",
-        "stdlib.h": "c"
+        "stdlib.h": "c",
+        "filesystem": "cpp"
     }
 }

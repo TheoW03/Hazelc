@@ -29,6 +29,7 @@ add_llvm_executable(${EXECUTABLE_NAME}
    src/lexxer.cpp
    src/parser.cpp
    src/Ast.cpp
+   src/InitHazel.cpp
    src/Compiler.cpp
    src/semantic_analysis.cpp
    src/visitor.cpp
