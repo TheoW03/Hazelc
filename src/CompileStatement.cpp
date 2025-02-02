@@ -11,14 +11,9 @@ void CompileStatement::Visit(ASTNode *node)
 
 void CompileStatement::Visit(FunctionNode *node)
 {
-    // Create the entry block for the function
-    // auto func = func_map[node->f->FunctionName.value].function;
     auto func = compiler_context.get_function(node->f->FunctionName).function;
     llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, "entry", func);
     builder.SetInsertPoint(EntryBlock);
-    // DEBUG ONLY
-    //  if (node->f->FunctionName.value != "hello_world")
-    //  builder.CreateCall(compiler_context.get_function({"hello_world", TokenType::Identifier, 0}).function, {});
     for (int i = 0; i < node->stmnts.size(); i++)
     {
 
