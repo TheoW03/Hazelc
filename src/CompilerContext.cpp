@@ -98,9 +98,22 @@ llvm::FunctionType *CompilerContext::compile_Function_Type(llvm::IRBuilder<> &bu
     for (int i = 0; i < n->params.size(); i++)
     {
         auto funct = compile_Function_Type(builder, context, n->params[i]);
-        a.push_back(llvm::PointerType::getUnqual(funct));
+        a.push_back(get_thunk_types(builder, context, n->params[i]).thunk_type);
     }
     llvm::FunctionType *functype = llvm::FunctionType::get(
         compile_Type(builder, context, c), a, false);
     return functype;
+}
+
+Thunks CompilerContext::get_thunk_types(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<FunctionRefNode> n)
+{
+
+    // std::vector<Thunks> thunks;
+    // this->string_type = llvm::StructType::create(context, "Thunk");
+    auto thunk = llvm::StructType::create(context, "Thunk");
+    auto funct = compile_Function_Type(builder, context, n);
+    std::vector<llvm::Type *> elements = {compile_Type(builder, context, n->RetType), llvm::PointerType::getUnqual(funct), builder.getInt1Ty()};
+    // this->string_type->setBody(elements);
+    thunk->setBody(elements);
+    return {thunk, nullptr};
 }

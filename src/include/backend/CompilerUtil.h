@@ -14,6 +14,15 @@ enum TypeOfExpr
     Float_Type,
     String_Type
 };
+
+#endif
+#ifndef THUNKS_H
+#define THUNKS_H
+struct Thunks
+{
+    llvm::Type *thunk_type;
+    llvm::Function *eval_func;
+};
 #endif
 #ifndef COMPILED_FUNCTION_H
 #define COMPILED_FUNCTION_H
@@ -21,6 +30,7 @@ struct Function
 {
     llvm::Function *function;
     std::vector<Function> params;
+    std::vector<Thunks> thunks;
 };
 #endif
 #ifndef CONTEXT_H
@@ -40,6 +50,7 @@ public:
     llvm::StructType *get_string_type(llvm::LLVMContext &context, llvm::IRBuilder<> &builder);
     llvm::Type *compile_Type(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<Type> ty);
     llvm::FunctionType *compile_Function_Type(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<FunctionRefNode> n);
+    Thunks get_thunk_types(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<FunctionRefNode> n);
 };
 #endif
 // llvm::Type *compileType(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<Type> ty, CompilerContext &ctx);
