@@ -323,7 +323,17 @@ std::shared_ptr<ModuleNode> parse_module(std::vector<Tokens> &tokens)
     auto module_name = match_and_remove(TokenType::Identifier, tokens);
     // print_tokens(tokens);
 
+    // while()
+    std::vector<Tokens> imports;
+    match_and_remove(TokenType::Open_Parenthesis, tokens);
+    while (!match_and_remove(TokenType::Close_Parenthesis, tokens).has_value())
+    {
+        auto c = match_and_remove(TokenType::Identifier, tokens);
+        imports.push_back(c.value());
+        match_and_remove(TokenType::Comma, tokens);
+    }
     std::vector<std::shared_ptr<ASTNode>> functions;
+
     while (!look_ahead(TokenType::EndOfFile, tokens) && !look_ahead(TokenType::Module, tokens))
     {
         if (match_and_remove(TokenType::Let, tokens).has_value())

@@ -3,9 +3,6 @@
 
 CompileHighLevel::CompileHighLevel(llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context) : module(module), builder(builder), context(context)
 {
-    // this->module = module;
-    // this->builder = builder;
-    // this->context = context;
     this->compiler_context.compile_cfunctions(module, context, builder);
 }
 

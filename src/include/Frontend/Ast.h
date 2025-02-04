@@ -216,11 +216,27 @@ class ModuleNode : public ASTNode
 public:
     std::vector<std::shared_ptr<ASTNode>> functions;
     Tokens name;
-    ModuleNode(std::vector<std::shared_ptr<ASTNode>> functions, Tokens name);
+    std::vector<Tokens> imports;
+    ModuleNode(std::vector<std::shared_ptr<ASTNode>> functions, Tokens name, std::vector<Tokens> imports);
     void Accept(Visitor *v);
     std::string to_string();
 };
 #endif
+
+#ifndef PROGRAM_H
+#define PROGRAM_H
+class Visitor;
+
+class ProgramNode : public ASTNode
+{
+public:
+    std::vector<std::shared_ptr<ModuleNode>> modules;
+    ProgramNode(std::vector<std::shared_ptr<ModuleNode>> modules);
+    void Accept(Visitor *v);
+    std::string to_string();
+};
+#endif
+
 #ifndef LIST_NODE_H
 #define LIST_NODE_H
 class Visitor;

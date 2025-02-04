@@ -1,6 +1,7 @@
 #include <Frontend/Ast.h>
 #include <visitor.h>
 #include <map>
+#include "Ast.h"
 
 ASTNode::~ASTNode()
 {
@@ -165,10 +166,11 @@ std::string ListType::to_string()
     return std::string();
 }
 
-ModuleNode::ModuleNode(std::vector<std::shared_ptr<ASTNode>> functions, Tokens name)
+ModuleNode::ModuleNode(std::vector<std::shared_ptr<ASTNode>> functions, Tokens name, std::vector<Tokens> imports)
 {
     this->functions = functions;
     this->name = name;
+    this->imports = imports;
 }
 
 void ModuleNode::Accept(Visitor *v)
@@ -279,6 +281,20 @@ void FunctionCallNode::Accept(Visitor *v)
 }
 
 std::string FunctionCallNode::to_string()
+{
+    return std::string();
+}
+
+ProgramNode::ProgramNode(std::vector<std::shared_ptr<ModuleNode>> modules)
+{
+    this->modules = modules;
+}
+
+void ProgramNode::Accept(Visitor *v)
+{
+}
+
+std::string ProgramNode::to_string()
 {
     return std::string();
 }
