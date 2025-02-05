@@ -57,6 +57,14 @@ void CompileHighLevel::Visit(FunctionCallNode *node)
 {
 }
 
+void CompileHighLevel::Visit(ProgramNode *node)
+{
+    for (int i = 0; i < node->modules.size(); i++)
+    {
+        node->modules[i]->Accept(this);
+    }
+}
+
 Function CompileHighLevel::CompileFunctionHeader(std::shared_ptr<FunctionRefNode> n)
 {
     auto c = n->RetType;

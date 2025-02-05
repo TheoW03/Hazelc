@@ -291,6 +291,7 @@ ProgramNode::ProgramNode(std::vector<std::shared_ptr<ModuleNode>> modules)
 
 void ProgramNode::Accept(Visitor *v)
 {
+    v->Visit(this);
 }
 
 std::string ProgramNode::to_string()

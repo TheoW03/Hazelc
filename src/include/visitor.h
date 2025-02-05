@@ -20,6 +20,7 @@ public:
     virtual void Visit(FunctionNode *node) = 0;
     virtual void Visit(ReturnNode *node) = 0;
     virtual void Visit(FunctionCallNode *node) = 0;
+    virtual void Visit(ProgramNode *node) = 0;
 };
 #endif
 
@@ -33,6 +34,7 @@ public:
     void Visit(ModuleNode *node) override;
     void Visit(ReturnNode *node) override;
     void Visit(FunctionCallNode *node) override;
+    void Visit(ProgramNode *node) override;
 };
 #endif
 #ifndef COMPILER_H
@@ -54,6 +56,7 @@ public:
 
     void Visit(ReturnNode *node) override;
     void Visit(FunctionCallNode *node) override;
+    void Visit(ProgramNode *node) override;
 
     Function CompileFunctionHeader(std::shared_ptr<FunctionRefNode> n);
 };
@@ -74,6 +77,7 @@ public:
     void Visit(ModuleNode *node) override;
 
     void Visit(ReturnNode *node) override;
+    void Visit(ProgramNode *node) override;
     void Visit(FunctionCallNode *node) override;
 };
 

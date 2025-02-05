@@ -35,6 +35,14 @@ void CompileStatement::Visit(ReturnNode *node)
     builder.CreateRet(c.Expression(node->Expr));
 }
 
+void CompileStatement::Visit(ProgramNode *node)
+{
+    for (int i = 0; i < node->modules.size(); i++)
+    {
+        node->modules[i]->Accept(this);
+    }
+}
+
 void CompileStatement::Visit(FunctionCallNode *node)
 {
     builder.CreateCall(compiler_context.get_function(node->name).function, {});

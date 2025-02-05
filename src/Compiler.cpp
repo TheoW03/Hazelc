@@ -18,7 +18,7 @@
 #include "llvm/IR/LLVMContext.h"
 
 #include <cli.h>
-void InitCompiler(Output output, std::vector<std::shared_ptr<ModuleNode>> node)
+void InitCompiler(Output output, std::shared_ptr<ProgramNode> node)
 {
     llvm::LLVMContext context;
     llvm::Module module("MyModule", context); // Module tied to context
@@ -27,16 +27,10 @@ void InitCompiler(Output output, std::vector<std::shared_ptr<ModuleNode>> node)
 
     std::map<std::string, llvm::Function *> func_map;
 
-        // CompileHighLevel c(module, builder, context);
+    // CompileHighLevel c(module, builder, context);
     // compiles function body
     CompileHighLevel *compile_top = new CompileHighLevel(module, builder, context);
-    for (int i = 0; i < node.size(); i++)
-    {
-        node[i]->Accept(compile_top);
-    }
-
-    // compiles the returns
-    // CompilerContext compiler_context;
+    node->Accept(compile_top);
     CompileStatement *compile_statement = new CompileStatement(module, builder, context, compile_top->compiler_context);
     for (int i = 0; i < compile_top->functions.size(); i++)
     {
@@ -44,6 +38,7 @@ void InitCompiler(Output output, std::vector<std::shared_ptr<ModuleNode>> node)
     }
     delete compile_top;
     delete compile_statement;
+
     // Initialize the target registry etc.llvm::InitializeAllTargets();
 
     llvm::InitializeAllTargetInfos();

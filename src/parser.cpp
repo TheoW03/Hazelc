@@ -346,7 +346,7 @@ std::shared_ptr<ModuleNode> parse_module(std::vector<Tokens> &tokens)
     }
     return std::make_shared<ModuleNode>(functions, module_name.value(), imports);
 }
-std::vector<std::shared_ptr<ModuleNode>> parse_node(std::vector<Tokens> &tokens)
+std::shared_ptr<ProgramNode> parse_node(std::vector<Tokens> &tokens)
 {
     std::vector<std::shared_ptr<ModuleNode>> modules;
     while (!match_and_remove(TokenType::EndOfFile, tokens).has_value() && tokens.size() != 0)
@@ -358,7 +358,7 @@ std::vector<std::shared_ptr<ModuleNode>> parse_node(std::vector<Tokens> &tokens)
             modules.push_back(m);
         }
     }
-    return modules;
+    return std::make_shared<ProgramNode>(modules);
 
     // return modules(tokens);
 }
