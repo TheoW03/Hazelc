@@ -325,13 +325,16 @@ std::shared_ptr<ModuleNode> parse_module(std::vector<Tokens> &tokens)
 
     // while()
     std::vector<Tokens> imports;
-    match_and_remove(TokenType::Open_Parenthesis, tokens);
-    while (!match_and_remove(TokenType::Close_Parenthesis, tokens).has_value())
+    if (match_and_remove(TokenType::Open_Parenthesis, tokens).has_value())
     {
-        auto c = match_and_remove(TokenType::Identifier, tokens);
-        imports.push_back(c.value());
-        match_and_remove(TokenType::Comma, tokens);
+        while (!match_and_remove(TokenType::Close_Parenthesis, tokens).has_value())
+        {
+            auto c = match_and_remove(TokenType::Identifier, tokens);
+            imports.push_back(c.value());
+            match_and_remove(TokenType::Comma, tokens);
+        }
     }
+
     std::vector<std::shared_ptr<ASTNode>> functions;
 
     while (!look_ahead(TokenType::EndOfFile, tokens) && !look_ahead(TokenType::Module, tokens))
@@ -341,7 +344,7 @@ std::shared_ptr<ModuleNode> parse_module(std::vector<Tokens> &tokens)
             functions.push_back(parse_function(tokens).value());
         }
     }
-    return std::make_shared<ModuleNode>(functions, module_name.value());
+    return std::make_shared<ModuleNode>(functions, module_name.value(), imports);
 }
 std::vector<std::shared_ptr<ModuleNode>> parse_node(std::vector<Tokens> &tokens)
 {
