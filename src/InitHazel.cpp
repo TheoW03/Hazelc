@@ -41,7 +41,6 @@ int Init(std::vector<std::string> args)
             std::ifstream file(cli.files[i]);
             get_files(file, lines);
             file.close();
-            // std::cout << path << " is not a directory." << std::endl;
         }
     }
 
