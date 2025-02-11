@@ -1,7 +1,7 @@
 /build/
 /TestFiles/
 /Test/
-/Theory/
+
 psuedoc
 test.hz
 
@@ -14,4 +14,5 @@ test
 hazelc
 *.s
 *.ll
-test.c
+Theory/test.c
+Theory/test2.c
