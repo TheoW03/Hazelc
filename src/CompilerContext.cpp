@@ -39,6 +39,8 @@ llvm::StructType *CompilerContext::get_string_type(llvm::LLVMContext &context, l
         this->string_type = llvm::StructType::create(context, "string");
         std::vector<llvm::Type *> elements = {builder.getInt8PtrTy(), builder.getInt64Ty()};
         this->string_type->setBody(elements);
+
+        // uint64_t StructSize = DL.getTypeAllocSize(MyStruct);
     }
     return string_type;
 }

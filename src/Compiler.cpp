@@ -26,6 +26,7 @@ void InitCompiler(Output output, std::shared_ptr<ProgramNode> node)
     llvm::IRBuilder<> builder(context); // Builder also tied to context
 
     std::map<std::string, llvm::Function *> func_map;
+    std::cout << module.getDataLayout().getTypeAllocSize(builder.getInt64Ty()) << std::endl;
 
     // CompileHighLevel c(module, builder, context);
     // compiles function body
