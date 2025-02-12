@@ -14,14 +14,10 @@ void get_files(std::ifstream &file, std::vector<std::string> &lines)
         lines.push_back(str);
     }
 }
-int Init(std::vector<std::string> args)
+std::vector<std::string> get_lines(Output cli)
 {
-
-    /* code */
-
     std::vector<std::string> lines;
 
-    auto cli = parse_cmd(args);
     for (int i = 0; i < cli.files.size(); i++)
     {
         if (std::filesystem::is_directory(cli.files[i]))
@@ -43,7 +39,15 @@ int Init(std::vector<std::string> args)
             file.close();
         }
     }
+    return lines;
+}
+int Init(std::vector<std::string> args)
+{
 
+    /* code */
+
+    auto cli = parse_cmd(args);
+    auto lines = get_lines(cli);
     auto tokens = lexxer(lines);
     std::cout << "lexxed" << std::endl;
     if (cli.print_tokens == 1)
