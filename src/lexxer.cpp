@@ -164,6 +164,7 @@ void is_token(Lexxer_Context &ctx)
     token_map[".."] = TokenType::Range;
     token_map["lambda"] = TokenType::Lambda;
     token_map["Type"] = TokenType::Generics;
+    token_map["export"] = TokenType::Export;
     if (token_map.find(ctx.buffer) != token_map.end())
         ctx.tokens.push_back({ctx.buffer, token_map[ctx.buffer], ctx.line_num});
     else if (is_hex_digit(ctx.buffer))
@@ -439,6 +440,7 @@ void print_tokens(std::vector<Tokens> tokens)
     token_map[TokenType::Range] = "Range";
     token_map[TokenType::String_Lit] = "str_lit";
     token_map[TokenType::Char_Lit] = "char_lit";
+    token_map[TokenType::Export] = "export";
 
     for (int i = 0; i < tokens.size(); i++)
     {

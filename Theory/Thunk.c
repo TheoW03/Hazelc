@@ -1,47 +1,5 @@
 #include <stdio.h>
 
-struct Thunk
-{
-    void *value;
-    struct Thunk *args;
-    void *(*computation)(struct Thunk *);
-};
-void *generate_func(struct Thunk t)
-{
-
-    if (t.value != NULL)
-    {
-        return t.value;
-    }
-    t.value = t.computation(t.args);
-    return t.value;
-}
-void *add(struct Thunk args[])
-{
-    void *pd = generate_func(args[0]);
-    void *plhs = generate_func(args[1]);
-    double pans = *(double *)plhs + *(double *)pd;
-    void *a = malloc(sizeof(double));
-    a = &pans;
-    return a;
-}
-void *two(struct Thunk args[])
-{
-    double f = 3.1415;
-    void *pd = malloc(sizeof(double));
-    pd = &f;
-    return pd;
-}
-void *one(struct Thunk args[])
-{
-    // int a = (int)generate_func(args[0]);
-    // printf("%d \n", a);
-    double f = 3.1415;
-    void *pd = malloc(sizeof(double));
-    pd = &f;
-    return pd;
-    // return (void *)3.1415;
-}
 struct String
 {
     char *str;

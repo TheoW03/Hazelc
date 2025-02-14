@@ -111,7 +111,7 @@ void InitCompiler(Output output, std::shared_ptr<ProgramNode> node)
                 llvm::errs() << "Could not open file: " << EC.message();
                 return;
             }
-
+            uint64_t c = 1 | 2;
             auto FileType = llvm::CodeGenFileType::CGFT_AssemblyFile;
 
             if (TargetMachine->addPassesToEmitFile(pass, dest, nullptr, FileType))

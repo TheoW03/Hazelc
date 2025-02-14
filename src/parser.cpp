@@ -280,11 +280,13 @@ std::vector<std::shared_ptr<ASTNode>> parse_scope(std::vector<Tokens> &tokens)
 }
 std::optional<std::shared_ptr<ASTNode>> parse_function(std::vector<Tokens> &tokens)
 {
+    bool is_export = current.value().type == TokenType::Export;
+
     match_and_remove(TokenType::Let, tokens);
     auto func = parse_function_ref(tokens);
     std::vector<std::shared_ptr<ASTNode>> ast;
 
-    return std::make_shared<FunctionNode>(func.value(),
+    return std::make_shared<FunctionNode>(is_export, func.value(),
                                           parse_scope(tokens));
 }
 std::optional<std::shared_ptr<ASTNode>> parse_return(std::vector<Tokens> &tokens)
@@ -339,7 +341,9 @@ std::shared_ptr<ModuleNode> parse_module(std::vector<Tokens> &tokens)
 
     while (!look_ahead(TokenType::EndOfFile, tokens) && !look_ahead(TokenType::Module, tokens))
     {
-        if (match_and_remove(TokenType::Let, tokens).has_value())
+        match_and_remove(TokenType::Export, tokens);
+
+        if (look_ahead(TokenType::Let, tokens))
         {
             functions.push_back(parse_function(tokens).value());
         }

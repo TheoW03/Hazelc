@@ -54,7 +54,9 @@ FunctionRefNode::FunctionRefNode(Tokens name,
                                  std::vector<std::shared_ptr<FunctionRefNode>> params,
                                  std::shared_ptr<Type> returnType)
 {
+
     this->FunctionName = name;
+    // this->can_export
     this->RetType = returnType;
     this->params = params;
 }
@@ -71,8 +73,10 @@ std::string FunctionRefNode::to_string()
     return std::string();
 }
 
-FunctionNode::FunctionNode(std::shared_ptr<FunctionRefNode> functionHeader, std::vector<std::shared_ptr<ASTNode>> stmnts)
+FunctionNode::FunctionNode(bool can_export, std::shared_ptr<FunctionRefNode> functionHeader, std::vector<std::shared_ptr<ASTNode>> stmnts)
 {
+
+    this->can_export = can_export;
     this->f = functionHeader;
     this->stmnts = stmnts;
 }

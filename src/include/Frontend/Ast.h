@@ -143,9 +143,10 @@ public:
     std::vector<std::shared_ptr<FunctionRefNode>> params;
     std::shared_ptr<Type>
         RetType;
-    FunctionRefNode(Tokens name,
-                    std::vector<std::shared_ptr<FunctionRefNode>> params,
-                    std::shared_ptr<Type> returnType);
+    FunctionRefNode(
+        Tokens name,
+        std::vector<std::shared_ptr<FunctionRefNode>> params,
+        std::shared_ptr<Type> returnType);
     void Accept(Visitor *v);
     std::string to_string();
 };
@@ -160,7 +161,9 @@ class FunctionNode : public ASTNode
 public:
     std::shared_ptr<FunctionRefNode> f;
     std::vector<std::shared_ptr<ASTNode>> stmnts;
-    FunctionNode(std::shared_ptr<FunctionRefNode> functionHeader,
+    bool can_export;
+    FunctionNode(bool can_export,
+                 std::shared_ptr<FunctionRefNode> functionHeader,
                  std::vector<std::shared_ptr<ASTNode>> stmnts);
     void Accept(Visitor *v);
     std::string to_string();
