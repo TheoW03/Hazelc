@@ -103,10 +103,8 @@ bool is_base_ten(std::string &str)
     }
     return true;
 }
-void is_token(Lexxer_Context &ctx)
+std::map<std::string, TokenType> get_keyword_map()
 {
-    if (ctx.buffer == "")
-        return;
     std::map<std::string, TokenType> token_map;
     token_map["+"] = TokenType::Addition;
     token_map["-"] = TokenType::Subtraction;
@@ -165,6 +163,13 @@ void is_token(Lexxer_Context &ctx)
     token_map["lambda"] = TokenType::Lambda;
     token_map["Type"] = TokenType::Generics;
     token_map["export"] = TokenType::Export;
+    return token_map;
+}
+void is_token(Lexxer_Context &ctx)
+{
+    if (ctx.buffer == "")
+        return;
+    std::map<std::string, TokenType> token_map = get_keyword_map();
     if (token_map.find(ctx.buffer) != token_map.end())
         ctx.tokens.push_back({ctx.buffer, token_map[ctx.buffer], ctx.line_num});
     else if (is_hex_digit(ctx.buffer))
