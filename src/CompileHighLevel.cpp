@@ -59,10 +59,17 @@ void CompileHighLevel::Visit(FunctionCallNode *node)
 
 void CompileHighLevel::Visit(ProgramNode *node)
 {
-    for (int i = 0; i < node->modules.size(); i++)
+    std::cout << "test" << node->avail_modules.size() << std::endl;
+
+    for (const auto &[key, current_module] : node->avail_modules)
     {
-        node->modules[i]->Accept(this);
+        current_module->Accept(this);
+        // std::cout << "Key: " << key << ", Value: " << value << std::endl;
     }
+    // for (int i = 0; i < node->modules.size(); i++)
+    // {
+    //     node->modules[i]->Accept(this);
+    // }
 }
 
 Function CompileHighLevel::CompileFunctionHeader(std::shared_ptr<FunctionRefNode> n)

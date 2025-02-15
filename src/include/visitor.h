@@ -37,6 +37,22 @@ public:
     void Visit(ProgramNode *node) override;
 };
 #endif
+
+#ifndef SEMANTIC_TOP_H
+#define SEMANTIC_TOP_H
+class SemanticAnalysisTopLevel : public Visitor
+{
+public:
+    std::map<std::string, std::shared_ptr<ModuleNode>> avail_modules;
+
+    void Visit(ASTNode *node) override;
+    void Visit(FunctionNode *node) override;
+    void Visit(ModuleNode *node) override;
+    void Visit(ReturnNode *node) override;
+    void Visit(FunctionCallNode *node) override;
+    void Visit(ProgramNode *node) override;
+};
+#endif
 #ifndef COMPILER_H
 #define COMPILER_H
 class CompileHighLevel : public Visitor

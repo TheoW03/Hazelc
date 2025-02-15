@@ -1,6 +1,7 @@
 #include <Frontend/lexxer.h>
 #include <iostream>
 #include <memory>
+#include <map>
 
 #ifndef ASTNODE_H
 #define ASTNODE_H
@@ -233,8 +234,8 @@ class Visitor;
 class ProgramNode : public ASTNode
 {
 public:
-    std::vector<std::shared_ptr<ModuleNode>> modules;
-    ProgramNode(std::vector<std::shared_ptr<ModuleNode>> modules);
+    std::map<std::string, std::shared_ptr<ModuleNode>> avail_modules;
+    ProgramNode(std::map<std::string, std::shared_ptr<ModuleNode>> modules);
     void Accept(Visitor *v);
     std::string to_string();
 };

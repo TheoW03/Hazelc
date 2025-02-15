@@ -288,9 +288,10 @@ std::string FunctionCallNode::to_string()
     return std::string();
 }
 
-ProgramNode::ProgramNode(std::vector<std::shared_ptr<ModuleNode>> modules)
+ProgramNode::ProgramNode(std::map<std::string, std::shared_ptr<ModuleNode>> modules)
 {
-    this->modules = modules;
+
+    this->avail_modules = modules;
 }
 
 void ProgramNode::Accept(Visitor *v)

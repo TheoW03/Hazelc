@@ -52,7 +52,6 @@ enum TokenType
     Right_Shift,
     Define,
     Range,
-    Lambda,
     Generics,
     String_Lit,
     Char_Lit,

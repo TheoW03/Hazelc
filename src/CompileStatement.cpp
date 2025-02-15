@@ -37,10 +37,15 @@ void CompileStatement::Visit(ReturnNode *node)
 
 void CompileStatement::Visit(ProgramNode *node)
 {
-    for (int i = 0; i < node->modules.size(); i++)
+    for (const auto &[key, current_module] : node->avail_modules)
     {
-        node->modules[i]->Accept(this);
+        current_module->Accept(this);
+        // std::cout << "Key: " << key << ", Value: " << value << std::endl;
     }
+    // for (int i = 0; i < node->modules.size(); i++)
+    // {
+    //     node->modules[i]->Accept(this);
+    // }
 }
 
 void CompileStatement::Visit(FunctionCallNode *node)

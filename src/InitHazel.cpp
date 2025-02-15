@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <cli.h>
 #include <stdexcept>
+#include <visitor.h>
 #include <filesystem>
 void get_files(std::ifstream &file, std::vector<std::string> &lines)
 {
@@ -54,6 +55,9 @@ int Init(std::vector<std::string> args)
         print_tokens(tokens);
     auto modules = parse_node(tokens);
     std::cout << "parsed" << std::endl;
+    SemanticAnalysisTopLevel *s = new SemanticAnalysisTopLevel;
+    modules->Accept(s);
+    // SemanticAnalysisTopLevel seman_analy;
     InitCompiler(cli, modules);
     std::cout << "" << std::endl;
 }
