@@ -21,9 +21,9 @@
 void InitCompiler(Output output, std::shared_ptr<ProgramNode> node)
 {
     llvm::LLVMContext context;
-    llvm::Module module("MyModule", context); // Module tied to context
+    llvm::Module module("MyModule", context);
 
-    llvm::IRBuilder<> builder(context); // Builder also tied to context
+    llvm::IRBuilder<> builder(context);
 
     std::map<std::string, llvm::Function *> func_map;
     std::cout << module.getDataLayout().getTypeAllocSize(builder.getInt64Ty()) << std::endl;

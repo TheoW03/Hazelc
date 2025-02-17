@@ -257,7 +257,6 @@ std::vector<std::shared_ptr<ASTNode>> parse_scope(std::vector<Tokens> &tokens)
     {
         while (!match_and_remove(TokenType::Dedents, tokens).has_value() && get_next_token(tokens).type != TokenType::EndOfFile)
         {
-            /* code */
             // print_tokens(tokens);
 
             std::optional<std::shared_ptr<ASTNode>>

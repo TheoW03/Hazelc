@@ -8,6 +8,49 @@
 #include <memory>
 #include <backend/CompilerUtil.h>
 
+#ifndef SEMANTUC_FUCN
+#define SEMANTUC_FUCN
+struct SemanticFunction
+{
+    FunctionNode *f;
+    std::map<std::string, std::vector<SemanticFunction>> functions;
+};
+
+#endif
+#ifndef SEMANTIC_MODULE_H
+#define SEMANTIC_MODULE_H
+
+struct SemanticModule
+{
+    std::shared_ptr<ModuleNode> module;
+    std::map<std::string, std::vector<SemanticFunction>> functions;
+    std::map<std::string, std::vector<SemanticFunction>> exported_functions;
+};
+
+#endif
+
+#ifndef SEMANTIC_SCOPE
+#define SEMANTIC_SCOPE
+class Scope
+{
+public:
+    virtual void add_function(FunctionNode *f) = 0;
+    virtual SemanticFunction get_function() = 0;
+};
+#endif
+
+#ifndef GLOBAL_SCOPE_H
+#define GLOBAL_SCOPE_H
+class GlobalScope : public Scope
+{
+public:
+    std::map<std::string, std::vector<SemanticFunction>> functions;
+    std::map<std::string, std::vector<SemanticFunction>> exported_functions;
+    void add_function(FunctionNode *f) override;
+    SemanticFunction get_function() override;
+};
+#endif
+
 #ifndef VISITOR_H
 #define VISITOR_H
 class Visitor
@@ -37,6 +80,10 @@ public:
     void Visit(ProgramNode *node) override;
 };
 #endif
+#ifndef SCOPE_H
+#define SCOPE_H
+
+#endif
 
 #ifndef SEMANTIC_TOP_H
 #define SEMANTIC_TOP_H
@@ -45,6 +92,9 @@ class SemanticAnalysisTopLevel : public Visitor
 public:
     std::map<std::string, std::shared_ptr<ModuleNode>> avail_modules;
 
+    std::vector<SemanticModule> modules;
+    std::shared_ptr<ModuleNode> current;
+    SemanticModule current_AST_module;
     void Visit(ASTNode *node) override;
     void Visit(FunctionNode *node) override;
     void Visit(ModuleNode *node) override;
