@@ -5,6 +5,16 @@
 #include <Frontend/Ast.h>
 #include "llvm/IR/LLVMContext.h"
 
+#ifndef OPTIONAL_TYPE_H
+#define OPTIONAL_TYPE_H
+class OptionalType
+{
+public:
+    llvm::StructType *type;
+    OptionalType();
+    OptionalType(llvm::LLVMContext &context, llvm::IRBuilder<> &builder, llvm::Type *inner);
+};
+#endif
 #ifndef TYPE_OF_EXPR_H
 #define TYPE_OF_EXPR_H
 enum TypeOfExpr
@@ -41,15 +51,21 @@ class CompilerContext
 public:
     std::map<std::string, Function> func_map;
     std::map<std::string, llvm::Function *> CFunctions;
-    std::map<std::string, llvm::Type *> types;
+    std::map<TokenType, OptionalType> NativeTypes;
+    // std::map<std::string, llvm::Type *> types;
+    // std::map<TokenType, OptionalType> types;
     std::vector<llvm::StructType *> lists;
     llvm::StructType *string_type;
+    CompilerContext();
+    CompilerContext(std::map<std::string, llvm::Function *> CFunctions, std::map<TokenType, OptionalType> NativeTypes);
     Function get_function(Tokens name);
     void add_function(Tokens name, Function f);
-    void compile_cfunctions(llvm::Module &module, llvm::LLVMContext &context, llvm::IRBuilder<> &builder);
+    // void compile_cfunctions(llvm::Module &module, llvm::LLVMContext &context, llvm::IRBuilder<> &builder);
     llvm::StructType *get_string_type(llvm::LLVMContext &context, llvm::IRBuilder<> &builder);
     llvm::Type *compile_Type(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<Type> ty);
     llvm::FunctionType *compile_Function_Type(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<FunctionRefNode> n);
+
+    OptionalType compile_Type_Optional(std::shared_ptr<Type> ty);
     Thunks get_thunk_types(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<FunctionRefNode> n);
 };
 #endif

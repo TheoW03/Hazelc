@@ -32,6 +32,7 @@ void InitCompiler(Output output, std::shared_ptr<ProgramNode> node)
     // compiles function body
     CompileHighLevel *compile_top = new CompileHighLevel(module, builder, context);
     node->Accept(compile_top);
+    std::cout << "compiled functions" << std::endl;
     CompileStatement *compile_statement = new CompileStatement(module, builder, context, compile_top->compiler_context);
     for (int i = 0; i < compile_top->functions.size(); i++)
     {

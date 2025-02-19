@@ -3,7 +3,30 @@
 
 CompileHighLevel::CompileHighLevel(llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context) : module(module), builder(builder), context(context)
 {
-    this->compiler_context.compile_cfunctions(module, context, builder);
+    std::map<std::string, llvm::Function *> CFunctions;
+    auto snprintftype = llvm::FunctionType::get(builder.getInt32Ty(), {builder.getInt8PtrTy(), builder.getInt64Ty(), builder.getInt8PtrTy()}, true);
+    auto snprintffunc = llvm::Function::Create(
+        snprintftype, llvm::Function::ExternalLinkage, "snprintf", module);
+    CFunctions.insert(std::make_pair("snprintf", snprintffunc));
+    auto printftype = llvm::FunctionType::get(builder.getInt32Ty(), {builder.getInt8PtrTy()}, true);
+    auto printf_func = llvm::Function::Create(
+        printftype, llvm::Function::ExternalLinkage, "printf", module);
+    CFunctions.insert(std::make_pair("printf", printf_func));
+
+    auto strncpy_type = llvm::FunctionType::get(builder.getInt32Ty(), {builder.getInt8PtrTy(), builder.getInt8PtrTy(), builder.getInt64Ty()}, false);
+    auto strncpy_func = llvm::Function::Create(
+        strncpy_type, llvm::Function::ExternalLinkage, "strncpy", module);
+    CFunctions.insert(std::make_pair("strncpy", strncpy_func));
+    std::map<TokenType, OptionalType> types;
+    // types.insert(std::make_pair(TokenType::Integer, OptionalType()));
+    std::map<TokenType, OptionalType> NativeTypes;
+    NativeTypes.insert(std::make_pair(TokenType::Integer, OptionalType(context, builder, builder.getInt64Ty())));
+    NativeTypes.insert(std::make_pair(TokenType::Decimal, OptionalType(context, builder, builder.getDoubleTy())));
+    NativeTypes.insert(std::make_pair(TokenType::boolean, OptionalType(context, builder, builder.getInt1Ty())));
+    NativeTypes.insert(std::make_pair(TokenType::character, OptionalType(context, builder, builder.getInt8Ty())));
+    this->compiler_context = CompilerContext(CFunctions, NativeTypes);
+
+    // this->compiler_context.compile_cfunctions(module, context, builder);
 }
 
 void CompileHighLevel::Visit(ASTNode *node)
@@ -59,7 +82,6 @@ void CompileHighLevel::Visit(FunctionCallNode *node)
 
 void CompileHighLevel::Visit(ProgramNode *node)
 {
-    std::cout << "test" << node->avail_modules.size() << std::endl;
 
     for (const auto &[key, current_module] : node->avail_modules)
     {

@@ -41,3 +41,14 @@ TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n)
     if (dynamic_cast<BooleanExprNode *>(c->lhs.get()))
         return get_bool_expr_type(c->lhs);
 }
+OptionalType::OptionalType()
+{
+    /* compiler stop bitching */
+}
+OptionalType::OptionalType(llvm::LLVMContext &context, llvm::IRBuilder<> &builder, llvm::Type *inner)
+
+{
+    this->type = llvm::StructType::create(context, "OptionalType");
+    std::vector<llvm::Type *> elements = {inner, builder.getInt1Ty()};
+    this->type->setBody(elements);
+}

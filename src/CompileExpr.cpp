@@ -1,8 +1,14 @@
 #include <visitor.h>
 #include <backend/CompilerUtil.h>
 
-CompileExpr::CompileExpr(llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context, CompilerContext &compiler_context) : module(module), builder(builder), context(context), compiler_context(compiler_context)
+CompileExpr::CompileExpr(llvm::Module &module,
+                         llvm::IRBuilder<> &builder,
+                         llvm::LLVMContext &context,
+                         CompilerContext compiler_context) : module(module),
+                                                             builder(builder),
+                                                             context(context)
 {
+    this->compiler_context = compiler_context;
     // this->func_map = func_map;
 }
 llvm::Value *CompileExpr::CompileStr(llvm::Value *str, llvm::Value *length, llvm::Value *structure)
