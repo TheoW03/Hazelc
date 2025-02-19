@@ -104,7 +104,7 @@ llvm::FunctionType *CompilerContext::compile_Function_Type(llvm::IRBuilder<> &bu
         a.push_back(get_thunk_types(builder, context, n->params[i]).thunk_type);
     }
     llvm::FunctionType *functype = llvm::FunctionType::get(
-        compile_Type(builder, context, c), a, false);
+        compile_Type_Optional(c).type, a, false);
     return functype;
 }
 OptionalType CompilerContext::compile_Type_Optional(std::shared_ptr<Type> ty)
@@ -124,7 +124,7 @@ Thunks CompilerContext::get_thunk_types(llvm::IRBuilder<> &builder, llvm::LLVMCo
     // this->string_type = llvm::StructType::create(context, "Thunk");
     auto thunk = llvm::StructType::create(context, "Thunk");
     auto funct = compile_Function_Type(builder, context, n);
-    std::vector<llvm::Type *> elements = {compile_Type(builder, context, n->RetType), llvm::PointerType::getUnqual(funct), builder.getInt1Ty()};
+    std::vector<llvm::Type *> elements = {compile_Type_Optional(n->RetType).type, llvm::PointerType::getUnqual(funct), builder.getInt1Ty()};
     // this->string_type->setBody(elements);
     thunk->setBody(elements);
     return {thunk, nullptr};
