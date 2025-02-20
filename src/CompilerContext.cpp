@@ -80,7 +80,6 @@ llvm::Type *CompilerContext::compile_Type(llvm::IRBuilder<> &builder, llvm::LLVM
         {
             if (this->lists[i]->getElementType(0) == c)
             {
-                std::cout << "aaa" << std::endl;
                 return llvm::PointerType::getUnqual(this->lists[i]);
             }
         }

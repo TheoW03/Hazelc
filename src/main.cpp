@@ -19,8 +19,5 @@ int main(int argc, char *argv[])
     {
         args.push_back(argv[i]);
     }
-    Init(args);
-
-    std::cout << "\033[32mSuccessfully Compiled \033[0m" << std::endl;
-    return 0;
+    return Init(args);
 }

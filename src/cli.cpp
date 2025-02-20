@@ -86,6 +86,11 @@ Output parse_cmd(std::vector<std::string> args)
     std::optional<Parse_F> current;
     for (int i = 0; i < args.size(); i++)
     {
+        if (!current.has_value() && args[i].size() < 2)
+        {
+            std::cout << "hazelc: arguement has to little characters to count as an option (they must be atleast 2 characters in length)" << std::endl;
+            exit(EXIT_FAILURE);
+        }
         if (args[i].at(0) == '-' && args[i].at(1) != '-')
         {
             char short_optop = args[i].at(1);
@@ -100,7 +105,7 @@ Output parse_cmd(std::vector<std::string> args)
             }
             else
             {
-                std::cout << "unknown option \"" << short_optop << "\" run -h or --help for a list of commands" << std::endl;
+                std::cout << "hazelc: unknown option \"" << short_optop << "\" run -h or --help for a list of commands" << std::endl;
                 exit(EXIT_FAILURE);
             }
         }

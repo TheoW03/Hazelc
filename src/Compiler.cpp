@@ -26,13 +26,12 @@ void InitCompiler(Output output, std::shared_ptr<ProgramNode> node)
     llvm::IRBuilder<> builder(context);
 
     std::map<std::string, llvm::Function *> func_map;
-    std::cout << module.getDataLayout().getTypeAllocSize(builder.getInt64Ty()) << std::endl;
 
     // CompileHighLevel c(module, builder, context);
     // compiles function body
     CompileHighLevel *compile_top = new CompileHighLevel(module, builder, context);
     node->Accept(compile_top);
-    std::cout << "compiled functions" << std::endl;
+    std::cout << "hazelc: compiled functions" << std::endl;
     // CompileStatement *compile_statement = new CompileStatement(module, builder, context, compile_top->compiler_context);
     // for (int i = 0; i < compile_top->functions.size(); i++)
     // {
