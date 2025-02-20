@@ -128,3 +128,28 @@ Thunks CompilerContext::get_thunk_types(llvm::IRBuilder<> &builder, llvm::LLVMCo
     thunk->setBody(elements);
     return {thunk, nullptr};
 }
+
+OptionalType CompilerContext::get_integer_type()
+{
+    return NativeTypes[TokenType::Integer];
+}
+
+OptionalType CompilerContext::get_float_type()
+{
+    return NativeTypes[TokenType::Decimal];
+}
+
+OptionalType CompilerContext::get_string_type()
+{
+    return NativeTypes[TokenType::string];
+}
+
+OptionalType CompilerContext::get_boolean_type()
+{
+    return NativeTypes[TokenType::boolean];
+}
+
+OptionalType CompilerContext::get_byte_type()
+{
+    return NativeTypes[TokenType::character];
+}

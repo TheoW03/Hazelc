@@ -67,6 +67,12 @@ public:
 
     OptionalType compile_Type_Optional(std::shared_ptr<Type> ty);
     Thunks get_thunk_types(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<FunctionRefNode> n);
+
+    OptionalType get_integer_type();
+    OptionalType get_float_type();
+    OptionalType get_string_type();
+    OptionalType get_boolean_type();
+    OptionalType get_byte_type();
 };
 #endif
 // llvm::Type *compileType(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<Type> ty, CompilerContext &ctx);

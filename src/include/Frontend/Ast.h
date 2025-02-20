@@ -175,7 +175,11 @@ public:
 #define EXPR_NODE_H
 class ExprNode : public ASTNode
 {
+private:
+    // std::shared_ptr<ASTNode> fold(std::shared_ptr<ASTNode> node);
+
 public:
+    // std::shared_ptr<ASTNode> fold();
     std::shared_ptr<ASTNode> lhs;
     std::shared_ptr<ASTNode> rhs;
     Tokens operation;
@@ -197,6 +201,7 @@ public:
     std::string to_string();
 };
 #endif
+
 #ifndef RETURN_H
 #define RETURN_H
 class Visitor;
