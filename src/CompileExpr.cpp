@@ -161,10 +161,20 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
     if (dynamic_cast<IntegerNode *>(node.get()))
     {
         auto c = dynamic_cast<IntegerNode *>(node.get());
-        return llvm::ConstantInt::get(llvm::Type::getInt64Ty(context), c->number);
+        auto get_int_type = compiler_context.get_integer_type();
+        llvm::Value *structPtr = builder.CreateAlloca(get_int_type.type);
+
+        auto destField0ptr = builder.CreateStructGEP(get_int_type.type, structPtr, 0, "IntStructptr0");
+        auto number = llvm::ConstantInt::get(llvm::Type::getInt64Ty(context), c->number);
+        builder.CreateStore(number, destField0ptr);
+        auto destField1ptr = builder.CreateStructGEP(get_int_type.type, structPtr, 1, "IntStructptr1");
+        auto isNone = llvm::ConstantInt::get(llvm::Type::getInt1Ty(context), 0);
+        builder.CreateStore(isNone, destField1ptr);
+        return structPtr;
     }
     else if (dynamic_cast<CharNode *>(node.get()))
     {
+
         auto c = dynamic_cast<CharNode *>(node.get());
 
         return llvm::ConstantInt::get(llvm::Type::getInt8Ty(context), c->value.value[0]);

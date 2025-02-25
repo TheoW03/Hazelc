@@ -72,3 +72,9 @@ OptionalType::OptionalType(llvm::LLVMContext &context, llvm::IRBuilder<> &builde
     std::vector<llvm::Type *> elements = {inner, builder.getInt1Ty()};
     this->type->setBody(elements);
 }
+
+llvm::Type *OptionalType::set_loaded_value(llvm::Value *value, llvm::IRBuilder<> &builder)
+{
+
+    return nullptr;
+}
