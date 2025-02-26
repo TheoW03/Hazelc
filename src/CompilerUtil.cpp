@@ -69,12 +69,18 @@ OptionalType::OptionalType(llvm::LLVMContext &context, llvm::IRBuilder<> &builde
 
 {
     this->type = llvm::StructType::create(context, "OptionalType");
+    this->inner = inner;
     std::vector<llvm::Type *> elements = {inner, builder.getInt1Ty()};
     this->type->setBody(elements);
 }
 
-llvm::Type *OptionalType::set_loaded_value(llvm::Value *value, llvm::IRBuilder<> &builder)
+llvm::Value *OptionalType::set_loaded_value(llvm::Value *value, llvm::IRBuilder<> &builder)
 {
-
-    return nullptr;
+    llvm::Value *structPtr = builder.CreateAlloca(this->type);
+    auto destField0ptr = builder.CreateStructGEP(this->type, structPtr, 0, "OptionalStructPtr0");
+    builder.CreateStore(value, destField0ptr);
+    auto destField1ptr = builder.CreateStructGEP(this->type, structPtr, 1, "OptionalStructPtr1");
+    auto isNone = llvm::ConstantInt::get(builder.getInt1Ty(), 0);
+    builder.CreateStore(isNone, destField1ptr);
+    return structPtr;
 }
