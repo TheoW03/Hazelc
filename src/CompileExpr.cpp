@@ -169,18 +169,25 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
     {
 
         auto c = dynamic_cast<CharNode *>(node.get());
+        auto char_type = compiler_context.get_byte_type();
+        auto value = llvm::ConstantInt::get(llvm::Type::getInt8Ty(context), c->value.value[0]);
 
-        return llvm::ConstantInt::get(llvm::Type::getInt8Ty(context), c->value.value[0]);
+        return char_type.set_loaded_value(value, builder);
+        // return llvm::ConstantInt::get(llvm::Type::getInt8Ty(context), c->value.value[0]);
     }
     else if (dynamic_cast<DecimalNode *>(node.get()))
     {
         auto c = dynamic_cast<DecimalNode *>(node.get());
-        return llvm::ConstantFP::get(context, llvm::APFloat(c->number));
+        auto float_type = compiler_context.get_float_type();
+        auto value = llvm::ConstantFP::get(context, llvm::APFloat(c->number));
+        return float_type.set_loaded_value(value, builder);
     }
     else if (dynamic_cast<BooleanConstNode *>(node.get()))
     {
         auto c = dynamic_cast<BooleanConstNode *>(node.get());
-        return llvm::ConstantInt::get(llvm::Type::getInt1Ty(context), c->value.type == TokenType::True ? 1 : 0);
+        auto bool_type = compiler_context.get_boolean_type();
+        auto value = llvm::ConstantInt::get(llvm::Type::getInt1Ty(context), c->value.type == TokenType::True ? 1 : 0);
+        return bool_type.set_loaded_value(value, builder);
     }
     else if (dynamic_cast<StringNode *>(node.get()))
     {
@@ -188,16 +195,11 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
 
         auto a = compiler_context.get_string_type(context, builder);
         llvm::Value *structPtr = builder.CreateAlloca(a);
-
         auto str = builder.CreateGlobalString(c->value.value);
         auto length = llvm::ConstantInt::get(llvm::Type::getInt64Ty(context), c->value.value.size() + 1);
-        return this->CompileStr(str, length, structPtr);
-        // auto Field0Ptr = builder.CreateStructGEP(a, structPtr, 0, "field0Ptr");
-        // builder.CreateStore(str, Field0Ptr);
-        // auto Field1Ptr = builder.CreateStructGEP(a, structPtr, 1, "field1Ptr");
-        // builder.CreateStore(llvm::ConstantInt::get(llvm::Type::getInt64Ty(context), c->value.value.size() + 1), Field1Ptr);
-        // return structPtr;
-        // return builder.CreateLoad(a, structPtr);
+        auto str_optional_type = compiler_context.get_string_type();
+        auto value = this->CompileStr(str, length, structPtr);
+        return str_optional_type.set_loaded_value(value, builder);
     }
     else if (dynamic_cast<ExprNode *>(node.get()))
     {
