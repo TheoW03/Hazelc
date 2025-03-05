@@ -15,6 +15,8 @@ public:
     OptionalType();
     OptionalType(llvm::LLVMContext &context, llvm::IRBuilder<> &builder, llvm::Type *inner);
     llvm::Value *set_loaded_value(llvm::Value *value, llvm::IRBuilder<> &builder);
+    llvm::Value *get_value(llvm::IRBuilder<> &builder);
+    llvm::Value *get_none(llvm::IRBuilder<> &builder);
 };
 #endif
 #ifndef TYPE_OF_EXPR_H

@@ -141,6 +141,7 @@ OptionalType CompilerContext::get_float_type()
 
 OptionalType CompilerContext::get_string_type()
 {
+
     return NativeTypes[TokenType::string];
 }
 

@@ -84,3 +84,13 @@ llvm::Value *OptionalType::set_loaded_value(llvm::Value *value, llvm::IRBuilder<
     builder.CreateStore(isNone, destField1ptr);
     return structPtr;
 }
+
+llvm::Value *OptionalType::get_value(llvm::IRBuilder<> &builder)
+{
+    return nullptr;
+}
+
+llvm::Value *OptionalType::get_none(llvm::IRBuilder<> &builder)
+{
+    return nullptr;
+}
