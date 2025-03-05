@@ -1,8 +1,14 @@
 #include <visitor.h>
 #include <backend/CompilerUtil.h>
 
-CompileExpr::CompileExpr(llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context, CompilerContext &compiler_context) : module(module), builder(builder), context(context), compiler_context(compiler_context)
+CompileExpr::CompileExpr(llvm::Module &module,
+                         llvm::IRBuilder<> &builder,
+                         llvm::LLVMContext &context,
+                         CompilerContext compiler_context) : module(module),
+                                                             builder(builder),
+                                                             context(context)
 {
+    this->compiler_context = compiler_context;
     // this->func_map = func_map;
 }
 llvm::Value *CompileExpr::CompileStr(llvm::Value *str, llvm::Value *length, llvm::Value *structure)
@@ -16,11 +22,14 @@ llvm::Value *CompileExpr::CompileStr(llvm::Value *str, llvm::Value *length, llvm
     builder.CreateStore(length, destField1ptr);
     return structure;
 }
+
 llvm::Value *CompileExpr::IntMathExpression(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
 {
+
     switch (op.type)
     {
     case Addition:
+
         return builder.CreateAdd(lhs, rhs, "addition");
     case Multiplication:
         return builder.CreateMul(lhs, rhs, "addition");
@@ -44,7 +53,35 @@ llvm::Value *CompileExpr::IntMathExpression(llvm::Value *lhs, Tokens op, llvm::V
     }
     return nullptr;
 }
+llvm::Value *CompileExpr::IntegerMath(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
+{
+    auto integer_type = compiler_context.get_integer_type();
+    auto lhs_val = builder.CreateLoad(builder.getInt64Ty(), builder.CreateStructGEP(integer_type.type, lhs, 0, "int_lhs"));
+    auto rhs_val = builder.CreateLoad(builder.getInt64Ty(), builder.CreateStructGEP(integer_type.type, rhs, 0, "int_rhs"));
+    auto math = IntMathExpression(lhs_val, op, rhs_val);
+    return integer_type.set_loaded_value(math, builder);
+}
+llvm::Value *CompileExpr::FloatMath(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
+{
 
+    auto float_type = compiler_context.get_float_type();
+    auto lhs_val = builder.CreateLoad(builder.getDoubleTy(), builder.CreateStructGEP(float_type.type, lhs, 0, "int_lhs"));
+    auto rhs_val = builder.CreateLoad(builder.getDoubleTy(), builder.CreateStructGEP(float_type.type, rhs, 0, "int_rhs"));
+    auto math = FloatMathExpression(lhs_val, op, rhs_val);
+    return float_type.set_loaded_value(math, builder);
+}
+llvm::Value *CompileExpr::StringMath(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
+{
+
+    auto string_type = compiler_context.get_string_type();
+    auto inner = compiler_context.get_string_type(context, builder);
+
+    auto lhs_val = builder.CreateLoad(inner, builder.CreateStructGEP(string_type.type, lhs, 0, "int_lhs"));
+    auto rhs_val = builder.CreateLoad(inner, builder.CreateStructGEP(string_type.type, rhs, 0, "int_rhs"));
+    auto math = StringMathExpr(lhs_val, op, rhs_val);
+    // return string_type.set_loaded_value(math, builder);
+    return lhs;
+}
 llvm::Value *CompileExpr::FloatMathExpression(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
 {
     switch (op.type)
@@ -88,6 +125,7 @@ llvm::Value *CompileExpr::BoolIntMathExpr(llvm::Value *lhs, Tokens op, llvm::Val
 
 llvm::Value *CompileExpr::BoolFloatMathExpr(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
 {
+
     switch (op.type)
     {
     case EQ:
@@ -103,7 +141,7 @@ llvm::Value *CompileExpr::BoolFloatMathExpr(llvm::Value *lhs, Tokens op, llvm::V
     case NE:
         return builder.CreateFCmp(llvm::CmpInst::FCMP_ONE, lhs, rhs, "NE");
     default:
-        std::cout << "semantic anaylsis bug perhaps in boolean \"" << op.value << "\"" << std::endl;
+        std::cout << "hazelc: semantic analysis bug perhaps in boolean \"" << op.value << "\"" << std::endl;
         exit(EXIT_FAILURE);
     }
 }
@@ -139,7 +177,7 @@ llvm::Value *CompileExpr::StringMathExpr(llvm::Value *lhs, Tokens op, llvm::Valu
     }
     default:
     {
-        std::cout << "semantic anaylsis bug perhaps in string operators \"" << op.value << "\"" << std::endl;
+        std::cout << "hazelc: semantic analysis bug perhaps in string operators \"" << op.value << "\"" << std::endl;
         exit(EXIT_FAILURE);
     }
     }
@@ -155,23 +193,36 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
     if (dynamic_cast<IntegerNode *>(node.get()))
     {
         auto c = dynamic_cast<IntegerNode *>(node.get());
-        return llvm::ConstantInt::get(llvm::Type::getInt64Ty(context), c->number);
+        auto get_int_type = compiler_context.get_integer_type();
+        auto number = llvm::ConstantInt::get(llvm::Type::getInt64Ty(context), c->number);
+
+        // llvm::Value *Undef = llvm::UndefValue::get(llvm::Type::getInt32Ty(context));
+        // builder.CreateFreeze(Undef);
+        // return Undef;
+        return get_int_type.set_loaded_value(number, builder);
     }
     else if (dynamic_cast<CharNode *>(node.get()))
     {
-        auto c = dynamic_cast<CharNode *>(node.get());
 
-        return llvm::ConstantInt::get(llvm::Type::getInt8Ty(context), c->value.value[0]);
+        auto c = dynamic_cast<CharNode *>(node.get());
+        auto char_type = compiler_context.get_byte_type();
+        auto value = llvm::ConstantInt::get(llvm::Type::getInt8Ty(context), c->value.value[0]);
+
+        return char_type.set_loaded_value(value, builder);
     }
     else if (dynamic_cast<DecimalNode *>(node.get()))
     {
         auto c = dynamic_cast<DecimalNode *>(node.get());
-        return llvm::ConstantFP::get(context, llvm::APFloat(c->number));
+        auto float_type = compiler_context.get_float_type();
+        auto value = llvm::ConstantFP::get(context, llvm::APFloat(c->number));
+        return float_type.set_loaded_value(value, builder);
     }
     else if (dynamic_cast<BooleanConstNode *>(node.get()))
     {
         auto c = dynamic_cast<BooleanConstNode *>(node.get());
-        return llvm::ConstantInt::get(llvm::Type::getInt1Ty(context), c->value.type == TokenType::True ? 1 : 0);
+        auto bool_type = compiler_context.get_boolean_type();
+        auto value = llvm::ConstantInt::get(llvm::Type::getInt1Ty(context), c->value.type == TokenType::True ? 1 : 0);
+        return bool_type.set_loaded_value(value, builder);
     }
     else if (dynamic_cast<StringNode *>(node.get()))
     {
@@ -179,16 +230,12 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
 
         auto a = compiler_context.get_string_type(context, builder);
         llvm::Value *structPtr = builder.CreateAlloca(a);
-
         auto str = builder.CreateGlobalString(c->value.value);
         auto length = llvm::ConstantInt::get(llvm::Type::getInt64Ty(context), c->value.value.size() + 1);
-        return this->CompileStr(str, length, structPtr);
-        // auto Field0Ptr = builder.CreateStructGEP(a, structPtr, 0, "field0Ptr");
-        // builder.CreateStore(str, Field0Ptr);
-        // auto Field1Ptr = builder.CreateStructGEP(a, structPtr, 1, "field1Ptr");
-        // builder.CreateStore(llvm::ConstantInt::get(llvm::Type::getInt64Ty(context), c->value.value.size() + 1), Field1Ptr);
-        // return structPtr;
-        // return builder.CreateLoad(a, structPtr);
+        auto str_optional_type = compiler_context.get_string_type();
+        auto value = this->CompileStr(str, length, structPtr);
+
+        return str_optional_type.set_loaded_value(value, builder);
     }
     else if (dynamic_cast<ExprNode *>(node.get()))
     {
@@ -200,11 +247,11 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         switch (get_type)
         {
         case Integer_Type:
-            return IntMathExpression(lhs, c->operation, rhs);
+            return IntegerMath(lhs, c->operation, rhs);
         case Float_Type:
-            return IntMathExpression(lhs, c->operation, rhs);
+            return FloatMath(lhs, c->operation, rhs);
         case String_Type:
-            return StringMathExpr(lhs, c->operation, rhs);
+            return StringMath(lhs, c->operation, rhs);
         default:
             break;
         }

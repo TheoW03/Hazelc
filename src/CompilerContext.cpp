@@ -2,35 +2,31 @@
 #include "llvm/IR/Module.h"
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/LLVMContext.h"
+
+CompilerContext::CompilerContext()
+{
+    /* here to make the compiler stop bitching */
+}
+
+CompilerContext::CompilerContext(std::map<std::string, llvm::Function *> CFunctions, std::map<TokenType, OptionalType> NativeTypes)
+{
+
+    this->CFunctions = CFunctions;
+    this->NativeTypes = NativeTypes;
+
+    this->string_type = nullptr;
+}
+
 Function CompilerContext::get_function(Tokens name)
 {
     return func_map[name.value];
 }
+
 void CompilerContext::add_function(Tokens name, Function f)
 {
     this->func_map.insert(std::make_pair(name.value, f));
 }
-void CompilerContext::compile_cfunctions(llvm::Module &module, llvm::LLVMContext &context, llvm::IRBuilder<> &builder)
-{
-    auto snprintftype = llvm::FunctionType::get(builder.getInt32Ty(), {builder.getInt8PtrTy(), builder.getInt64Ty(), builder.getInt8PtrTy()}, true);
-    auto snprintffunc = llvm::Function::Create(
-        snprintftype, llvm::Function::ExternalLinkage, "snprintf", module);
-    this->CFunctions.insert(std::make_pair("snprintf", snprintffunc));
-    auto printftype = llvm::FunctionType::get(builder.getInt32Ty(), {builder.getInt8PtrTy()}, true);
-    auto printf_func = llvm::Function::Create(
-        printftype, llvm::Function::ExternalLinkage, "printf", module);
-    this->CFunctions.insert(std::make_pair("printf", printf_func));
 
-    auto strncpy_type = llvm::FunctionType::get(builder.getInt32Ty(), {builder.getInt8PtrTy(), builder.getInt8PtrTy(), builder.getInt64Ty()}, false);
-    auto strncpy_func = llvm::Function::Create(
-        strncpy_type, llvm::Function::ExternalLinkage, "strncpy", module);
-    this->CFunctions.insert(std::make_pair("strncpy", strncpy_func));
-
-    // this->CFunctions["snprintf"] = snprintf;
-
-    // llvm::Function *function = llvm::Function::Create( builder.getInt64Ty().
-    // functype, llvm::Function::ExternalLinkage, n->FunctionName.value, module);
-}
 llvm::StructType *CompilerContext::get_string_type(llvm::LLVMContext &context, llvm::IRBuilder<> &builder)
 {
     if (this->string_type == nullptr)
@@ -85,7 +81,6 @@ llvm::Type *CompilerContext::compile_Type(llvm::IRBuilder<> &builder, llvm::LLVM
         {
             if (this->lists[i]->getElementType(0) == c)
             {
-                std::cout << "aaa" << std::endl;
                 return llvm::PointerType::getUnqual(this->lists[i]);
             }
         }
@@ -109,19 +104,54 @@ llvm::FunctionType *CompilerContext::compile_Function_Type(llvm::IRBuilder<> &bu
         a.push_back(get_thunk_types(builder, context, n->params[i]).thunk_type);
     }
     llvm::FunctionType *functype = llvm::FunctionType::get(
-        compile_Type(builder, context, c), a, false);
+        compile_Type_Optional(c).type, a, false);
     return functype;
 }
-
+OptionalType CompilerContext::compile_Type_Optional(std::shared_ptr<Type> ty)
+{
+    if (dynamic_cast<NativeType *>(ty.get()))
+    {
+        auto p = dynamic_cast<NativeType *>(ty.get());
+        return NativeTypes[p->type.type];
+    }
+    exit(EXIT_FAILURE);
+}
 Thunks CompilerContext::get_thunk_types(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<FunctionRefNode> n)
+
 {
 
     // std::vector<Thunks> thunks;
     // this->string_type = llvm::StructType::create(context, "Thunk");
     auto thunk = llvm::StructType::create(context, "Thunk");
     auto funct = compile_Function_Type(builder, context, n);
-    std::vector<llvm::Type *> elements = {compile_Type(builder, context, n->RetType), llvm::PointerType::getUnqual(funct), builder.getInt1Ty()};
+    std::vector<llvm::Type *> elements = {compile_Type_Optional(n->RetType).type, llvm::PointerType::getUnqual(funct), builder.getInt1Ty()};
     // this->string_type->setBody(elements);
     thunk->setBody(elements);
     return {thunk, nullptr};
+}
+
+OptionalType CompilerContext::get_integer_type()
+{
+    return NativeTypes[TokenType::Integer];
+}
+
+OptionalType CompilerContext::get_float_type()
+{
+    return NativeTypes[TokenType::Decimal];
+}
+
+OptionalType CompilerContext::get_string_type()
+{
+
+    return NativeTypes[TokenType::string];
+}
+
+OptionalType CompilerContext::get_boolean_type()
+{
+    return NativeTypes[TokenType::boolean];
+}
+
+OptionalType CompilerContext::get_byte_type()
+{
+    return NativeTypes[TokenType::character];
 }

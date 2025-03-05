@@ -26,19 +26,19 @@ void InitCompiler(Output output, std::shared_ptr<ProgramNode> node)
     llvm::IRBuilder<> builder(context);
 
     std::map<std::string, llvm::Function *> func_map;
-    std::cout << module.getDataLayout().getTypeAllocSize(builder.getInt64Ty()) << std::endl;
 
     // CompileHighLevel c(module, builder, context);
     // compiles function body
     CompileHighLevel *compile_top = new CompileHighLevel(module, builder, context);
     node->Accept(compile_top);
+    std::cout << "hazelc: compiled functions" << std::endl;
     CompileStatement *compile_statement = new CompileStatement(module, builder, context, compile_top->compiler_context);
     for (int i = 0; i < compile_top->functions.size(); i++)
     {
         compile_top->functions[i]->Accept(compile_statement);
     }
     delete compile_top;
-    delete compile_statement;
+    // delete compile_statement;
 
     // Initialize the target registry etc.llvm::InitializeAllTargets();
 
@@ -111,7 +111,6 @@ void InitCompiler(Output output, std::shared_ptr<ProgramNode> node)
                 llvm::errs() << "Could not open file: " << EC.message();
                 return;
             }
-            uint64_t c = 1 | 2;
             auto FileType = llvm::CodeGenFileType::CGFT_AssemblyFile;
 
             if (TargetMachine->addPassesToEmitFile(pass, dest, nullptr, FileType))

@@ -52,15 +52,16 @@ void SemanticAnalysisTopLevel::Visit(ProgramNode *node)
         current_module->Accept(this);
         this->modules.push_back(current_AST_module);
     }
-    for (int i = 0; i < this->modules.size(); i++)
-    {
-        for (const auto &[key, current_module] : this->modules[i].functions)
-        {
-            std::cout << "local: " << key << std::endl;
-        }
-        for (const auto &[key, current_module] : this->modules[i].exported_functions)
-        {
-            std::cout << "export: " << key << std::endl;
-        }
-    }
+    // DEBUG
+    // for (int i = 0; i < this->modules.size(); i++)
+    // {
+    //     for (const auto &[key, current_module] : this->modules[i].functions)
+    //     {
+    //         std::cout << "local: " << key << std::endl;
+    //     }
+    //     for (const auto &[key, current_module] : this->modules[i].exported_functions)
+    //     {
+    //         std::cout << "export: " << key << std::endl;
+    //     }
+    // }
 }

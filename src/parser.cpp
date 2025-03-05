@@ -360,6 +360,5 @@ std::shared_ptr<ProgramNode> parse_node(std::vector<Tokens> &tokens)
             modules.insert(std::make_pair(m->name.value, m));
         }
     }
-    std::cout << modules.size() << std::endl;
     return std::make_shared<ProgramNode>(modules);
 }

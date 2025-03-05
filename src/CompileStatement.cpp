@@ -1,8 +1,10 @@
 #include <visitor.h>
 #include <backend/CompilerUtil.h>
 
-CompileStatement::CompileStatement(llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context, CompilerContext &compiler_context) : module(module), builder(builder), context(context), compiler_context(compiler_context)
+CompileStatement::CompileStatement(llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context,
+                                   CompilerContext compiler_context) : module(module), builder(builder), context(context)
 {
+    this->compiler_context = compiler_context;
 }
 
 void CompileStatement::Visit(ASTNode *node)

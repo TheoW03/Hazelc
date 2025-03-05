@@ -71,5 +71,7 @@
         "any": "cpp",
         "stdlib.h": "c",
         "filesystem": "cpp"
-    }
+    },
+    "editor.fontFamily": "'Droid Sans Mono', 'monospace', monospace",
+    "editor.fontLigatures": false
 }
