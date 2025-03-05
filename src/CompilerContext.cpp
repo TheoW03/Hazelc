@@ -13,6 +13,7 @@ CompilerContext::CompilerContext(std::map<std::string, llvm::Function *> CFuncti
 
     this->CFunctions = CFunctions;
     this->NativeTypes = NativeTypes;
+
     this->string_type = nullptr;
 }
 

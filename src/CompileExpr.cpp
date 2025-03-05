@@ -61,6 +61,27 @@ llvm::Value *CompileExpr::IntegerMath(llvm::Value *lhs, Tokens op, llvm::Value *
     auto math = IntMathExpression(lhs_val, op, rhs_val);
     return integer_type.set_loaded_value(math, builder);
 }
+llvm::Value *CompileExpr::FloatMath(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
+{
+
+    auto float_type = compiler_context.get_float_type();
+    auto lhs_val = builder.CreateLoad(builder.getDoubleTy(), builder.CreateStructGEP(float_type.type, lhs, 0, "int_lhs"));
+    auto rhs_val = builder.CreateLoad(builder.getDoubleTy(), builder.CreateStructGEP(float_type.type, rhs, 0, "int_rhs"));
+    auto math = FloatMathExpression(lhs_val, op, rhs_val);
+    return float_type.set_loaded_value(math, builder);
+}
+llvm::Value *CompileExpr::StringMath(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
+{
+
+    auto string_type = compiler_context.get_string_type();
+    auto inner = compiler_context.get_string_type(context, builder);
+
+    auto lhs_val = builder.CreateLoad(inner, builder.CreateStructGEP(string_type.type, lhs, 0, "int_lhs"));
+    auto rhs_val = builder.CreateLoad(inner, builder.CreateStructGEP(string_type.type, rhs, 0, "int_rhs"));
+    auto math = StringMathExpr(lhs_val, op, rhs_val);
+    // return string_type.set_loaded_value(math, builder);
+    return lhs;
+}
 llvm::Value *CompileExpr::FloatMathExpression(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
 {
     switch (op.type)
@@ -228,9 +249,9 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         case Integer_Type:
             return IntegerMath(lhs, c->operation, rhs);
         case Float_Type:
-            return IntMathExpression(lhs, c->operation, rhs);
+            return FloatMath(lhs, c->operation, rhs);
         case String_Type:
-            return StringMathExpr(lhs, c->operation, rhs);
+            return StringMath(lhs, c->operation, rhs);
         default:
             break;
         }

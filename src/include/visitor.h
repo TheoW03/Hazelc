@@ -156,6 +156,8 @@ class CompileExpr
 private:
     llvm::Value *CompileStr(llvm::Value *str, llvm::Value *length, llvm::Value *structure);
     llvm::Value *IntegerMath(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
+    llvm::Value *FloatMath(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
+    llvm::Value *StringMath(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
 
 public:
     llvm::Module &module;
