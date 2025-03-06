@@ -1,6 +1,6 @@
 # Hazel
 
-![](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+![](https://img.shields.io/badge/License-GPLv3-blue.svg)
 ![](https://tokei.rs/b1/github/TheoW03/hazel)
 
 hazel is a declartive functional paradigm programming langauge. its syntax and name is inpsired by haskell.
