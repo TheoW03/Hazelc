@@ -94,6 +94,26 @@ llvm::Value *CompileExpr::StringMath(llvm::Value *lhs, Tokens op, llvm::Value *r
 
     return string_type.set_loaded_value(math, builder);
 }
+llvm::Value *CompileExpr::IntegerBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
+{
+    auto integer_type = compiler_context.get_integer_type();
+    auto BoolType = compiler_context.get_boolean_type();
+    auto lhs_val = builder.CreateLoad(builder.getInt64Ty(), builder.CreateStructGEP(integer_type.type, lhs, 0, "int_lhs"));
+    auto rhs_val = builder.CreateLoad(builder.getInt64Ty(), builder.CreateStructGEP(integer_type.type, rhs, 0, "int_rhs"));
+    auto math = BoolIntMathExpr(lhs_val, op, rhs_val);
+    return BoolType.set_loaded_value(math, builder);
+}
+
+llvm::Value *CompileExpr::FloatBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
+{
+
+    auto float_type = compiler_context.get_float_type();
+    auto BoolType = compiler_context.get_boolean_type();
+    auto lhs_val = builder.CreateLoad(builder.getInt64Ty(), builder.CreateStructGEP(float_type.type, lhs, 0, "int_lhs"));
+    auto rhs_val = builder.CreateLoad(builder.getInt64Ty(), builder.CreateStructGEP(float_type.type, rhs, 0, "int_rhs"));
+    auto math = BoolFloatMathExpr(lhs_val, op, rhs_val);
+    return BoolType.set_loaded_value(math, builder);
+}
 llvm::Value *CompileExpr::FloatMathExpression(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
 {
     switch (op.type)
@@ -281,9 +301,9 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         switch (get_type)
         {
         case Integer_Type:
-            return BoolIntMathExpr(lhs, c->op, rhs);
+            return IntegerBool(lhs, c->op, rhs);
         case Float_Type:
-            return BoolFloatMathExpr(lhs, c->op, rhs);
+            return FloatBool(lhs, c->op, rhs);
         default:
             break;
         }
