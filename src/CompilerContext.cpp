@@ -8,13 +8,14 @@ CompilerContext::CompilerContext()
     /* here to make the compiler stop bitching */
 }
 
-CompilerContext::CompilerContext(std::map<std::string, llvm::Function *> CFunctions, std::map<TokenType, OptionalType> NativeTypes)
+CompilerContext::CompilerContext(std::map<std::string, llvm::Function *> CFunctions,
+                                 std::map<TokenType, OptionalType> NativeTypes, llvm::StructType *str_type)
 {
 
     this->CFunctions = CFunctions;
     this->NativeTypes = NativeTypes;
 
-    this->string_type = nullptr;
+    this->string_type = str_type;
 }
 
 Function CompilerContext::get_function(Tokens name)
@@ -29,15 +30,15 @@ void CompilerContext::add_function(Tokens name, Function f)
 
 llvm::StructType *CompilerContext::get_string_type(llvm::LLVMContext &context, llvm::IRBuilder<> &builder)
 {
-    if (this->string_type == nullptr)
-    {
+    // if (this->string_type == nullptr)
+    // {
 
-        this->string_type = llvm::StructType::create(context, "string");
-        std::vector<llvm::Type *> elements = {builder.getInt8PtrTy(), builder.getInt64Ty()};
-        this->string_type->setBody(elements);
+    //     this->string_type = llvm::StructType::create(context, "string");
+    //     std::vector<llvm::Type *> elements = {builder.getInt8PtrTy(), builder.getInt64Ty()};
+    //     this->string_type->setBody(elements);
 
-        // uint64_t StructSize = DL.getTypeAllocSize(MyStruct);
-    }
+    //     // uint64_t StructSize = DL.getTypeAllocSize(MyStruct);
+    // }
     return string_type;
 }
 llvm::Type *CompilerContext::compile_Type(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<Type> ty)

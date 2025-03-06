@@ -36,7 +36,7 @@ CompileHighLevel::CompileHighLevel(llvm::Module &module, llvm::IRBuilder<> &buil
     NativeTypes.insert(std::make_pair(TokenType::Ubyte, OptionalType(context, builder, builder.getInt8Ty())));
 
     NativeTypes.insert(std::make_pair(TokenType::string, OptionalType(context, builder, string_type)));
-    this->compiler_context = CompilerContext(CFunctions, NativeTypes);
+    this->compiler_context = CompilerContext(CFunctions, NativeTypes, string_type);
 
     // this->compiler_context.compile_cfunctions(module, context, builder);
 }

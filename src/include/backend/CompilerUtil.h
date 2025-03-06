@@ -61,7 +61,9 @@ public:
     std::vector<llvm::StructType *> lists;
     llvm::StructType *string_type;
     CompilerContext();
-    CompilerContext(std::map<std::string, llvm::Function *> CFunctions, std::map<TokenType, OptionalType> NativeTypes);
+    CompilerContext(std::map<std::string, llvm::Function *> CFunctions,
+                    std::map<TokenType, OptionalType> NativeTypes,
+                    llvm::StructType *str_type);
     Function get_function(Tokens name);
     void add_function(Tokens name, Function f);
     // void compile_cfunctions(llvm::Module &module, llvm::LLVMContext &context, llvm::IRBuilder<> &builder);

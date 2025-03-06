@@ -79,8 +79,8 @@ llvm::Value *CompileExpr::StringMath(llvm::Value *lhs, Tokens op, llvm::Value *r
     auto lhs_val = builder.CreateLoad(inner, builder.CreateStructGEP(string_type.type, lhs, 0, "int_lhs"));
     auto rhs_val = builder.CreateLoad(inner, builder.CreateStructGEP(string_type.type, rhs, 0, "int_rhs"));
     auto math = StringMathExpr(lhs_val, op, rhs_val);
-    // return string_type.set_loaded_value(math, builder);
-    return lhs;
+    return string_type.set_loaded_value(math, builder);
+    // return lhs;
 }
 llvm::Value *CompileExpr::FloatMathExpression(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
 {
