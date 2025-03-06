@@ -78,10 +78,12 @@ llvm::Value *OptionalType::set_loaded_value(llvm::Value *value, llvm::IRBuilder<
 {
     llvm::Value *structPtr = builder.CreateAlloca(this->type);
     auto destField0ptr = builder.CreateStructGEP(this->type, structPtr, 0, "OptionalStructPtr0");
+
     builder.CreateStore(value, destField0ptr);
     auto destField1ptr = builder.CreateStructGEP(this->type, structPtr, 1, "OptionalStructPtr1");
     auto isNone = llvm::ConstantInt::get(builder.getInt1Ty(), 0);
     builder.CreateStore(isNone, destField1ptr);
+    // structPtr->dump();
     return structPtr;
 }
 
