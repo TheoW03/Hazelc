@@ -184,6 +184,7 @@ public:
     std::shared_ptr<ASTNode> rhs;
     Tokens operation;
     ExprNode(std::shared_ptr<ASTNode> lhs, Tokens operation, std::shared_ptr<ASTNode> rhs);
+    std::shared_ptr<ASTNode> fold();
     void Accept(Visitor *v);
     std::string to_string();
 };

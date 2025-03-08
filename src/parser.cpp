@@ -161,7 +161,7 @@ std::optional<std::shared_ptr<ASTNode>> term(std::vector<Tokens> &tokens)
 std::optional<std::shared_ptr<ASTNode>> expression(std::vector<Tokens> &tokens)
 {
     auto lhs = term(tokens);
-    auto expression_tokens = {TokenType::Addition, TokenType::Subtraction};
+    auto expression_tokens = {TokenType::Addition, TokenType::Subtraction, TokenType::Concation};
     auto op = match_and_remove(expression_tokens, tokens);
     while (op.has_value())
     {

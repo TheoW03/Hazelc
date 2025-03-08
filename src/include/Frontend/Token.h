@@ -55,7 +55,8 @@ enum TokenType
     Generics,
     String_Lit,
     Char_Lit,
-    Export
+    Export,
+    Concation
 
 };
 #endif

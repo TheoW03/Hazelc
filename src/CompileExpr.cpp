@@ -183,7 +183,7 @@ llvm::Value *CompileExpr::StringMathExpr(llvm::Value *lhs, Tokens op, llvm::Valu
 
     switch (op.type)
     {
-    case Addition:
+    case Concation:
     {
         auto fmt = builder.CreateGlobalString("%s%s");
         auto snprinft = compiler_context.CFunctions["snprintf"];

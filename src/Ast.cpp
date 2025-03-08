@@ -35,6 +35,11 @@ ExprNode::ExprNode(std::shared_ptr<ASTNode> lhs, Tokens operation, std::shared_p
     this->rhs = rhs;
     this->operation = operation;
 }
+
+std::shared_ptr<ASTNode> ExprNode::fold()
+{
+    return std::shared_ptr<ASTNode>();
+}
 void ExprNode::Accept(Visitor *v)
 {
 }

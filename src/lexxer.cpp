@@ -111,6 +111,7 @@ std::map<std::string, TokenType> get_keyword_map()
     token_map["*"] = TokenType::Multiplication;
     token_map["/"] = TokenType::Division;
     token_map["%"] = TokenType::Modulas;
+    token_map["++"] = TokenType::Concation;
 
     token_map[">>"] = TokenType::Right_Shift;
     token_map["<<"] = TokenType::Left_Shift;
@@ -162,6 +163,7 @@ std::map<std::string, TokenType> get_keyword_map()
     token_map[".."] = TokenType::Range;
     token_map["Type"] = TokenType::Generics;
     token_map["export"] = TokenType::Export;
+
     return token_map;
 }
 void is_token(Lexxer_Context &ctx)
@@ -186,7 +188,10 @@ void is_token(Lexxer_Context &ctx)
 
 void is_operand(Lexxer_Context &ctx, char value)
 {
-
+    if (value == '+' && ctx.buffer == "+")
+    {
+        ctx.buffer += value;
+    }
     is_token(ctx);
     ctx.buffer += value;
     if (value != '(')
