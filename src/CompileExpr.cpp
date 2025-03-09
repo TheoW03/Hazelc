@@ -272,13 +272,31 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
 
         return str_optional_type.set_loaded_value(value, builder);
     }
+    else if (dynamic_cast<FunctionCallNode *>(node.get()))
+    {
+        auto c = dynamic_cast<FunctionCallNode *>(node.get());
+        auto fu = compiler_context.get_function(c->name);
+        auto function_call = builder.CreateCall(compiler_context.get_function(c->name).function, {});
+
+        // TODO: refactor compiler context to have a method that does this for us
+        if (dynamic_cast<NativeType *>(fu.ret_type.get()))
+        {
+            auto p = dynamic_cast<NativeType *>(fu.ret_type.get());
+
+            if (p->type.type == TokenType::Integer)
+            {
+                auto op_type = compiler_context.get_integer_type();
+                return op_type.set_loaded_value(function_call, builder);
+            }
+        }
+    }
     else if (dynamic_cast<ExprNode *>(node.get()))
     {
         auto c = dynamic_cast<ExprNode *>(node.get());
 
         auto lhs = Expression(c->lhs);
         auto rhs = Expression(c->rhs);
-        auto get_type = get_expr_type(node);
+        auto get_type = get_expr_type(node, compiler_context);
         switch (get_type)
         {
         case Integer_Type:
@@ -297,7 +315,7 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
 
         auto lhs = Expression(c->lhs);
         auto rhs = Expression(c->rhs);
-        auto get_type = get_bool_expr_type(node);
+        auto get_type = get_bool_expr_type(node, compiler_context);
         switch (get_type)
         {
         case Integer_Type:

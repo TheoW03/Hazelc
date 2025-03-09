@@ -16,8 +16,8 @@
 #include "llvm/Support/Host.h"
 #include <fstream>
 #include "llvm/IR/LLVMContext.h"
-
 #include <cli.h>
+
 void InitCompiler(Output output, std::shared_ptr<ProgramNode> node)
 {
     llvm::LLVMContext context;

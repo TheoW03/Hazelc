@@ -71,6 +71,12 @@ std::optional<std::shared_ptr<ASTNode>> parse_list(std::vector<Tokens> &tokens)
     }
     return std::make_shared<ListNode>(values);
 }
+std::optional<std::shared_ptr<ASTNode>> parse_function_call(std::vector<Tokens> &tokens)
+{
+    auto name = match_and_remove(TokenType::Identifier, tokens);
+    std::vector<std::shared_ptr<ASTNode>> params;
+    return std::make_shared<FunctionCallNode>(name.value(), params);
+}
 
 std::optional<std::shared_ptr<ASTNode>> factor(std::vector<Tokens> &tokens)
 {
@@ -106,6 +112,10 @@ std::optional<std::shared_ptr<ASTNode>> factor(std::vector<Tokens> &tokens)
     else if (match_and_remove(TokenType::Char_Lit, tokens).has_value())
     {
         return std::make_shared<CharNode>(current.value());
+    }
+    else if (look_ahead(TokenType::Identifier, tokens))
+    {
+        return parse_function_call(tokens);
     }
     else if (look_ahead(TokenType::Open_Parenthesis, tokens))
     {
@@ -292,12 +302,6 @@ std::optional<std::shared_ptr<ASTNode>> parse_return(std::vector<Tokens> &tokens
 {
     match_and_remove(TokenType::Return, tokens);
     return std::make_shared<ReturnNode>(expr_parse(tokens).value());
-}
-std::optional<std::shared_ptr<ASTNode>> parse_function_call(std::vector<Tokens> &tokens)
-{
-    auto name = match_and_remove(TokenType::Identifier, tokens);
-    std::vector<std::shared_ptr<ASTNode>> params;
-    return std::make_shared<FunctionCallNode>(name.value(), params);
 }
 
 std::optional<std::shared_ptr<ASTNode>> parse_stmnts(std::vector<Tokens> &tokens)

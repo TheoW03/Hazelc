@@ -5,7 +5,7 @@
 #include <memory>
 #include <backend/CompilerUtil.h>
 
-TypeOfExpr get_bool_expr_type(std::shared_ptr<ASTNode> n)
+TypeOfExpr get_bool_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx)
 {
     auto c = dynamic_cast<BooleanExprNode *>(n.get());
     if (dynamic_cast<IntegerNode *>(c->lhs.get()) && dynamic_cast<IntegerNode *>(c->rhs.get()))
@@ -15,13 +15,13 @@ TypeOfExpr get_bool_expr_type(std::shared_ptr<ASTNode> n)
     else if (dynamic_cast<BooleanConstNode *>(c->lhs.get()) && dynamic_cast<BooleanConstNode *>(c->rhs.get()))
         return TypeOfExpr::Integer_Type;
     if (dynamic_cast<BooleanExprNode *>(c->lhs.get()))
-        return get_bool_expr_type(c->lhs);
+        return get_bool_expr_type(c->lhs, ctx);
     if (dynamic_cast<BooleanExprNode *>(c->rhs.get()))
-        return get_bool_expr_type(c->rhs);
+        return get_bool_expr_type(c->rhs, ctx);
     if (dynamic_cast<BooleanExprNode *>(c->rhs.get()))
-        return get_bool_expr_type(c->rhs);
+        return get_bool_expr_type(c->rhs, ctx);
 }
-TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n)
+TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx)
 {
     auto c = dynamic_cast<ExprNode *>(n.get());
     if (dynamic_cast<IntegerNode *>(c->lhs.get()) && dynamic_cast<IntegerNode *>(c->rhs.get()))
@@ -32,14 +32,38 @@ TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n)
         return TypeOfExpr::Integer_Type;
     else if (dynamic_cast<StringNode *>(c->lhs.get()) && dynamic_cast<StringNode *>(c->rhs.get()))
         return TypeOfExpr::String_Type;
+    else if (dynamic_cast<FunctionCallNode *>(c->lhs.get()))
+    {
+        auto d = dynamic_cast<FunctionCallNode *>(c->lhs.get());
+        auto f = ctx.get_function(d->name);
+        if (dynamic_cast<NativeType *>(f.ret_type.get()))
+        {
+            auto p = dynamic_cast<NativeType *>(f.ret_type.get());
+            if (p->type.type == TokenType::Integer)
+            {
+                return TypeOfExpr::Integer_Type;
+            }
+            else if (p->type.type == TokenType::Integer)
+            {
+                return TypeOfExpr::Float_Type;
+            }
+            else if (p->type.type == TokenType::Integer)
+            {
+                return TypeOfExpr::String_Type;
+            }
+        }
+        // if (f.)
+        // auto c =
+    }
+
     if (dynamic_cast<ExprNode *>(c->lhs.get()))
-        return get_expr_type(c->lhs);
+        return get_expr_type(c->lhs, ctx);
     if (dynamic_cast<ExprNode *>(c->rhs.get()))
-        return get_expr_type(c->rhs);
+        return get_expr_type(c->rhs, ctx);
     if (dynamic_cast<BooleanExprNode *>(c->rhs.get()))
-        return get_bool_expr_type(c->rhs);
+        return get_bool_expr_type(c->rhs, ctx);
     if (dynamic_cast<BooleanExprNode *>(c->lhs.get()))
-        return get_bool_expr_type(c->lhs);
+        return get_bool_expr_type(c->lhs, ctx);
 }
 std::shared_ptr<ASTNode> fold(std::shared_ptr<ASTNode> node)
 {

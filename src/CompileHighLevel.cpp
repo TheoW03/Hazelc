@@ -122,5 +122,5 @@ Function CompileHighLevel::CompileFunctionHeader(std::shared_ptr<FunctionRefNode
     llvm::Function *function = llvm::Function::Create(
         functype, llvm::Function::ExternalLinkage, n->FunctionName.value, module);
 
-    return {function, f};
+    return {function, f, n->RetType};
 }
