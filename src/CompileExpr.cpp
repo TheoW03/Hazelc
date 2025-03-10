@@ -277,18 +277,19 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         auto c = dynamic_cast<FunctionCallNode *>(node.get());
         auto fu = compiler_context.get_function(c->name);
         auto function_call = builder.CreateCall(compiler_context.get_function(c->name).function, {});
-
+        OptionalType type_of_func = compiler_context.get_type(fu.ret_type);
+        return type_of_func.set_loaded_value(function_call, builder);
         // TODO: refactor compiler context to have a method that does this for us
-        if (dynamic_cast<NativeType *>(fu.ret_type.get()))
-        {
-            auto p = dynamic_cast<NativeType *>(fu.ret_type.get());
+        // if (dynamic_cast<NativeType *>(fu.ret_type.get()))
+        // {
+        //     auto p = dynamic_cast<NativeType *>(fu.ret_type.get());
 
-            if (p->type.type == TokenType::Integer)
-            {
-                auto op_type = compiler_context.get_integer_type();
-                return op_type.set_loaded_value(function_call, builder);
-            }
-        }
+        //     if (p->type.type == TokenType::Integer)
+        //     {
+        //         auto op_type = compiler_context.get_integer_type();
+        //         return op_type.set_loaded_value(function_call, builder);
+        //     }
+        // }
     }
     else if (dynamic_cast<ExprNode *>(node.get()))
     {

@@ -80,6 +80,7 @@ public:
     OptionalType get_string_type();
     OptionalType get_boolean_type();
     OptionalType get_byte_type();
+    OptionalType get_type(std::shared_ptr<Type> type);
 };
 #endif
 // llvm::Type *compileType(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<Type> ty, CompilerContext &ctx);

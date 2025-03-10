@@ -56,7 +56,8 @@ enum TokenType
     String_Lit,
     Char_Lit,
     Export,
-    Concation
+    Concation,
+    Index_In
 
 };
 #endif
