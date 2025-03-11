@@ -230,10 +230,6 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         auto c = dynamic_cast<IntegerNode *>(node.get());
         auto get_int_type = compiler_context.get_integer_type();
         auto number = llvm::ConstantInt::get(llvm::Type::getInt64Ty(context), c->number);
-
-        // llvm::Value *Undef = llvm::UndefValue::get(llvm::Type::getInt32Ty(context));
-        // builder.CreateFreeze(Undef);
-        // return Undef;
         return get_int_type.set_loaded_value(number, builder);
     }
     else if (dynamic_cast<CharNode *>(node.get()))
@@ -279,17 +275,6 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         auto function_call = builder.CreateCall(compiler_context.get_function(c->name).function, {});
         OptionalType type_of_func = compiler_context.get_type(fu.ret_type);
         return type_of_func.set_loaded_value(function_call, builder);
-        // TODO: refactor compiler context to have a method that does this for us
-        // if (dynamic_cast<NativeType *>(fu.ret_type.get()))
-        // {
-        //     auto p = dynamic_cast<NativeType *>(fu.ret_type.get());
-
-        //     if (p->type.type == TokenType::Integer)
-        //     {
-        //         auto op_type = compiler_context.get_integer_type();
-        //         return op_type.set_loaded_value(function_call, builder);
-        //     }
-        // }
     }
     else if (dynamic_cast<ExprNode *>(node.get()))
     {
