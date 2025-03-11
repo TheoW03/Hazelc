@@ -156,3 +156,27 @@ OptionalType CompilerContext::get_byte_type()
 {
     return NativeTypes[TokenType::character];
 }
+
+OptionalType CompilerContext::get_type(std::shared_ptr<Type> type)
+{
+    if (dynamic_cast<NativeType *>(type.get()))
+    {
+        auto p = dynamic_cast<NativeType *>(type.get());
+        if (p->type.type == TokenType::Integer)
+        {
+            return get_integer_type();
+        }
+        else if (p->type.type == TokenType::Decimal)
+        {
+            return get_float_type();
+        }
+        else if (p->type.type == TokenType::string)
+        {
+            return get_string_type();
+        }
+        else if (p->type.type == TokenType::character || p->type.type == TokenType::Byte)
+        {
+            return get_byte_type();
+        }
+    }
+}

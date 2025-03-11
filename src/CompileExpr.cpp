@@ -230,10 +230,6 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         auto c = dynamic_cast<IntegerNode *>(node.get());
         auto get_int_type = compiler_context.get_integer_type();
         auto number = llvm::ConstantInt::get(llvm::Type::getInt64Ty(context), c->number);
-
-        // llvm::Value *Undef = llvm::UndefValue::get(llvm::Type::getInt32Ty(context));
-        // builder.CreateFreeze(Undef);
-        // return Undef;
         return get_int_type.set_loaded_value(number, builder);
     }
     else if (dynamic_cast<CharNode *>(node.get()))
@@ -272,13 +268,21 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
 
         return str_optional_type.set_loaded_value(value, builder);
     }
+    else if (dynamic_cast<FunctionCallNode *>(node.get()))
+    {
+        auto c = dynamic_cast<FunctionCallNode *>(node.get());
+        auto fu = compiler_context.get_function(c->name);
+        auto function_call = builder.CreateCall(compiler_context.get_function(c->name).function, {});
+        OptionalType type_of_func = compiler_context.get_type(fu.ret_type);
+        return type_of_func.set_loaded_value(function_call, builder);
+    }
     else if (dynamic_cast<ExprNode *>(node.get()))
     {
         auto c = dynamic_cast<ExprNode *>(node.get());
 
         auto lhs = Expression(c->lhs);
         auto rhs = Expression(c->rhs);
-        auto get_type = get_expr_type(node);
+        auto get_type = get_expr_type(node, compiler_context);
         switch (get_type)
         {
         case Integer_Type:
@@ -297,7 +301,7 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
 
         auto lhs = Expression(c->lhs);
         auto rhs = Expression(c->rhs);
-        auto get_type = get_bool_expr_type(node);
+        auto get_type = get_bool_expr_type(node, compiler_context);
         switch (get_type)
         {
         case Integer_Type:

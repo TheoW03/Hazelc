@@ -44,6 +44,7 @@ struct Function
 {
     llvm::Function *function;
     std::vector<Function> params;
+    std::shared_ptr<Type> ret_type;
     std::vector<Thunks> thunks;
 };
 #endif
@@ -79,10 +80,11 @@ public:
     OptionalType get_string_type();
     OptionalType get_boolean_type();
     OptionalType get_byte_type();
+    OptionalType get_type(std::shared_ptr<Type> type);
 };
 #endif
 // llvm::Type *compileType(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<Type> ty, CompilerContext &ctx);
 // llvm::FunctionType *CompileFunctionType(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<FunctionRefNode> n, CompilerContext &ctx);
 
-TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n);
-TypeOfExpr get_bool_expr_type(std::shared_ptr<ASTNode> n);
+TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx);
+TypeOfExpr get_bool_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx);

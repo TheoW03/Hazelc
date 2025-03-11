@@ -103,15 +103,20 @@ bool is_base_ten(std::string &str)
     }
     return true;
 }
+// this is a hashmap of all possible keywords. and symbols
+// when it time to add what it does is check if its in the map, then number then ident
+
 std::map<std::string, TokenType> get_keyword_map()
 {
     std::map<std::string, TokenType> token_map;
+
     token_map["+"] = TokenType::Addition;
     token_map["-"] = TokenType::Subtraction;
     token_map["*"] = TokenType::Multiplication;
     token_map["/"] = TokenType::Division;
     token_map["%"] = TokenType::Modulas;
     token_map["++"] = TokenType::Concation;
+    token_map["!!"] = TokenType::Index_In;
 
     token_map[">>"] = TokenType::Right_Shift;
     token_map["<<"] = TokenType::Left_Shift;
@@ -188,7 +193,8 @@ void is_token(Lexxer_Context &ctx)
 
 void is_operand(Lexxer_Context &ctx, char value)
 {
-    if (value == '+' && ctx.buffer == "+")
+    if ((value == '+' && ctx.buffer == "+")     // concat
+        || (value == '!' && ctx.buffer == "!")) // Index in
     {
         ctx.buffer += value;
     }
@@ -225,7 +231,7 @@ void is_number(Lexxer_Context &ctx, char value)
         // ctx.buffer += value;
         ctx.state = 4;
     }
-    else if (value == '+' || value == '*' || value == '-' || value == '/' || value == '%' || value == '(' || value == ')')
+    else if (value == '+' || value == '*' || value == '-' || value == '/' || value == '%' || value == '(' || value == ')' || value == '!')
     {
 
         is_token(ctx);
