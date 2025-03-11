@@ -53,9 +53,9 @@ void CompileHighLevel::Visit(FunctionNode *node)
     //     functype, llvm::Function::ExternalLinkage, node->f->FunctionName.value, module);
     // func_map.insert(, node->f->FunctionName.value, );
     std::vector<std::shared_ptr<ASTNode>> filter_functions;
-
-    compiler_context.add_function(node->f->FunctionName, CompileFunctionHeader(node->f));
-
+    Function compiled_function = CompileFunctionHeader(node->f);
+    // compiler_context.add_function(node->f->FunctionName, CompileFunctionHeader(node->f));
+    this->func_map.insert(std::make_pair(node->f->FunctionName.value, compiled_function));
     for (int i = 0; i < node->stmnts.size(); i++)
     {
 
@@ -96,6 +96,10 @@ void CompileHighLevel::Visit(ProgramNode *node)
     for (const auto &[key, current_module] : node->avail_modules)
     {
         current_module->Accept(this);
+        std::cout << "h" << std::endl;
+        compiler_context.AddModule(current_module->name.value, {func_map, current_module->imports});
+        this->func_map.clear();
+
         // std::cout << "Key: " << key << ", Value: " << value << std::endl;
     }
     // for (int i = 0; i < node->modules.size(); i++)

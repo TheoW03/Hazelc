@@ -48,6 +48,16 @@ struct Function
     std::vector<Thunks> thunks;
 };
 #endif
+
+#ifndef COMPILED_MODULE_H
+#define COMPILED_MODULE_H
+struct CompiledModule
+{
+    std::map<std::string, Function> func_map;
+    std::vector<Tokens> imports;
+};
+#endif
+
 #ifndef CONTEXT_H
 #define CONTEXT_H
 
@@ -55,8 +65,10 @@ class CompilerContext
 {
 public:
     std::map<std::string, Function> func_map;
+    std::map<std::string, CompiledModule> modules;
     std::map<std::string, llvm::Function *> CFunctions;
     std::map<TokenType, OptionalType> NativeTypes;
+    Tokens current_module;
     // std::map<std::string, llvm::Type *> types;
     // std::map<TokenType, OptionalType> types;
     std::vector<llvm::StructType *> lists;
@@ -81,6 +93,10 @@ public:
     OptionalType get_boolean_type();
     OptionalType get_byte_type();
     OptionalType get_type(std::shared_ptr<Type> type);
+
+    void AddModule(std::string module_name, CompiledModule module);
+    CompiledModule get_module(Tokens module);
+    void set_current_module(Tokens module_name);
 };
 #endif
 // llvm::Type *compileType(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<Type> ty, CompilerContext &ctx);

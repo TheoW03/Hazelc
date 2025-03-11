@@ -25,8 +25,12 @@ void CompileStatement::Visit(FunctionNode *node)
 
 void CompileStatement::Visit(ModuleNode *node)
 {
+
     for (int i = 0; i < node->functions.size(); i++)
     {
+        // this->current_module = compiler_context.get_module(node->name);
+
+        compiler_context.set_current_module(node->name);
         node->functions[i]->Accept(this);
     }
 }
@@ -41,6 +45,9 @@ void CompileStatement::Visit(ProgramNode *node)
 {
     for (const auto &[key, current_module] : node->avail_modules)
     {
+        compiler_context.set_current_module(current_module->name);
+        std::cout << "working in program node " << std::endl;
+        std::cout << current_module->name.value << std::endl;
         current_module->Accept(this);
         // std::cout << "Key: " << key << ", Value: " << value << std::endl;
     }

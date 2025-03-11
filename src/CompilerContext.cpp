@@ -20,7 +20,9 @@ CompilerContext::CompilerContext(std::map<std::string, llvm::Function *> CFuncti
 
 Function CompilerContext::get_function(Tokens name)
 {
-    return func_map[name.value];
+    std::cout << current_module.value << std::endl;
+    // exit(EXIT_FAILURE);
+    return modules[current_module.value].func_map[name.value];
 }
 
 void CompilerContext::add_function(Tokens name, Function f)
@@ -115,7 +117,6 @@ OptionalType CompilerContext::compile_Type_Optional(std::shared_ptr<Type> ty)
         auto p = dynamic_cast<NativeType *>(ty.get());
         return NativeTypes[p->type.type];
     }
-    exit(EXIT_FAILURE);
 }
 Thunks CompilerContext::get_thunk_types(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<FunctionRefNode> n)
 
@@ -179,4 +180,19 @@ OptionalType CompilerContext::get_type(std::shared_ptr<Type> type)
             return get_byte_type();
         }
     }
+}
+
+void CompilerContext::AddModule(std::string module_name, CompiledModule module)
+{
+    modules.insert(std::make_pair(module_name, module));
+}
+
+CompiledModule CompilerContext::get_module(Tokens module)
+{
+    return this->modules[module.value];
+}
+
+void CompilerContext::set_current_module(Tokens module_name)
+{
+    this->current_module = module_name;
 }
