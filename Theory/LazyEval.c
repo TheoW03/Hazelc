@@ -27,7 +27,6 @@ int forceEvaluation(struct ThunkMemoized *t)
 }
 int nMinusOne(struct Params *p)
 {
-    printf("a \n");
     return forceEvaluation(p->n) - 1;
 }
 
