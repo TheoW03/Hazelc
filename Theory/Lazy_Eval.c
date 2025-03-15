@@ -72,8 +72,10 @@ int main(int argc, char const *argv[])
 
         let main : integer => add(factorial(5), 1)
 
+        would compile
+
         parameters every time a function is called, saves itself to
-        the thunk, and creates a new copy of itself to pass into the function.
+        the thunk, and creates a new copy of itself to pass into the function that contians the actual value.
         it does rely on stack as of right now. but we will see.
 
         arguably its more efficeient due to the heap being the heap

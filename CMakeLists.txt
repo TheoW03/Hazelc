@@ -15,7 +15,10 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions")
 include_directories(${LLVM_INCLUDE_DIRS})
 # include_directories()
 # Name of your output executable
-
+if(DEFINED PROFILING AND PROFILING STREQUAL "ON")
+string(APPEND CMAKE_CXX_FLAGS " -pg")
+string(APPEND CMAKE_EXE_LINKER_FLAGS " -pg")
+endif()
 if(DEFINED DEBUG AND DEBUG)
    message("test")
 endif()
