@@ -13,8 +13,14 @@ void CompileStatement::Visit(ASTNode *node)
 
 void CompileStatement::Visit(FunctionNode *node)
 {
-    auto func = compiler_context.get_function(node->f->FunctionName).function;
-    llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, "entry", func);
+    auto func = compiler_context.get_function(node->f->FunctionName);
+    for (int i = 0; i < func.functions.size(); i++)
+    {
+
+        auto f = dynamic_cast<FunctionNode *>(func.functions[i].get());
+        f->Accept(this);
+    }
+    llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, "entry", func.function);
     builder.SetInsertPoint(EntryBlock);
     for (int i = 0; i < node->stmnts.size(); i++)
     {
@@ -46,8 +52,8 @@ void CompileStatement::Visit(ProgramNode *node)
     for (const auto &[key, current_module] : node->avail_modules)
     {
         compiler_context.set_current_module(current_module->name);
-        std::cout << "working in program node " << std::endl;
-        std::cout << current_module->name.value << std::endl;
+        // std::cout << "working in program node " << std::endl;
+        // std::cout << current_module->name.value << std::endl;
         current_module->Accept(this);
         // std::cout << "Key: " << key << ", Value: " << value << std::endl;
     }

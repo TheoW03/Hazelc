@@ -38,6 +38,7 @@ struct Thunks
     llvm::Function *eval_func;
 };
 #endif
+
 #ifndef COMPILED_FUNCTION_H
 #define COMPILED_FUNCTION_H
 struct Function
@@ -46,6 +47,8 @@ struct Function
     std::vector<Function> params;
     std::shared_ptr<Type> ret_type;
     std::vector<Thunks> thunks;
+    std::map<std::string, Function> func_map;
+    std::vector<std::shared_ptr<ASTNode>> functions;
 };
 #endif
 
@@ -54,6 +57,7 @@ struct Function
 struct CompiledModule
 {
     std::map<std::string, Function> func_map;
+    // std::map<std::string, Function> export_fu
     std::vector<Tokens> imports;
 };
 #endif

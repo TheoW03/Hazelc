@@ -54,21 +54,22 @@ void CompileHighLevel::Visit(FunctionNode *node)
     // func_map.insert(, node->f->FunctionName.value, );
     std::vector<std::shared_ptr<ASTNode>> filter_functions;
     Function compiled_function = CompileFunctionHeader(node->f);
+    // std::cout << "func name: " << node->f->FunctionName.value << std::endl;
     // compiler_context.add_function(node->f->FunctionName, CompileFunctionHeader(node->f));
-    this->func_map.insert(std::make_pair(node->f->FunctionName.value, compiled_function));
     for (int i = 0; i < node->stmnts.size(); i++)
     {
 
         node->stmnts[i]->Accept(this);
         if (dynamic_cast<FunctionNode *>(node->stmnts[i].get()))
         {
-            functions.push_back(node->stmnts[i]);
+            compiled_function.functions.push_back(node->stmnts[i]);
         }
         else
         {
             filter_functions.push_back(node->stmnts[i]);
         }
     }
+    this->func_map.insert(std::make_pair(node->f->FunctionName.value, compiled_function));
     node->stmnts = filter_functions;
 }
 
@@ -80,6 +81,7 @@ void CompileHighLevel::Visit(ModuleNode *node)
 
         node->functions[i]->Accept(this);
     }
+    node->functions = functions;
 }
 
 void CompileHighLevel::Visit(ReturnNode *node)

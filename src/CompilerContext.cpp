@@ -20,13 +20,23 @@ CompilerContext::CompilerContext(std::map<std::string, llvm::Function *> CFuncti
 
 Function CompilerContext::get_function(Tokens name)
 {
-    std::cout << current_module.value << std::endl;
-    // exit(EXIT_FAILURE);
+    if (modules[current_module.value].func_map.find(name.value) == modules[current_module.value].func_map.end())
+    {
+        auto import_list = modules[current_module.value].imports;
+        for (int i = 0; i < import_list.size(); i++)
+        {
+            if (modules[import_list[i].value].func_map.find(name.value) != modules[current_module.value].func_map.end())
+            {
+                return modules[import_list[i].value].func_map[name.value];
+            }
+        }
+    }
     return modules[current_module.value].func_map[name.value];
 }
 
 void CompilerContext::add_function(Tokens name, Function f)
 {
+
     this->func_map.insert(std::make_pair(name.value, f));
 }
 
