@@ -34,12 +34,38 @@ Function CompilerContext::get_function(Tokens name)
     return modules[current_module.value].func_map[name.value];
 }
 
+Function CompilerContext::get_local_function(Tokens name)
+{
+    return Function();
+}
+void CompilerContext::add_local_function(Tokens name, Function value)
+{
+    if (this->local_functions.find(name.value) != this->local_functions.end())
+    {
+        local_functions[name.value] = value;
+    }
+    else
+    {
+        local_functions.insert(std::make_pair(name.value, value));
+    }
+}
 void CompilerContext::add_function(Tokens name, Function f)
 {
 
     this->func_map.insert(std::make_pair(name.value, f));
 }
 
+Function CompilerContext::get_current()
+{
+    std::cout << "ackbefore" << std::endl;
+
+    auto f = this->modules[current_module.value].functions.front();
+    // if (!this->modules[current_module.value].functions.empty())
+    this->modules[current_module.value].functions.pop();
+    std::cout << f.name.value << std::endl;
+    std::cout << "ackafter" << std::endl;
+    return f;
+}
 llvm::StructType *CompilerContext::get_string_type(llvm::LLVMContext &context, llvm::IRBuilder<> &builder)
 {
     // if (this->string_type == nullptr)
@@ -202,7 +228,28 @@ CompiledModule CompilerContext::get_module(Tokens module)
     return this->modules[module.value];
 }
 
+CompiledModule CompilerContext::get_current_module()
+{
+    return this->modules[current_module.value];
+}
 void CompilerContext::set_current_module(Tokens module_name)
 {
     this->current_module = module_name;
+}
+
+bool CompilerContext::can_get_function(Tokens name)
+{
+    if (modules[current_module.value].func_map.find(name.value) == modules[current_module.value].func_map.end())
+    {
+        auto import_list = modules[current_module.value].imports;
+        for (int i = 0; i < import_list.size(); i++)
+        {
+            if (modules[import_list[i].value].func_map.find(name.value) != modules[current_module.value].func_map.end())
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    return true;
 }

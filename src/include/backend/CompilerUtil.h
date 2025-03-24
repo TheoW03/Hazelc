@@ -3,6 +3,7 @@
 #include <map>
 #include <iostream>
 #include <Frontend/Ast.h>
+#include <queue>
 #include "llvm/IR/LLVMContext.h"
 
 #ifndef OPTIONAL_TYPE_H
@@ -46,8 +47,8 @@ struct Function
     llvm::Function *function;
     std::vector<Function> params;
     std::shared_ptr<Type> ret_type;
+    Tokens name;
     std::vector<Thunks> thunks;
-    std::map<std::string, Function> func_map;
     std::vector<std::shared_ptr<ASTNode>> functions;
 };
 #endif
@@ -59,6 +60,7 @@ struct CompiledModule
     std::map<std::string, Function> func_map;
     // std::map<std::string, Function> export_fu
     std::vector<Tokens> imports;
+    std::queue<Function> functions;
 };
 #endif
 
@@ -76,13 +78,17 @@ public:
     // std::map<std::string, llvm::Type *> types;
     // std::map<TokenType, OptionalType> types;
     std::vector<llvm::StructType *> lists;
+    std::map<std::string, Function> local_functions;
     llvm::StructType *string_type;
     CompilerContext();
     CompilerContext(std::map<std::string, llvm::Function *> CFunctions,
                     std::map<TokenType, OptionalType> NativeTypes,
                     llvm::StructType *str_type);
     Function get_function(Tokens name);
+    Function get_local_function(Tokens name);
+    void add_local_function(Tokens name, Function function);
     void add_function(Tokens name, Function f);
+    Function get_current();
     // void compile_cfunctions(llvm::Module &module, llvm::LLVMContext &context, llvm::IRBuilder<> &builder);
     llvm::StructType *get_string_type(llvm::LLVMContext &context, llvm::IRBuilder<> &builder);
     llvm::Type *compile_Type(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<Type> ty);
@@ -100,7 +106,9 @@ public:
 
     void AddModule(std::string module_name, CompiledModule module);
     CompiledModule get_module(Tokens module);
+    CompiledModule get_current_module();
     void set_current_module(Tokens module_name);
+    bool can_get_function(Tokens name);
 };
 #endif
 // llvm::Type *compileType(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<Type> ty, CompilerContext &ctx);

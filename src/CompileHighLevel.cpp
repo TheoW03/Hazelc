@@ -56,20 +56,24 @@ void CompileHighLevel::Visit(FunctionNode *node)
     Function compiled_function = CompileFunctionHeader(node->f);
     // std::cout << "func name: " << node->f->FunctionName.value << std::endl;
     // compiler_context.add_function(node->f->FunctionName, CompileFunctionHeader(node->f));
+    if (is_global)
+        this->func_map.insert(std::make_pair(node->f->FunctionName.value, compiled_function));
+    is_global = false;
+    this->compiled_functions.push(compiled_function);
+    std::cout << this->compiled_functions.size() << std::endl;
     for (int i = 0; i < node->stmnts.size(); i++)
     {
 
         node->stmnts[i]->Accept(this);
         if (dynamic_cast<FunctionNode *>(node->stmnts[i].get()))
         {
-            compiled_function.functions.push_back(node->stmnts[i]);
+            this->functions.push_back(node->stmnts[i]);
         }
         else
         {
             filter_functions.push_back(node->stmnts[i]);
         }
     }
-    this->func_map.insert(std::make_pair(node->f->FunctionName.value, compiled_function));
     node->stmnts = filter_functions;
 }
 
@@ -78,10 +82,11 @@ void CompileHighLevel::Visit(ModuleNode *node)
     for (int i = 0; i < node->functions.size(); i++)
     {
         functions.push_back(node->functions[i]);
-
+        is_global = true;
         node->functions[i]->Accept(this);
     }
     node->functions = functions;
+    functions.clear();
 }
 
 void CompileHighLevel::Visit(ReturnNode *node)
@@ -99,8 +104,9 @@ void CompileHighLevel::Visit(ProgramNode *node)
     {
         current_module->Accept(this);
         std::cout << "h" << std::endl;
-        compiler_context.AddModule(current_module->name.value, {func_map, current_module->imports});
+        compiler_context.AddModule(current_module->name.value, {func_map, current_module->imports, this->compiled_functions});
         this->func_map.clear();
+        this->compiled_functions = {};
 
         // std::cout << "Key: " << key << ", Value: " << value << std::endl;
     }
@@ -126,5 +132,5 @@ Function CompileHighLevel::CompileFunctionHeader(std::shared_ptr<FunctionRefNode
     llvm::Function *function = llvm::Function::Create(
         functype, llvm::Function::ExternalLinkage, n->FunctionName.value, module);
 
-    return {function, f, n->RetType};
+    return {function, f, n->RetType, n->FunctionName};
 }

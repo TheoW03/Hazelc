@@ -115,6 +115,9 @@ public:
     CompilerContext compiler_context;
     std::map<std::string, Function> func_map;
 
+    std::queue<Function> compiled_functions;
+    bool is_global;
+
     llvm::IRBuilder<> &builder;
     llvm::LLVMContext &context;
     CompileHighLevel(llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context);

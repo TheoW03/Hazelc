@@ -13,25 +13,38 @@ void CompileStatement::Visit(ASTNode *node)
 
 void CompileStatement::Visit(FunctionNode *node)
 {
-    auto func = compiler_context.get_function(node->f->FunctionName);
-    for (int i = 0; i < func.functions.size(); i++)
-    {
+    auto c = compiler_context.get_current();
 
-        auto f = dynamic_cast<FunctionNode *>(func.functions[i].get());
-        f->Accept(this);
+    if (compiler_context.can_get_function(node->f->FunctionName))
+    {
+        auto func = compiler_context.get_function(node->f->FunctionName);
+        llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, "entry", func.function);
+        builder.SetInsertPoint(EntryBlock);
     }
-    llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, "entry", func.function);
-    builder.SetInsertPoint(EntryBlock);
+    else
+    {
+        compiler_context.add_local_function(c.name, c);
+
+        llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, "entry", c.function);
+        builder.SetInsertPoint(EntryBlock);
+    }
     for (int i = 0; i < node->stmnts.size(); i++)
     {
-
         node->stmnts[i]->Accept(this);
     }
+    // Function c = compiler_context.get_current_module().functions.front();
+    // compiler_context.get_current_module().functions.pop();
+    // std::cout << compiler_context.get_current_module().functions.size() << std::endl;
+    // compiler_context.get_current_module().functions.erase(compiler_context.get_current_module().functions.begin());
+    // std::cout << "from data structure: " << c.name.value << std::endl;
+    // std::cout << "from AST: " << node->f->FunctionName.value << std::endl;
+    // std::cout << "from AST: " << node->f->FunctionName.value << std::endl;
 }
 
 void CompileStatement::Visit(ModuleNode *node)
 {
 
+    std::cout << "module n: " << node->functions.size() << std::endl;
     for (int i = 0; i < node->functions.size(); i++)
     {
         // this->current_module = compiler_context.get_module(node->name);
