@@ -20,25 +20,57 @@ CompilerContext::CompilerContext(std::map<std::string, llvm::Function *> CFuncti
 
 Function CompilerContext::get_function(Tokens name)
 {
-    return func_map[name.value];
+    if (can_get_function(name))
+    {
+        if (modules[current_module.value].func_map.find(name.value) == modules[current_module.value].func_map.end())
+        {
+            auto import_list = modules[current_module.value].imports;
+            for (int i = 0; i < import_list.size(); i++)
+            {
+                if (modules[import_list[i].value].func_map.find(name.value) != modules[current_module.value].func_map.end())
+                {
+                    return modules[import_list[i].value].func_map[name.value];
+                }
+            }
+        }
+        return modules[current_module.value].func_map[name.value];
+    }
+    else
+    {
+        return get_local_function(name);
+    }
 }
 
+Function CompilerContext::get_local_function(Tokens name)
+{
+    return local_functions[name.value];
+}
+void CompilerContext::add_local_function(Tokens name, Function value)
+{
+    if (this->local_functions.find(name.value) != this->local_functions.end())
+    {
+        local_functions[name.value] = value;
+    }
+    else
+    {
+        local_functions.insert(std::make_pair(name.value, value));
+    }
+}
 void CompilerContext::add_function(Tokens name, Function f)
 {
+
     this->func_map.insert(std::make_pair(name.value, f));
 }
 
+Function CompilerContext::get_current()
+{
+
+    auto f = this->modules[current_module.value].functions.front();
+    this->modules[current_module.value].functions.pop();
+    return f;
+}
 llvm::StructType *CompilerContext::get_string_type(llvm::LLVMContext &context, llvm::IRBuilder<> &builder)
 {
-    // if (this->string_type == nullptr)
-    // {
-
-    //     this->string_type = llvm::StructType::create(context, "string");
-    //     std::vector<llvm::Type *> elements = {builder.getInt8PtrTy(), builder.getInt64Ty()};
-    //     this->string_type->setBody(elements);
-
-    //     // uint64_t StructSize = DL.getTypeAllocSize(MyStruct);
-    // }
     return string_type;
 }
 llvm::Type *CompilerContext::compile_Type(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<Type> ty)
@@ -115,7 +147,6 @@ OptionalType CompilerContext::compile_Type_Optional(std::shared_ptr<Type> ty)
         auto p = dynamic_cast<NativeType *>(ty.get());
         return NativeTypes[p->type.type];
     }
-    exit(EXIT_FAILURE);
 }
 Thunks CompilerContext::get_thunk_types(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<FunctionRefNode> n)
 
@@ -179,4 +210,40 @@ OptionalType CompilerContext::get_type(std::shared_ptr<Type> type)
             return get_byte_type();
         }
     }
+}
+
+void CompilerContext::AddModule(std::string module_name, CompiledModule module)
+{
+    modules.insert(std::make_pair(module_name, module));
+}
+
+CompiledModule CompilerContext::get_module(Tokens module)
+{
+    return this->modules[module.value];
+}
+
+CompiledModule CompilerContext::get_current_module()
+{
+    return this->modules[current_module.value];
+}
+void CompilerContext::set_current_module(Tokens module_name)
+{
+    this->current_module = module_name;
+}
+
+bool CompilerContext::can_get_function(Tokens name)
+{
+    if (modules[current_module.value].func_map.find(name.value) == modules[current_module.value].func_map.end())
+    {
+        auto import_list = modules[current_module.value].imports;
+        for (int i = 0; i < import_list.size(); i++)
+        {
+            if (modules[import_list[i].value].func_map.find(name.value) != modules[import_list[i].value].func_map.end())
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    return true;
 }

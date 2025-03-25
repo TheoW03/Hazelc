@@ -33,12 +33,9 @@ void InitCompiler(Output output, std::shared_ptr<ProgramNode> node)
     node->Accept(compile_top);
     std::cout << "hazelc: compiled functions" << std::endl;
     CompileStatement *compile_statement = new CompileStatement(module, builder, context, compile_top->compiler_context);
-    for (int i = 0; i < compile_top->functions.size(); i++)
-    {
-        compile_top->functions[i]->Accept(compile_statement);
-    }
+
+    node->Accept(compile_statement);
     delete compile_top;
-    // delete compile_statement;
 
     // Initialize the target registry etc.llvm::InitializeAllTargets();
 
@@ -47,7 +44,6 @@ void InitCompiler(Output output, std::shared_ptr<ProgramNode> node)
     llvm::InitializeAllTargetMCs();
     llvm::InitializeAllAsmParsers();
     llvm::InitializeAllAsmPrinters();
-    // auto TargetTriple = llvm::sys::getDefaultTargetTriple();
     std::string Error;
     auto TargetTriple = llvm::sys::getDefaultTargetTriple();
 
@@ -64,15 +60,12 @@ void InitCompiler(Output output, std::shared_ptr<ProgramNode> node)
         return;
     }
 
-    // std::cout << Error << std::endl;
     auto CPU = "generic";
     auto Features = "";
 
     llvm::TargetOptions opt;
     auto TargetMachine = Target->createTargetMachine(TargetTriple, CPU, Features, opt, llvm::Reloc::PIC_);
     module.setDataLayout(TargetMachine->createDataLayout());
-
-    // std::cout << "aaa" << std::endl;
 
     std::error_code EC;
     for (int i = 0; i < output.output_files.size(); i++)
@@ -153,6 +146,7 @@ void InitCompiler(Output output, std::shared_ptr<ProgramNode> node)
             pass.run(module);
             int returnCode = std::system(("clang a.o -o " + output.output_files[i]).c_str());
             dest.flush();
+
             break;
         }
         }

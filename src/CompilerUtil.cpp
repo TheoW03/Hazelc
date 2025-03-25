@@ -100,6 +100,10 @@ OptionalType::OptionalType(llvm::LLVMContext &context, llvm::IRBuilder<> &builde
 
 llvm::Value *OptionalType::set_loaded_value(llvm::Value *value, llvm::IRBuilder<> &builder)
 {
+    if (this->type == nullptr)
+    {
+        std::cout << "null" << std::endl;
+    }
     llvm::Value *structPtr = builder.CreateAlloca(this->type);
     auto destField0ptr = builder.CreateStructGEP(this->type, structPtr, 0, "OptionalStructPtr0");
 

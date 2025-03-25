@@ -17,6 +17,7 @@ struct SemanticFunction
 };
 
 #endif
+
 #ifndef SEMANTIC_MODULE_H
 #define SEMANTIC_MODULE_H
 
@@ -110,8 +111,12 @@ class CompileHighLevel : public Visitor
 public:
     llvm::Module &module;
     std::vector<std::shared_ptr<ASTNode>> functions;
+
     CompilerContext compiler_context;
-    // std::map<std::string, Function> func_map;
+    std::map<std::string, Function> func_map;
+
+    std::queue<Function> compiled_functions;
+    bool is_global;
 
     llvm::IRBuilder<> &builder;
     llvm::LLVMContext &context;
@@ -134,6 +139,7 @@ class CompileStatement : public Visitor
 {
 public:
     llvm::Module &module;
+    CompiledModule current_module;
     CompilerContext compiler_context;
     llvm::IRBuilder<> &builder;
     llvm::LLVMContext &context;
