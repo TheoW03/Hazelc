@@ -64,26 +64,13 @@ void CompilerContext::add_function(Tokens name, Function f)
 
 Function CompilerContext::get_current()
 {
-    std::cout << "ackbefore" << std::endl;
 
     auto f = this->modules[current_module.value].functions.front();
-    // if (!this->modules[current_module.value].functions.empty())
     this->modules[current_module.value].functions.pop();
-    std::cout << f.name.value << this->modules[current_module.value].functions.size() << std::endl;
-    std::cout << "ackafter" << std::endl;
     return f;
 }
 llvm::StructType *CompilerContext::get_string_type(llvm::LLVMContext &context, llvm::IRBuilder<> &builder)
 {
-    // if (this->string_type == nullptr)
-    // {
-
-    //     this->string_type = llvm::StructType::create(context, "string");
-    //     std::vector<llvm::Type *> elements = {builder.getInt8PtrTy(), builder.getInt64Ty()};
-    //     this->string_type->setBody(elements);
-
-    //     // uint64_t StructSize = DL.getTypeAllocSize(MyStruct);
-    // }
     return string_type;
 }
 llvm::Type *CompilerContext::compile_Type(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<Type> ty)
@@ -249,7 +236,6 @@ bool CompilerContext::can_get_function(Tokens name)
     if (modules[current_module.value].func_map.find(name.value) == modules[current_module.value].func_map.end())
     {
         auto import_list = modules[current_module.value].imports;
-        std::cout << "import list size: " << current_module.value << import_list.size() << std::endl;
         for (int i = 0; i < import_list.size(); i++)
         {
             if (modules[import_list[i].value].func_map.find(name.value) != modules[import_list[i].value].func_map.end())

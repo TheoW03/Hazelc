@@ -60,7 +60,6 @@ void CompileHighLevel::Visit(FunctionNode *node)
         this->func_map.insert(std::make_pair(node->f->FunctionName.value, compiled_function));
     is_global = false;
     this->compiled_functions.push(compiled_function);
-    std::cout << this->compiled_functions.size() << std::endl;
     for (int i = 0; i < node->stmnts.size(); i++)
     {
 
@@ -103,7 +102,6 @@ void CompileHighLevel::Visit(ProgramNode *node)
     for (const auto &[key, current_module] : node->avail_modules)
     {
         current_module->Accept(this);
-        std::cout << "h" << std::endl;
         compiler_context.AddModule(current_module->name.value, {func_map, current_module->imports, this->compiled_functions});
         this->func_map.clear();
         this->compiled_functions = {};

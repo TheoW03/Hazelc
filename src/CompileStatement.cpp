@@ -44,11 +44,8 @@ void CompileStatement::Visit(FunctionNode *node)
 void CompileStatement::Visit(ModuleNode *node)
 {
 
-    std::cout << "module n: " << node->functions.size() << std::endl;
     for (int i = 0; i < node->functions.size(); i++)
     {
-        // this->current_module = compiler_context.get_module(node->name);
-
         compiler_context.set_current_module(node->name);
         node->functions[i]->Accept(this);
     }
@@ -56,7 +53,6 @@ void CompileStatement::Visit(ModuleNode *node)
 
 void CompileStatement::Visit(ReturnNode *node)
 {
-    std::cout << "return" << std::endl;
     CompileExpr c(module, builder, context, compiler_context);
     builder.CreateRet(c.Expression(node->Expr));
 }

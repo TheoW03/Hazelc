@@ -229,7 +229,6 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
     {
         auto c = dynamic_cast<IntegerNode *>(node.get());
         auto get_int_type = compiler_context.get_integer_type();
-        std::cout << c->number << std::endl;
         auto number = llvm::ConstantInt::get(builder.getInt64Ty(), c->number);
 
         return get_int_type.set_loaded_value(number, builder);
