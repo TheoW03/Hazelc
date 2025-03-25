@@ -41,6 +41,7 @@ add_llvm_executable(${EXECUTABLE_NAME}
    src/cli.cpp
    src/CompileHighLevel.cpp
    src/CompilerUtil.cpp
+   src/Scope.cpp
    src/CompilerContext.cpp
    src/SemanticTopLevel.cpp
 
