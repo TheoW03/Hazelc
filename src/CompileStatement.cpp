@@ -56,6 +56,7 @@ void CompileStatement::Visit(ModuleNode *node)
 
 void CompileStatement::Visit(ReturnNode *node)
 {
+    std::cout << "return" << std::endl;
     CompileExpr c(module, builder, context, compiler_context);
     builder.CreateRet(c.Expression(node->Expr));
 }

@@ -20,23 +20,30 @@ CompilerContext::CompilerContext(std::map<std::string, llvm::Function *> CFuncti
 
 Function CompilerContext::get_function(Tokens name)
 {
-    if (modules[current_module.value].func_map.find(name.value) == modules[current_module.value].func_map.end())
+    if (can_get_function(name))
     {
-        auto import_list = modules[current_module.value].imports;
-        for (int i = 0; i < import_list.size(); i++)
+        if (modules[current_module.value].func_map.find(name.value) == modules[current_module.value].func_map.end())
         {
-            if (modules[import_list[i].value].func_map.find(name.value) != modules[current_module.value].func_map.end())
+            auto import_list = modules[current_module.value].imports;
+            for (int i = 0; i < import_list.size(); i++)
             {
-                return modules[import_list[i].value].func_map[name.value];
+                if (modules[import_list[i].value].func_map.find(name.value) != modules[current_module.value].func_map.end())
+                {
+                    return modules[import_list[i].value].func_map[name.value];
+                }
             }
         }
+        return modules[current_module.value].func_map[name.value];
     }
-    return modules[current_module.value].func_map[name.value];
+    else
+    {
+        return get_local_function(name);
+    }
 }
 
 Function CompilerContext::get_local_function(Tokens name)
 {
-    return Function();
+    return local_functions[name.value];
 }
 void CompilerContext::add_local_function(Tokens name, Function value)
 {
@@ -62,7 +69,7 @@ Function CompilerContext::get_current()
     auto f = this->modules[current_module.value].functions.front();
     // if (!this->modules[current_module.value].functions.empty())
     this->modules[current_module.value].functions.pop();
-    std::cout << f.name.value << std::endl;
+    std::cout << f.name.value << this->modules[current_module.value].functions.size() << std::endl;
     std::cout << "ackafter" << std::endl;
     return f;
 }
@@ -242,9 +249,10 @@ bool CompilerContext::can_get_function(Tokens name)
     if (modules[current_module.value].func_map.find(name.value) == modules[current_module.value].func_map.end())
     {
         auto import_list = modules[current_module.value].imports;
+        std::cout << "import list size: " << current_module.value << import_list.size() << std::endl;
         for (int i = 0; i < import_list.size(); i++)
         {
-            if (modules[import_list[i].value].func_map.find(name.value) != modules[current_module.value].func_map.end())
+            if (modules[import_list[i].value].func_map.find(name.value) != modules[import_list[i].value].func_map.end())
             {
                 return true;
             }
