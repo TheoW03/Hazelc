@@ -22,7 +22,7 @@ now run this in your terminal
 
 ```sh
 cmake -S . -B build 
-cmake --build build --config Release -DPROF={ON|OFF}
+cmake --build build --config Release -DPROFILING={ON|OFF}
 ./hazelc --help
 ```
 
