@@ -2,7 +2,7 @@
 
 #include "llvm/IR/Module.h"
 #include "llvm/IR/IRBuilder.h"
-
+#include <backend/Scope.h>
 #include <Frontend/Ast.h>
 #include <map>
 #include <memory>
@@ -104,10 +104,14 @@ public:
     void Visit(ProgramNode *node) override;
 };
 #endif
+
 #ifndef COMPILER_H
 #define COMPILER_H
 class CompileHighLevel : public Visitor
 {
+private:
+    std::map<std::string, CompiledModuleClass> modules;
+
 public:
     llvm::Module &module;
     std::vector<std::shared_ptr<ASTNode>> functions;
@@ -130,9 +134,11 @@ public:
     void Visit(ProgramNode *node) override;
 
     Function CompileFunctionHeader(std::shared_ptr<FunctionRefNode> n);
-};
+    ProgramScope getProgramScope();
+}
 
 #endif
+
 #ifndef COMPILE_STATEMENT_H
 #define COMPILE_STATEMENT_H
 class CompileStatement : public Visitor

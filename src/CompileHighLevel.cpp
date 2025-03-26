@@ -132,3 +132,8 @@ Function CompileHighLevel::CompileFunctionHeader(std::shared_ptr<FunctionRefNode
 
     return {function, f, n->RetType, n->FunctionName};
 }
+
+ProgramScope CompileHighLevel::getProgramScope()
+{
+    return ProgramScope(this->modules);
+}
