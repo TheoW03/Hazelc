@@ -135,7 +135,7 @@ public:
 
     Function CompileFunctionHeader(std::shared_ptr<FunctionRefNode> n);
     ProgramScope getProgramScope();
-}
+};
 
 #endif
 
