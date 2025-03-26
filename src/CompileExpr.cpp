@@ -1,14 +1,17 @@
 #include <visitor.h>
 #include <backend/CompilerUtil.h>
+#include <backend/CompilerContext.h>
 
 CompileExpr::CompileExpr(llvm::Module &module,
                          llvm::IRBuilder<> &builder,
                          llvm::LLVMContext &context,
-                         CompilerContext compiler_context) : module(module),
-                                                             builder(builder),
-                                                             context(context)
+                         CompilerContext compiler_context, ProgramScope program) : module(module),
+                                                                                   builder(builder),
+                                                                                   context(context)
 {
     this->compiler_context = compiler_context;
+    this->program = program;
+
     // this->func_map = func_map;
 }
 llvm::Value *CompileExpr::CompileStr(llvm::Value *str, llvm::Value *length, llvm::Value *structure)
@@ -272,8 +275,8 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
     else if (dynamic_cast<FunctionCallNode *>(node.get()))
     {
         auto c = dynamic_cast<FunctionCallNode *>(node.get());
-        auto fu = compiler_context.get_function(c->name);
-        auto function_call = builder.CreateCall(compiler_context.get_function(c->name).function, {});
+        auto fu = program.get_function(c->name);
+        auto function_call = builder.CreateCall(fu.function, {});
         OptionalType type_of_func = compiler_context.get_type(fu.ret_type);
         return type_of_func.set_loaded_value(function_call, builder);
     }
@@ -283,7 +286,7 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
 
         auto lhs = Expression(c->lhs);
         auto rhs = Expression(c->rhs);
-        auto get_type = get_expr_type(node, compiler_context);
+        auto get_type = get_expr_type(node, this->program);
         switch (get_type)
         {
         case Integer_Type:
@@ -302,7 +305,7 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
 
         auto lhs = Expression(c->lhs);
         auto rhs = Expression(c->rhs);
-        auto get_type = get_bool_expr_type(node, compiler_context);
+        auto get_type = get_bool_expr_type(node, this->program);
         switch (get_type)
         {
         case Integer_Type:

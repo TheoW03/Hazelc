@@ -3,9 +3,9 @@
 #include <Frontend/Ast.h>
 #include "llvm/IR/LLVMContext.h"
 #include <memory>
-#include <backend/CompilerUtil.h>
+#include <backend/CompilerContext.h>
 
-TypeOfExpr get_bool_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx)
+TypeOfExpr get_bool_expr_type(std::shared_ptr<ASTNode> n, ProgramScope ctx)
 {
     auto c = dynamic_cast<BooleanExprNode *>(n.get());
     if (dynamic_cast<IntegerNode *>(c->lhs.get()) && dynamic_cast<IntegerNode *>(c->rhs.get()))
@@ -21,7 +21,7 @@ TypeOfExpr get_bool_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx)
     if (dynamic_cast<BooleanExprNode *>(c->rhs.get()))
         return get_bool_expr_type(c->rhs, ctx);
 }
-TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx)
+TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n, ProgramScope ctx)
 {
     auto c = dynamic_cast<ExprNode *>(n.get());
     if (dynamic_cast<IntegerNode *>(c->lhs.get()) && dynamic_cast<IntegerNode *>(c->rhs.get()))
