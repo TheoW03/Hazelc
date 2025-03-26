@@ -2,6 +2,7 @@
 #include <iostream>
 #include <optional>
 #include <backend/CompilerUtil.h>
+#include <Frontend/Token.h>
 
 #ifndef COMPILED_MODULE_CLASS_H
 #define COMPILED_MODULE_CLASS_H

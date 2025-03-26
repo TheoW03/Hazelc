@@ -1,10 +1,12 @@
 #include <visitor.h>
 #include <backend/CompilerUtil.h>
+#include <backend/CompilerContext.h>
 
 CompileStatement::CompileStatement(llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context,
                                    CompilerContext compiler_context) : module(module), builder(builder), context(context)
 {
     this->compiler_context = compiler_context;
+    this->program_scope = compiler_context.getScope();
 }
 
 void CompileStatement::Visit(ASTNode *node)
@@ -13,18 +15,17 @@ void CompileStatement::Visit(ASTNode *node)
 
 void CompileStatement::Visit(FunctionNode *node)
 {
-    auto c = compiler_context.get_current();
+    auto c = this->program_scope.get_current_function();
 
-    if (compiler_context.can_get_function(node->f->FunctionName))
+    if (this->program_scope.get_global_function(c.name).has_value())
     {
-        auto func = compiler_context.get_function(node->f->FunctionName);
+        auto func = program_scope.get_function(node->f->FunctionName);
         llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, "entry", func.function);
         builder.SetInsertPoint(EntryBlock);
     }
     else
     {
-        compiler_context.add_local_function(c.name, c);
-
+        program_scope.addLocal(c.name, c);
         llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, "entry", c.function);
         builder.SetInsertPoint(EntryBlock);
     }
@@ -46,14 +47,14 @@ void CompileStatement::Visit(ModuleNode *node)
 
     for (int i = 0; i < node->functions.size(); i++)
     {
-        compiler_context.set_current_module(node->name);
+        // program_scope.set_current(node->name);
         node->functions[i]->Accept(this);
     }
 }
 
 void CompileStatement::Visit(ReturnNode *node)
 {
-    CompileExpr c(module, builder, context, compiler_context);
+    CompileExpr c(module, builder, context, compiler_context, this->program_scope);
     builder.CreateRet(c.Expression(node->Expr));
 }
 
@@ -61,7 +62,7 @@ void CompileStatement::Visit(ProgramNode *node)
 {
     for (const auto &[key, current_module] : node->avail_modules)
     {
-        compiler_context.set_current_module(current_module->name);
+        program_scope.set_current(current_module->name);
         // std::cout << "working in program node " << std::endl;
         // std::cout << current_module->name.value << std::endl;
         current_module->Accept(this);
@@ -75,5 +76,5 @@ void CompileStatement::Visit(ProgramNode *node)
 
 void CompileStatement::Visit(FunctionCallNode *node)
 {
-    builder.CreateCall(compiler_context.get_function(node->name).function, {});
+    builder.CreateCall(this->program_scope.get_function(node->name).function, {});
 }

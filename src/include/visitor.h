@@ -6,6 +6,7 @@
 #include <Frontend/Ast.h>
 #include <map>
 #include <memory>
+#include <backend/CompilerContext.h>
 #include <backend/CompilerUtil.h>
 
 #ifndef SEMANTUC_FUCN
@@ -149,6 +150,7 @@ public:
     CompilerContext compiler_context;
     llvm::IRBuilder<> &builder;
     llvm::LLVMContext &context;
+    ProgramScope program_scope;
     CompileStatement(llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context, CompilerContext compiler_context);
     void Visit(ASTNode *node) override;
     void Visit(FunctionNode *node) override;
@@ -176,11 +178,14 @@ private:
 
 public:
     llvm::Module &module;
+    ProgramScope program;
     // std::map<std::string, Function> func_map;
     CompilerContext compiler_context;
     llvm::IRBuilder<> &builder;
     llvm::LLVMContext &context;
-    CompileExpr(llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context, CompilerContext compiler_context);
+    CompileExpr(llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context,
+                CompilerContext compiler_context,
+                ProgramScope program);
     llvm::Value *IntMathExpression(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
     llvm::Value *FloatMathExpression(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
     llvm::Value *BoolIntMathExpr(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
