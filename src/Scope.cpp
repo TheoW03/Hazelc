@@ -68,7 +68,6 @@ CompiledModuleClass::CompiledModuleClass()
 CompiledModuleClass::CompiledModuleClass(CompiledModule CompiledModule)
 {
     this->compiled_module = CompiledModule;
-    std::cout << "compiled module function size: " << compiled_module.functions.size() << std::endl;
 }
 
 std::optional<Function> CompiledModuleClass::get_function(Tokens name)
@@ -87,7 +86,6 @@ std::vector<Tokens> CompiledModuleClass::get_import_names()
 
 Function CompiledModuleClass::get_current_function()
 {
-    std::cout << this->compiled_module.functions.size() << std::endl;
     auto f = this->compiled_module.functions.front();
     compiled_module.functions.pop();
     return f;

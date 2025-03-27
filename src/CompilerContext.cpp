@@ -166,7 +166,6 @@ OptionalType CompilerContext::get_type(std::shared_ptr<Type> type)
 
 void CompilerContext::AddModule(std::string module_name, CompiledModule module)
 {
-    std::cout << "compiled module function size: " << module.functions.size() << std::endl;
 
     modules.insert(std::make_pair(module_name, CompiledModuleClass(module)));
 }

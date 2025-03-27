@@ -50,7 +50,6 @@ struct Function
     std::shared_ptr<Type> ret_type;
     Tokens name;
     std::vector<Thunks> thunks;
-    std::vector<std::shared_ptr<ASTNode>> functions;
 };
 #endif
 
