@@ -73,7 +73,7 @@ CompiledModuleClass::CompiledModuleClass(CompiledModule CompiledModule)
 
 std::optional<Function> CompiledModuleClass::get_function(Tokens name)
 {
-    if (this->compiled_module.func_map.find(name.value) == this->compiled_module.func_map.find(name.value))
+    if (this->compiled_module.func_map.find(name.value) == this->compiled_module.func_map.end())
     {
         return {};
     }
