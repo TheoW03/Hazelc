@@ -381,7 +381,6 @@ std::vector<Tokens> lexxer(std::vector<std::string> lines)
             }
             if (ctx.state == 0)
             {
-                std::cout << "0" << std::endl;
                 is_space(ctx, current_char);
             }
             else if (ctx.state == 1)

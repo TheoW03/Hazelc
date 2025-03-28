@@ -23,7 +23,6 @@ void ConstantFoldingVisitor::Visit(ModuleNode *node)
 void ConstantFoldingVisitor::Visit(ReturnNode *node)
 {
     FoldExpr expr;
-    std::cout << "Shared pointer reference count: " << node->Expr.use_count() << std::endl;
     node->Expr = expr.fold_expr(node->Expr);
 }
 
@@ -67,13 +66,11 @@ std::shared_ptr<ASTNode> FoldExpr::fold_expr(std::shared_ptr<ASTNode> n)
         auto expr = dynamic_cast<ExprNode *>(n.get());
         auto lhs = fold_expr(expr->lhs);
         auto rhs = fold_expr(expr->rhs);
-        std::cout << lhs->to_string() << std::endl;
-        std::cout << rhs->to_string() << std::endl;
-
         if (dynamic_cast<IntegerNode *>(lhs.get()) && dynamic_cast<IntegerNode *>(rhs.get()))
         {
             auto lhsInt = dynamic_cast<IntegerNode *>(lhs.get())->number;
             auto rhsInt = dynamic_cast<IntegerNode *>(rhs.get())->number;
+
             return fold_integer(std::make_shared<IntegerNode>(lhsInt),
                                 expr->operation, std::make_shared<IntegerNode>(rhsInt));
         }
