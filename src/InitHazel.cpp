@@ -71,11 +71,12 @@ int Init(std::vector<std::string> args)
     if (cli.print_tokens == 1)
         print_tokens(tokens);
     auto modules = parse_node(tokens);
+    std::cout << "hazelc: constant folding" << std::endl;
+    ConstantFoldingVisitor *s2 = new ConstantFoldingVisitor;
     std::cout << "hazelc: parsed" << std::endl;
     std::cout << "" << std::endl;
     SemanticAnalysisTopLevel *s = new SemanticAnalysisTopLevel;
     // modules->Accept(s);
-    SemanticAnalysisVisit *s2 = new SemanticAnalysisVisit;
     modules->Accept(s2);
     std::cout << "hazelc: semantic analysis" << std::endl;
     std::cout << "" << std::endl;

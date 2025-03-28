@@ -386,25 +386,25 @@ std::vector<Tokens> lexxer(std::vector<std::string> lines)
             }
             else if (ctx.state == 1)
             {
-                std::cout << "state 1 " << " current char: " << current_char << std::endl;
+                // std::cout << "state 1 " << " current char: " << current_char << std::endl;
 
                 is_number(ctx, current_char);
             }
             else if (ctx.state == 2)
             {
-                std::cout << "state 2 " << "current char: " << current_char << std::endl;
+                // std::cout << "state 2 " << "current char: " << current_char << std::endl;
 
                 is_operand(ctx, current_char);
             }
             else if (ctx.state == 3)
             {
-                std::cout << "state 3 " << "current char: " << current_char << std::endl;
+                // std::cout << "state 3 " << "current char: " << current_char << std::endl;
 
                 is_equal(ctx, current_char);
             }
             else if (ctx.state == 4)
             {
-                std::cout << "state 4 " << "current char: " << current_char << std::endl;
+                // std::cout << "state 4 " << "current char: " << current_char << std::endl;
 
                 dot_state(ctx, current_char);
             }

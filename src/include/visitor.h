@@ -81,10 +81,10 @@ public:
 #endif
 #ifndef SEMANTIC_H
 #define SEMANTIC_H
-class SemanticAnalysisVisit : public Visitor
+class ConstantFoldingVisitor : public Visitor
 {
 public:
-    SemanticAnalysisVisit();
+    ConstantFoldingVisitor();
     void Visit(ASTNode *node) override;
     void Visit(FunctionNode *node) override;
     void Visit(ModuleNode *node) override;

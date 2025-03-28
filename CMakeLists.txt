@@ -34,7 +34,7 @@ add_llvm_executable(${EXECUTABLE_NAME}
    src/Ast.cpp
    src/InitHazel.cpp
    src/Compiler.cpp
-   src/semantic_analysis.cpp
+   src/ConstantFolding.cpp
    src/visitor.cpp
    src/CompileStatement.cpp
    src/CompileExpr.cpp
