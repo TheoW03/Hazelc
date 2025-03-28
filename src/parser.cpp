@@ -11,6 +11,7 @@ std::optional<Tokens> current;
 std::optional<std::shared_ptr<ASTNode>> expression(std::vector<Tokens> &tokens);
 std::optional<std::shared_ptr<FunctionRefNode>> parse_function_ref(std::vector<Tokens> &tokens);
 using parser = std::optional<std::shared_ptr<ASTNode>> (*)(std::vector<Tokens> &);
+std::optional<std::shared_ptr<ASTNode>> parse_bitshift(std::vector<Tokens> &tokens);
 
 std::optional<Tokens> match_and_remove(TokenType token_type, std::vector<Tokens> &tokens)
 {
@@ -147,15 +148,20 @@ std::optional<std::shared_ptr<ASTNode>> BoolExpr(std::vector<Tokens> &tokens)
     }
     return lhs;
 }
+
 std::optional<std::shared_ptr<ASTNode>> term(std::vector<Tokens> &tokens)
 {
-    auto term_tokens = {TokenType::Multiplication,
-                        TokenType::Division,
-                        TokenType::Modulas,
-                        TokenType::And,
-                        TokenType::Or,
-                        TokenType::Left_Shift,
-                        TokenType::Right_Shift};
+    auto term_tokens = {
+        TokenType::Multiplication,
+        TokenType::Division,
+        TokenType::Modulas,
+
+    };
+
+    // TokenType::And,
+    // TokenType::Or,
+    // TokenType::Left_Shift,
+    // TokenType::Right_Shift};
     auto lhs = BoolExpr(tokens);
     auto op = match_and_remove(term_tokens,
                                tokens);
@@ -168,14 +174,39 @@ std::optional<std::shared_ptr<ASTNode>> term(std::vector<Tokens> &tokens)
     }
     return lhs;
 }
+
 std::optional<std::shared_ptr<ASTNode>> expression(std::vector<Tokens> &tokens)
 {
     auto lhs = term(tokens);
-    auto expression_tokens = {TokenType::Addition, TokenType::Subtraction, TokenType::Concation};
+    auto expression_tokens = {
+        TokenType::Addition,
+        TokenType::Subtraction,
+        TokenType::Concation,
+        TokenType::Left_Shift,
+        TokenType::Right_Shift,
+        TokenType::And,
+        TokenType::Or
+
+    };
     auto op = match_and_remove(expression_tokens, tokens);
     while (op.has_value())
     {
         auto rhs = term(tokens);
+        lhs = std::make_shared<ExprNode>(lhs.value(), op.value(), rhs.value());
+        op = match_and_remove(expression_tokens, tokens);
+    }
+    return lhs;
+}
+std::optional<std::shared_ptr<ASTNode>> parse_bitshift(std::vector<Tokens> &tokens)
+{
+    auto lhs = expression(tokens);
+    auto expression_tokens = {
+        TokenType::Left_Shift,
+        TokenType::Right_Shift};
+    auto op = match_and_remove(expression_tokens, tokens);
+    while (op.has_value())
+    {
+        auto rhs = expression(tokens);
         lhs = std::make_shared<ExprNode>(lhs.value(), op.value(), rhs.value());
         op = match_and_remove(expression_tokens, tokens);
     }

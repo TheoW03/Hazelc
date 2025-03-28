@@ -56,6 +56,8 @@ std::string ExprNode::to_string()
     token_map[TokenType::Subtraction] = "-";
     token_map[TokenType::Multiplication] = "*";
     token_map[TokenType::Division] = "/";
+    token_map[TokenType::Left_Shift] = "<<";
+
     return lhs->to_string() + token_map[operation.type] + rhs->to_string();
 }
 

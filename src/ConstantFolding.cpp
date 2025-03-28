@@ -43,14 +43,43 @@ FoldExpr::FoldExpr()
 }
 std::shared_ptr<ASTNode> FoldExpr::fold_integer(std::shared_ptr<IntegerNode> lhs, Tokens op, std::shared_ptr<IntegerNode> rhs)
 {
-    std::cout << "number: " << lhs->number << std::endl;
-
-    std::cout << "nuymber: " << rhs->number << std::endl;
+    std::cout << "lhs: " << lhs->number << std::endl;
+    std::cout << "rhs:" << lhs->number << std::endl;
 
     switch (op.type)
     {
     case Addition:
         return std::make_shared<IntegerNode>(lhs->number + rhs->number);
+        break;
+    case Subtraction:
+        return std::make_shared<IntegerNode>(lhs->number - rhs->number);
+        break;
+    case Multiplication:
+        return std::make_shared<IntegerNode>(lhs->number * rhs->number);
+        break;
+    case Division:
+        return std::make_shared<IntegerNode>(lhs->number / rhs->number);
+        break;
+    case Modulas:
+        return std::make_shared<IntegerNode>(lhs->number % rhs->number);
+        break;
+    case And:
+        return std::make_shared<IntegerNode>(lhs->number & rhs->number);
+        break;
+    case Or:
+        return std::make_shared<IntegerNode>(lhs->number | rhs->number);
+        break;
+    case Left_Shift:
+    {
+        int v = lhs->number << rhs->number;
+
+        std::cout << v << std::endl;
+        return std::make_shared<IntegerNode>(lhs->number << rhs->number);
+        break;
+    }
+
+    case Right_Shift:
+        return std::make_shared<IntegerNode>(lhs->number >> rhs->number);
         break;
     default:
         break;

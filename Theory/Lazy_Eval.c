@@ -57,6 +57,7 @@ int functio_for_b(struct Params *params)
 }
 int main(int argc, char const *argv[])
 {
+
     /* code */
 
     // int f = factorial(&p);
