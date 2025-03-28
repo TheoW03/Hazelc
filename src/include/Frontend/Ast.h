@@ -91,6 +91,7 @@ public:
     int number;
 
     IntegerNode(Tokens num);
+    IntegerNode(int num);
     void Accept(Visitor *v);
     std::string to_string();
 };

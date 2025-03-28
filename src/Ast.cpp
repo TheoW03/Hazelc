@@ -23,6 +23,10 @@ IntegerNode::IntegerNode(Tokens num)
         this->number = std::stoul(num.value, nullptr, 2);
     }
 }
+IntegerNode::IntegerNode(int num)
+{
+    this->number = num;
+}
 void IntegerNode::Accept(Visitor *v) {}
 
 std::string IntegerNode::to_string()

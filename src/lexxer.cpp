@@ -199,9 +199,13 @@ void is_operand(Lexxer_Context &ctx, char value)
         ctx.buffer += value;
     }
     is_token(ctx);
+
     ctx.buffer += value;
-    if (value != '(')
+
+    if (value != '(' && value != ')')
         ctx.state = 1;
+    else
+        ctx.state = 2;
 }
 void is_equal(Lexxer_Context &ctx, char value)
 {
@@ -211,12 +215,13 @@ void is_equal(Lexxer_Context &ctx, char value)
     }
     else
     {
-        void is_number(Lexxer_Context & ctx, char value);
-        is_token(ctx);
-        is_number(ctx, value);
+        // void is_number(Lexxer_Context & ctx, char value);
 
-        ctx.state = 1;
+        is_token(ctx);
+        ctx.buffer += value;
+        // is_number(ctx, value);
     }
+    ctx.state = 1;
 }
 
 void is_number(Lexxer_Context &ctx, char value)
@@ -236,7 +241,6 @@ void is_number(Lexxer_Context &ctx, char value)
 
         is_token(ctx);
         ctx.buffer += value;
-        // std::cout << "state2 " << value << std::endl;
         ctx.state = 2;
     }
     else if (value == ':' || value == ',' || value == '[' || value == ']')
@@ -377,7 +381,6 @@ std::vector<Tokens> lexxer(std::vector<std::string> lines)
             }
             if (ctx.state == 0)
             {
-                // std::cout << "0" << std::endl;
                 is_space(ctx, current_char);
             }
             else if (ctx.state == 1)
@@ -394,12 +397,14 @@ std::vector<Tokens> lexxer(std::vector<std::string> lines)
             }
             else if (ctx.state == 3)
             {
-                // std::cout << "state 2 " << "current char: " << current_char << std::endl;
+                // std::cout << "state 3 " << "current char: " << current_char << std::endl;
 
                 is_equal(ctx, current_char);
             }
             else if (ctx.state == 4)
             {
+                // std::cout << "state 4 " << "current char: " << current_char << std::endl;
+
                 dot_state(ctx, current_char);
             }
         }
