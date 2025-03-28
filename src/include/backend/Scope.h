@@ -36,7 +36,7 @@ public:
     void set_current(Tokens name);
     Function get_function(Tokens name);
     Function get_current_function();
-    void addLocal(Tokens name, Function function);
+    std::optional<int> addLocal(Tokens name, Function function);
 };
 
 #endif

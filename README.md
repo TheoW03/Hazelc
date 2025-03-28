@@ -3,10 +3,9 @@
 ![](https://img.shields.io/badge/License-GPLv3-blue.svg)
 ![](https://tokei.rs/b1/github/TheoW03/hazel)
 
-hazel is a declartive functional paradigm programming langauge. its syntax and name is inpsired by haskell.
+Hazel is a declartive functional paradigm programming language. 
 
-It uses a LLVM compiler, hazelc.
-
+This is the Compiler for it, hazelc
 
 ## build instrcutions
 

@@ -230,6 +230,10 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
 {
     if (dynamic_cast<IntegerNode *>(node.get()))
     {
+
+        std::cout << "integer" << std::endl;
+        std::cout << "Folding ExprNode: lhs = " << typeid(*node).name()
+                  << ", rhs = " << typeid(*node).name() << std::endl;
         auto c = dynamic_cast<IntegerNode *>(node.get());
         auto get_int_type = compiler_context.get_integer_type();
         auto number = llvm::ConstantInt::get(builder.getInt64Ty(), c->number);
@@ -285,6 +289,7 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         auto c = dynamic_cast<ExprNode *>(node.get());
 
         auto lhs = Expression(c->lhs);
+
         auto rhs = Expression(c->rhs);
         auto get_type = get_expr_type(node, this->program);
         switch (get_type)

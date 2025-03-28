@@ -68,12 +68,23 @@ public:
     virtual void Visit(ProgramNode *node) = 0;
 };
 #endif
+#ifndef FOLD_EXPR_H
+#define FOLD_EXPR_H
+class FoldExpr
+{
+public:
+    FoldExpr();
+    std::shared_ptr<ASTNode> fold_integer(std::shared_ptr<IntegerNode> lhs, Tokens op, std::shared_ptr<IntegerNode> rhs);
+    std::shared_ptr<ASTNode> fold_expr(std::shared_ptr<ASTNode> n);
+};
 
+#endif
 #ifndef SEMANTIC_H
 #define SEMANTIC_H
 class SemanticAnalysisVisit : public Visitor
 {
 public:
+    SemanticAnalysisVisit();
     void Visit(ASTNode *node) override;
     void Visit(FunctionNode *node) override;
     void Visit(ModuleNode *node) override;

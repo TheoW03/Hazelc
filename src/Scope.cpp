@@ -50,15 +50,17 @@ Function ProgramScope::get_current_function()
     return current_module.get_current_function();
 }
 
-void ProgramScope::addLocal(Tokens name, Function function)
+std::optional<int> ProgramScope::addLocal(Tokens name, Function function)
 {
     if (this->local_functions.find(name.value) != this->local_functions.end())
     {
         local_functions[name.value] = function;
+        return {};
     }
     else
     {
         local_functions.insert(std::make_pair(name.value, function));
+        return 1;
     }
 }
 CompiledModuleClass::CompiledModuleClass()
