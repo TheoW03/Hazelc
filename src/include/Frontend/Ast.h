@@ -105,6 +105,7 @@ class DecimalNode : public ASTNode
 public:
     double number;
     DecimalNode(Tokens num);
+    DecimalNode(double num);
     void Accept(Visitor *v);
     std::string to_string();
 };

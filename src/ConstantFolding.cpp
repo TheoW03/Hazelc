@@ -83,6 +83,25 @@ std::shared_ptr<ASTNode> FoldExpr::fold_integer(std::shared_ptr<IntegerNode> lhs
     return nullptr;
 }
 
+std::shared_ptr<ASTNode> FoldExpr::fold_decimal(std::shared_ptr<DecimalNode> lhs, Tokens op, std::shared_ptr<DecimalNode> rhs)
+{
+    switch (op.type)
+    {
+    case Addition:
+        return std::make_shared<DecimalNode>(lhs->number + rhs->number);
+        break;
+    case Subtraction:
+        return std::make_shared<DecimalNode>(lhs->number - rhs->number);
+        break;
+    case Multiplication:
+        return std::make_shared<DecimalNode>(lhs->number * rhs->number);
+        break;
+    case Division:
+        return std::make_shared<DecimalNode>(lhs->number / rhs->number);
+        break;
+    }
+}
+
 std::shared_ptr<ASTNode> FoldExpr::fold_expr(std::shared_ptr<ASTNode> n)
 {
 
@@ -98,6 +117,13 @@ std::shared_ptr<ASTNode> FoldExpr::fold_expr(std::shared_ptr<ASTNode> n)
 
             return fold_integer(std::make_shared<IntegerNode>(lhsInt),
                                 expr->operation, std::make_shared<IntegerNode>(rhsInt));
+        }
+        else if (dynamic_cast<DecimalNode *>(lhs.get()) && dynamic_cast<DecimalNode *>(rhs.get()))
+        {
+            auto lhsInt = dynamic_cast<DecimalNode *>(lhs.get())->number;
+            auto rhsInt = dynamic_cast<DecimalNode *>(rhs.get())->number;
+            return fold_decimal(std::make_shared<DecimalNode>(lhsInt),
+                                expr->operation, std::make_shared<DecimalNode>(rhsInt));
         }
         return std::make_shared<ExprNode>(lhs, expr->operation, rhs);
     }

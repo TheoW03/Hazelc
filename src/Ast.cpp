@@ -202,6 +202,10 @@ DecimalNode::DecimalNode(Tokens num)
     this->number = std::stod(num.value);
 }
 
+DecimalNode::DecimalNode(double num)
+{
+    this->number = num;
+}
 void DecimalNode::Accept(Visitor *v)
 {
 }
