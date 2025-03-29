@@ -43,8 +43,6 @@ FoldExpr::FoldExpr()
 }
 std::shared_ptr<ASTNode> FoldExpr::fold_integer(std::shared_ptr<IntegerNode> lhs, Tokens op, std::shared_ptr<IntegerNode> rhs)
 {
-    std::cout << "lhs: " << lhs->number << std::endl;
-    std::cout << "rhs:" << lhs->number << std::endl;
 
     switch (op.type)
     {
@@ -72,8 +70,6 @@ std::shared_ptr<ASTNode> FoldExpr::fold_integer(std::shared_ptr<IntegerNode> lhs
     case Left_Shift:
     {
         int v = lhs->number << rhs->number;
-
-        std::cout << v << std::endl;
         return std::make_shared<IntegerNode>(lhs->number << rhs->number);
         break;
     }
