@@ -65,26 +65,26 @@ TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n, ProgramScope ctx)
     if (dynamic_cast<BooleanExprNode *>(c->lhs.get()))
         return get_bool_expr_type(c->lhs, ctx);
 }
-std::shared_ptr<ASTNode> fold(std::shared_ptr<ASTNode> node)
-{
+// std::shared_ptr<ASTNode> fold(std::shared_ptr<ASTNode> node)
+// {
 
-    if (dynamic_cast<ExprNode *>(node.get()))
-    {
-        auto f = dynamic_cast<ExprNode *>(node.get());
-        auto lhs = fold(f->lhs);
-        auto rhs = fold(f->rhs);
-        if (dynamic_cast<StringNode *>(lhs.get()) && dynamic_cast<StringNode *>(rhs.get()))
-        {
-            auto str_lhs = dynamic_cast<StringNode *>(lhs.get());
-            auto str_rhs = dynamic_cast<StringNode *>(rhs.get());
-            Tokens newStrToken = {str_lhs->value.value + str_rhs->value.value, TokenType::String_Lit, str_lhs->value.line_num};
-            return std::make_shared<StringNode>(newStrToken);
-        }
-        // auto c = std::make_shared<ExprNode>(dynamic_cast<IntegerNode *>(node.get()));
-        // return c;
-    }
-    return node;
-}
+//     if (dynamic_cast<ExprNode *>(node.get()))
+//     {
+//         auto f = dynamic_cast<ExprNode *>(node.get());
+//         auto lhs = fold(f->lhs);
+//         auto rhs = fold(f->rhs);
+//         if (dynamic_cast<StringNode *>(lhs.get()) && dynamic_cast<StringNode *>(rhs.get()))
+//         {
+//             auto str_lhs = dynamic_cast<StringNode *>(lhs.get());
+//             auto str_rhs = dynamic_cast<StringNode *>(rhs.get());
+//             Tokens newStrToken = {str_lhs->value.value + str_rhs->value.value, TokenType::String_Lit, str_lhs->value.line_num};
+//             return std::make_shared<StringNode>(newStrToken);
+//         }
+//         // auto c = std::make_shared<ExprNode>(dynamic_cast<IntegerNode *>(node.get()));
+//         // return c;
+//     }
+//     return node;
+// }
 OptionalType::OptionalType()
 {
     /* compiler stop bitching */

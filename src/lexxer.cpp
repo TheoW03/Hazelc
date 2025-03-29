@@ -197,15 +197,19 @@ void is_operand(Lexxer_Context &ctx, char value)
         || (value == '!' && ctx.buffer == "!")) // Index in
     {
         ctx.buffer += value;
-    }
-    is_token(ctx);
-
-    ctx.buffer += value;
-
-    if (value != '(' && value != ')')
+        is_token(ctx);
         ctx.state = 1;
+    }
     else
-        ctx.state = 2;
+    {
+        is_token(ctx);
+        ctx.buffer += value;
+
+        if (value != '(' && value != ')')
+            ctx.state = 1;
+        else
+            ctx.state = 2;
+    }
 }
 void is_equal(Lexxer_Context &ctx, char value)
 {

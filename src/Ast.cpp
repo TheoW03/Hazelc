@@ -261,6 +261,10 @@ std::string ListNode::to_string()
 
 StringNode::StringNode(Tokens value)
 {
+    this->value = value.value;
+}
+StringNode::StringNode(std::string value)
+{
     this->value = value;
 }
 

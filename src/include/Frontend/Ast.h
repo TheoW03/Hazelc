@@ -269,8 +269,11 @@ class Visitor;
 class StringNode : public ASTNode
 {
 public:
-    Tokens value;
+    // Tokens value;
+    std::string value;
     StringNode(Tokens value);
+    StringNode(std::string value);
+
     void Accept(Visitor *v);
     std::string to_string();
 };

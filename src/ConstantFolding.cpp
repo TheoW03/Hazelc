@@ -102,6 +102,18 @@ std::shared_ptr<ASTNode> FoldExpr::fold_decimal(std::shared_ptr<DecimalNode> lhs
     }
 }
 
+std::shared_ptr<ASTNode> FoldExpr::fold_string(std::shared_ptr<StringNode> lhs, Tokens op, std::shared_ptr<StringNode> rhs)
+{
+    switch (op.type)
+    {
+    case Concation:
+    {
+        return std::make_shared<StringNode>(lhs->value + rhs->value);
+        break;
+    }
+    }
+}
+
 std::shared_ptr<ASTNode> FoldExpr::fold_expr(std::shared_ptr<ASTNode> n)
 {
 
@@ -124,6 +136,13 @@ std::shared_ptr<ASTNode> FoldExpr::fold_expr(std::shared_ptr<ASTNode> n)
             auto rhsInt = dynamic_cast<DecimalNode *>(rhs.get())->number;
             return fold_decimal(std::make_shared<DecimalNode>(lhsInt),
                                 expr->operation, std::make_shared<DecimalNode>(rhsInt));
+        }
+        else if (dynamic_cast<StringNode *>(lhs.get()) && dynamic_cast<StringNode *>(rhs.get()))
+        {
+            auto lhsInt = dynamic_cast<StringNode *>(lhs.get())->value;
+            auto rhsInt = dynamic_cast<StringNode *>(rhs.get())->value;
+            return fold_string(std::make_shared<StringNode>(lhsInt),
+                               expr->operation, std::make_shared<StringNode>(rhsInt));
         }
         return std::make_shared<ExprNode>(lhs, expr->operation, rhs);
     }

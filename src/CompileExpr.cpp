@@ -266,8 +266,8 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
 
         auto a = compiler_context.get_string_type(context, builder);
         llvm::Value *structPtr = builder.CreateAlloca(a);
-        auto str = builder.CreateGlobalString(c->value.value);
-        auto length = llvm::ConstantInt::get(llvm::Type::getInt64Ty(context), c->value.value.size() + 1);
+        auto str = builder.CreateGlobalString(c->value);
+        auto length = llvm::ConstantInt::get(llvm::Type::getInt64Ty(context), c->value.size() + 1);
         auto value = this->CompileStr(str, length, structPtr);
         auto str_optional_type = compiler_context.get_string_type();
 
