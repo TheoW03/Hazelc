@@ -13,8 +13,8 @@
 #define SEMANTUC_FUCN
 struct SemanticFunction
 {
-    FunctionNode *f;
-    std::map<std::string, std::vector<SemanticFunction>> functions;
+    std::vector<std::shared_ptr<Type>> paremeters;
+    std::shared_ptr<Type> returnType;
 };
 
 #endif
@@ -24,9 +24,9 @@ struct SemanticFunction
 
 struct SemanticModule
 {
-    std::shared_ptr<ModuleNode> module;
-    std::map<std::string, std::vector<SemanticFunction>> functions;
-    std::map<std::string, std::vector<SemanticFunction>> exported_functions;
+    std::set<std::string> functions;
+    // std::shared_ptr<ModuleNode> module;
+    // std::map<std::string, std::vector<SemanticFunction>> functions;
 };
 
 #endif
@@ -108,7 +108,7 @@ class SemanticAnalysisTopLevel : public Visitor
 {
 public:
     std::map<std::string, std::shared_ptr<ModuleNode>> avail_modules;
-
+    std::set<std::string> module_functions;
     std::vector<SemanticModule> modules;
     std::shared_ptr<ModuleNode> current;
     SemanticModule current_AST_module;

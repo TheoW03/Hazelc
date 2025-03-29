@@ -6,16 +6,27 @@ void SemanticAnalysisTopLevel::Visit(ASTNode *node)
 
 void SemanticAnalysisTopLevel::Visit(FunctionNode *node)
 {
-    std::map<std::string, std::vector<SemanticFunction>> func;
-    SemanticFunction f = {node, func};
-    std::vector<SemanticFunction> functions;
-    functions.push_back(f);
-    auto c = std::make_pair(node->f->FunctionName.value, functions);
-    this->current_AST_module.functions.insert(c);
-    if (node->can_export == true)
+    if (module_functions.find(node->f->FunctionName.value) == module_functions.end())
     {
-        this->current_AST_module.exported_functions.insert(c);
+
+        module_functions.insert((node->f->FunctionName.value));
     }
+    else
+    {
+        std::cout << "repeating function name, \"" << node->f->FunctionName.value << "\"" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
+    // std::map<std::string, std::vector<SemanticFunction>> func;
+    // // SemanticFunction f = {no};
+    // std::vector<SemanticFunction> functions;
+    // functions.push_back(f);
+    // auto c = std::make_pair(node->f->FunctionName.value, functions);
+    // this->current_AST_module.functions.insert(c);
+    // if (node->can_export == true)
+    // {
+    //     this->current_AST_module.exported_functions.insert(c);
+    // }
 }
 
 void SemanticAnalysisTopLevel::Visit(ModuleNode *node)
@@ -48,9 +59,12 @@ void SemanticAnalysisTopLevel::Visit(ProgramNode *node)
     for (const auto &[key, current_module] : node->avail_modules)
     {
         SemanticModule c;
-        this->current_AST_module = c;
+        // this->current_AST_module = c;
         current_module->Accept(this);
-        this->modules.push_back(current_AST_module);
+        c = {this->module_functions};
+
+        this->module_functions.clear();
+        this->modules.push_back(c);
     }
     // DEBUG
     // for (int i = 0; i < this->modules.size(); i++)
