@@ -8,7 +8,7 @@
 
 std::optional<Tokens> current;
 
-std::optional<std::shared_ptr<ASTNode>> expression(std::vector<Tokens> &tokens);
+std::optional<std::shared_ptr<ASTNode>> expr_parse(std::vector<Tokens> &tokens);
 std::optional<std::shared_ptr<FunctionRefNode>> parse_function_ref(std::vector<Tokens> &tokens);
 using parser = std::optional<std::shared_ptr<ASTNode>> (*)(std::vector<Tokens> &);
 std::optional<std::shared_ptr<ASTNode>> parse_bitshift(std::vector<Tokens> &tokens);
@@ -66,7 +66,7 @@ std::optional<std::shared_ptr<ASTNode>> parse_list(std::vector<Tokens> &tokens)
     std::vector<std::shared_ptr<ASTNode>> values;
     while (!match_and_remove(TokenType::Closed_Bracket, tokens).has_value())
     {
-        values.push_back(expression(tokens)
+        values.push_back(expr_parse(tokens)
                              .value());
         match_and_remove(TokenType::Comma, tokens);
     }
@@ -121,7 +121,7 @@ std::optional<std::shared_ptr<ASTNode>> factor(std::vector<Tokens> &tokens)
     else if (look_ahead(TokenType::Open_Parenthesis, tokens))
     {
         match_and_remove(TokenType::Open_Parenthesis, tokens);
-        auto ret = expression(tokens);
+        auto ret = expr_parse(tokens);
         match_and_remove(TokenType::Close_Parenthesis, tokens);
         return ret;
     }
