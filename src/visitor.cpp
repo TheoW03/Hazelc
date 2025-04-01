@@ -37,6 +37,26 @@ void Visitor::Visit(DecimalNode *node)
 {
 }
 
+void Visitor::Visit(CharNode *node)
+{
+}
+
+void Visitor::Visit(StringNode *node)
+{
+}
+
+void Visitor::Visit(BooleanExprNode *node)
+{
+}
+
+void Visitor::Visit(BooleanConstNode *node)
+{
+}
+
 void Visitor::Visit(ExprNode *node)
+{
+}
+
+void Visitor::Visit(ListNode *node)
 {
 }
