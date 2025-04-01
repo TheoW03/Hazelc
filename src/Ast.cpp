@@ -27,7 +27,10 @@ IntegerNode::IntegerNode(int num)
 {
     this->number = num;
 }
-void IntegerNode::Accept(Visitor *v) {}
+void IntegerNode::Accept(Visitor *v)
+{
+    v->Visit(this);
+}
 
 std::string IntegerNode::to_string()
 {
@@ -46,6 +49,7 @@ std::shared_ptr<ASTNode> ExprNode::fold()
 }
 void ExprNode::Accept(Visitor *v)
 {
+    v->Visit(this);
 }
 
 std::string ExprNode::to_string()
@@ -208,6 +212,7 @@ DecimalNode::DecimalNode(double num)
 }
 void DecimalNode::Accept(Visitor *v)
 {
+    v->Visit(this);
 }
 
 std::string DecimalNode::to_string()
@@ -224,6 +229,7 @@ BooleanExprNode::BooleanExprNode(std::shared_ptr<ASTNode> lhs, Tokens operation,
 
 void BooleanExprNode::Accept(Visitor *v)
 {
+    v->Visit(this);
 }
 
 std::string BooleanExprNode::to_string()
@@ -238,6 +244,7 @@ BooleanConstNode::BooleanConstNode(Tokens value)
 
 void BooleanConstNode::Accept(Visitor *v)
 {
+    v->Visit(this);
 }
 
 std::string BooleanConstNode::to_string()
@@ -252,6 +259,7 @@ ListNode::ListNode(std::vector<std::shared_ptr<ASTNode>> values)
 
 void ListNode::Accept(Visitor *v)
 {
+    v->Visit(this);
 }
 
 std::string ListNode::to_string()
@@ -270,6 +278,7 @@ StringNode::StringNode(std::string value)
 
 void StringNode::Accept(Visitor *v)
 {
+    v->Visit(this);
 }
 
 std::string StringNode::to_string()
@@ -284,6 +293,7 @@ CharNode::CharNode(Tokens value)
 
 void CharNode::Accept(Visitor *v)
 {
+    v->Visit(this);
 }
 
 std::string CharNode::to_string()
