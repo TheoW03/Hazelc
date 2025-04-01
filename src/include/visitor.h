@@ -109,7 +109,7 @@ class SemanticGlobalScopeVisitor : public Visitor
 public:
     std::map<std::string, std::shared_ptr<ModuleNode>> avail_modules;
     std::set<std::string> module_functions;
-    std::vector<SemanticModule> modules;
+    std::map<std::string, SemanticModule> modules;
     std::shared_ptr<ModuleNode> current;
     SemanticModule current_AST_module;
     void Visit(ASTNode *node) override;
@@ -127,9 +127,9 @@ public:
 class SemanticLocalScopeVisitor : public Visitor
 {
 public:
-    std::vector<SemanticModule> modules;
+    std::map<std::string, SemanticModule> modules;
     SemanticModule current_AST_module;
-    SemanticLocalScopeVisitor(std::vector<SemanticModule> modules);
+    SemanticLocalScopeVisitor(std::map<std::string, SemanticModule> modules);
     void Visit(ASTNode *node) override;
     void Visit(FunctionNode *node) override;
     void Visit(ModuleNode *node) override;

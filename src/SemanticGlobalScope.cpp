@@ -62,7 +62,8 @@ void SemanticGlobalScopeVisitor::Visit(ProgramNode *node)
         // this->current_AST_module = c;
         current_module->Accept(this);
         c = {this->module_functions};
-        this->modules.push_back(c);
+        // this->modules.push_back(c);
+        this->modules.insert(std::make_pair(key, c));
         this->module_functions.clear();
     }
     // DEBUG
