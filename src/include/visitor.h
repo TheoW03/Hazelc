@@ -60,12 +60,15 @@ class Visitor
 public:
     Visitor();
     ~Visitor();
-    virtual void Visit(ASTNode *node) = 0;
-    virtual void Visit(ModuleNode *node) = 0;
-    virtual void Visit(FunctionNode *node) = 0;
-    virtual void Visit(ReturnNode *node) = 0;
-    virtual void Visit(FunctionCallNode *node) = 0;
-    virtual void Visit(ProgramNode *node) = 0;
+    virtual void Visit(ASTNode *node);
+    virtual void Visit(ModuleNode *node);
+    virtual void Visit(FunctionNode *node);
+    virtual void Visit(ReturnNode *node);
+    virtual void Visit(FunctionCallNode *node);
+    virtual void Visit(ProgramNode *node);
+    virtual void Visit(IntegerNode *node);
+    virtual void Visit(DecimalNode *node);
+    virtual void Visit(ExprNode *node);
 };
 #endif
 #ifndef FOLD_EXPR_H
@@ -83,6 +86,7 @@ public:
 };
 
 #endif
+
 #ifndef SEMANTIC_H
 #define SEMANTIC_H
 class ConstantFoldingVisitor : public Visitor
