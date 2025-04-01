@@ -1,5 +1,10 @@
 #include <visitor.h>
 
+SemanticLocalScopeVisitor::SemanticLocalScopeVisitor(std::vector<SemanticModule> modules)
+{
+    this->modules = modules;
+}
+
 void SemanticLocalScopeVisitor::Visit(ASTNode *node)
 {
 }
