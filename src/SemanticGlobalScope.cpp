@@ -1,10 +1,10 @@
 #include <visitor.h>
 #include <map>
-void SemanticAnalysisTopLevel::Visit(ASTNode *node)
+void SemanticGlobalScopeVisitor::Visit(ASTNode *node)
 {
 }
 
-void SemanticAnalysisTopLevel::Visit(FunctionNode *node)
+void SemanticGlobalScopeVisitor::Visit(FunctionNode *node)
 {
     if (module_functions.find(node->f->FunctionName.value) == module_functions.end())
     {
@@ -29,7 +29,7 @@ void SemanticAnalysisTopLevel::Visit(FunctionNode *node)
     // }
 }
 
-void SemanticAnalysisTopLevel::Visit(ModuleNode *node)
+void SemanticGlobalScopeVisitor::Visit(ModuleNode *node)
 {
     for (int i = 0; i < node->imports.size(); i++)
     {
@@ -45,15 +45,15 @@ void SemanticAnalysisTopLevel::Visit(ModuleNode *node)
     }
 }
 
-void SemanticAnalysisTopLevel::Visit(ReturnNode *node)
+void SemanticGlobalScopeVisitor::Visit(ReturnNode *node)
 {
 }
 
-void SemanticAnalysisTopLevel::Visit(FunctionCallNode *node)
+void SemanticGlobalScopeVisitor::Visit(FunctionCallNode *node)
 {
 }
 
-void SemanticAnalysisTopLevel::Visit(ProgramNode *node)
+void SemanticGlobalScopeVisitor::Visit(ProgramNode *node)
 {
     this->avail_modules = node->avail_modules;
     for (const auto &[key, current_module] : node->avail_modules)
@@ -62,9 +62,8 @@ void SemanticAnalysisTopLevel::Visit(ProgramNode *node)
         // this->current_AST_module = c;
         current_module->Accept(this);
         c = {this->module_functions};
-
-        this->module_functions.clear();
         this->modules.push_back(c);
+        this->module_functions.clear();
     }
     // DEBUG
     // for (int i = 0; i < this->modules.size(); i++)

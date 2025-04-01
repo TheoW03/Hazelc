@@ -168,6 +168,7 @@ std::map<std::string, TokenType> get_keyword_map()
     token_map[".."] = TokenType::Range;
     token_map["Type"] = TokenType::Generics;
     token_map["export"] = TokenType::Export;
+    token_map["instance"] = TokenType::Instance_Function;
 
     return token_map;
 }

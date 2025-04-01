@@ -43,7 +43,8 @@ add_llvm_executable(${EXECUTABLE_NAME}
    src/CompilerUtil.cpp
    src/Scope.cpp
    src/CompilerContext.cpp
-   src/SemanticTopLevel.cpp
+   src/SemanticGlobalScope.cpp
+   src/SemanticLocalScope.cpp
 
 )
 

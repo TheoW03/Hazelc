@@ -104,7 +104,27 @@ public:
 
 #ifndef SEMANTIC_TOP_H
 #define SEMANTIC_TOP_H
-class SemanticAnalysisTopLevel : public Visitor
+class SemanticGlobalScopeVisitor : public Visitor
+{
+public:
+    std::map<std::string, std::shared_ptr<ModuleNode>> avail_modules;
+    std::set<std::string> module_functions;
+    std::vector<SemanticModule> modules;
+    std::shared_ptr<ModuleNode> current;
+    SemanticModule current_AST_module;
+    void Visit(ASTNode *node) override;
+    void Visit(FunctionNode *node) override;
+    void Visit(ModuleNode *node) override;
+    void Visit(ReturnNode *node) override;
+    void Visit(FunctionCallNode *node) override;
+    void Visit(ProgramNode *node) override;
+};
+#endif
+
+#ifndef SEMANTIC_SCOPE_VISTOR_H
+#define SEMANTIC_SCOPE_VISTOR_H
+
+class SemanticLocalScopeVisitor : public Visitor
 {
 public:
     std::map<std::string, std::shared_ptr<ModuleNode>> avail_modules;

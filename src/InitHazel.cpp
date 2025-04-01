@@ -59,7 +59,7 @@ void runPasses(std::shared_ptr<ProgramNode> node)
     ConstantFoldingVisitor *s2 = new ConstantFoldingVisitor;
     node->Accept(s2);
     std::cout << "hazelc: semantic analysis" << std::endl;
-    SemanticAnalysisTopLevel *semantic = new SemanticAnalysisTopLevel;
+    SemanticGlobalScopeVisitor *semantic = new SemanticGlobalScopeVisitor;
     node->Accept(semantic);
     std::cout << "" << std::endl;
 }
