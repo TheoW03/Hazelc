@@ -3,7 +3,7 @@
 ![](https://img.shields.io/badge/License-GPLv3-blue.svg)
 ![](https://tokei.rs/b1/github/TheoW03/hazel)
 
-Hazel is a declartive functional paradigm programming language. 
+Hazel is a declarative functional paradigm programming language. 
 
 This is the Compiler for it, hazelc
 
