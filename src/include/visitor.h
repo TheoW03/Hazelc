@@ -13,8 +13,8 @@
 #define SEMANTUC_FUCN
 struct SemanticFunction
 {
-    FunctionNode *f;
-    std::map<std::string, std::vector<SemanticFunction>> functions;
+    std::vector<std::shared_ptr<Type>> paremeters;
+    std::shared_ptr<Type> returnType;
 };
 
 #endif
@@ -24,9 +24,9 @@ struct SemanticFunction
 
 struct SemanticModule
 {
-    std::shared_ptr<ModuleNode> module;
-    std::map<std::string, std::vector<SemanticFunction>> functions;
-    std::map<std::string, std::vector<SemanticFunction>> exported_functions;
+    std::set<std::string> functions;
+    // std::shared_ptr<ModuleNode> module;
+    // std::map<std::string, std::vector<SemanticFunction>> functions;
 };
 
 #endif
@@ -104,14 +104,32 @@ public:
 
 #ifndef SEMANTIC_TOP_H
 #define SEMANTIC_TOP_H
-class SemanticAnalysisTopLevel : public Visitor
+class SemanticGlobalScopeVisitor : public Visitor
 {
 public:
     std::map<std::string, std::shared_ptr<ModuleNode>> avail_modules;
-
-    std::vector<SemanticModule> modules;
+    std::set<std::string> module_functions;
+    std::map<std::string, SemanticModule> modules;
     std::shared_ptr<ModuleNode> current;
     SemanticModule current_AST_module;
+    void Visit(ASTNode *node) override;
+    void Visit(FunctionNode *node) override;
+    void Visit(ModuleNode *node) override;
+    void Visit(ReturnNode *node) override;
+    void Visit(FunctionCallNode *node) override;
+    void Visit(ProgramNode *node) override;
+};
+#endif
+
+#ifndef SEMANTIC_SCOPE_VISTOR_H
+#define SEMANTIC_SCOPE_VISTOR_H
+
+class SemanticLocalScopeVisitor : public Visitor
+{
+public:
+    std::map<std::string, SemanticModule> modules;
+    SemanticModule current_AST_module;
+    SemanticLocalScopeVisitor(std::map<std::string, SemanticModule> modules);
     void Visit(ASTNode *node) override;
     void Visit(FunctionNode *node) override;
     void Visit(ModuleNode *node) override;

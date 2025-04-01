@@ -49,6 +49,21 @@ std::vector<std::string> get_lines(Output cli)
     }
     return lines;
 }
+
+void runPasses(std::shared_ptr<ProgramNode> node)
+{
+    // This runs intermediate passes
+    // that take care of error checking and basic optimization if needed
+
+    std::cout << "hazelc: constant folding" << std::endl;
+    ConstantFoldingVisitor *s2 = new ConstantFoldingVisitor;
+    node->Accept(s2);
+    std::cout << "hazelc: semantic analysis" << std::endl;
+    SemanticGlobalScopeVisitor *semantic = new SemanticGlobalScopeVisitor;
+    node->Accept(semantic);
+    std::cout << "" << std::endl;
+}
+
 int Init(std::vector<std::string> args)
 {
 
@@ -74,11 +89,7 @@ int Init(std::vector<std::string> args)
 
     std::cout << "hazelc: parsed" << std::endl;
     std::cout << "" << std::endl;
-    std::cout << "hazelc: constant folding" << std::endl;
-    ConstantFoldingVisitor *s2 = new ConstantFoldingVisitor;
-    modules->Accept(s2);
-    std::cout << "hazelc: semantic analysis" << std::endl;
-    std::cout << "" << std::endl;
+    runPasses(modules);
 
     // SemanticAnalysisTopLevel seman_analy;
     InitCompiler(cli, modules);
