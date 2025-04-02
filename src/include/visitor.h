@@ -25,6 +25,7 @@ struct SemanticFunction
 struct SemanticModule
 {
     std::set<std::string> functions;
+    std::vector<Tokens> imports;
     // std::shared_ptr<ModuleNode> module;
     // std::map<std::string, std::vector<SemanticFunction>> functions;
 };
@@ -140,12 +141,14 @@ public:
     std::map<std::string, SemanticModule> modules;
     SemanticModule current_AST_module;
     SemanticLocalScopeVisitor(std::map<std::string, SemanticModule> modules);
+    std::optional<int> find_function(Tokens name);
     void Visit(ASTNode *node) override;
     void Visit(FunctionNode *node) override;
     void Visit(ModuleNode *node) override;
     void Visit(ReturnNode *node) override;
     void Visit(FunctionCallNode *node) override;
     void Visit(ProgramNode *node) override;
+    void Visit(ExprNode *node) override;
 };
 #endif
 

@@ -58,9 +58,17 @@ void runPasses(std::shared_ptr<ProgramNode> node)
     std::cout << "hazelc: constant folding" << std::endl;
     ConstantFoldingVisitor *s2 = new ConstantFoldingVisitor;
     node->Accept(s2);
+
+    // todo: dont forget in the documentation
+    //  to much that you dont ave access to improted modules
+    //  imports
     std::cout << "hazelc: semantic analysis" << std::endl;
-    SemanticGlobalScopeVisitor *semantic = new SemanticGlobalScopeVisitor;
+    SemanticGlobalScopeVisitor *semantic =
+        new SemanticGlobalScopeVisitor;
     node->Accept(semantic);
+    SemanticLocalScopeVisitor *semantic_local =
+        new SemanticLocalScopeVisitor(semantic->modules);
+    node->Accept(semantic_local);
     std::cout << "" << std::endl;
 }
 
