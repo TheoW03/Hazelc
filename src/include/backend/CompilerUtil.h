@@ -28,7 +28,8 @@ enum TypeOfExpr
     Boolean_Type,
     Integer_Type,
     Float_Type,
-    String_Type
+    String_Type,
+    Void_Type
 };
 
 #endif

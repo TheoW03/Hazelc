@@ -100,6 +100,7 @@ std::shared_ptr<ASTNode> FoldExpr::fold_decimal(std::shared_ptr<DecimalNode> lhs
         return std::make_shared<DecimalNode>(lhs->number / rhs->number);
         break;
     }
+    return nullptr;
 }
 
 std::shared_ptr<ASTNode> FoldExpr::fold_string(std::shared_ptr<StringNode> lhs, Tokens op, std::shared_ptr<StringNode> rhs)
@@ -112,6 +113,7 @@ std::shared_ptr<ASTNode> FoldExpr::fold_string(std::shared_ptr<StringNode> lhs, 
         break;
     }
     }
+    return nullptr;
 }
 
 std::shared_ptr<ASTNode> FoldExpr::fold_expr(std::shared_ptr<ASTNode> n)

@@ -5,7 +5,7 @@ SemanticLocalScopeVisitor::SemanticLocalScopeVisitor(std::map<std::string, Seman
     this->modules = modules;
 }
 
-std::optional<int> SemanticLocalScopeVisitor::find_function(Tokens name)
+std::optional<int> SemanticLocalScopeVisitor::find_function_global(Tokens name)
 {
     auto global_functions = this->current_AST_module.functions;
     if (global_functions.find(name.value) != global_functions.end())
@@ -24,7 +24,26 @@ std::optional<int> SemanticLocalScopeVisitor::find_function(Tokens name)
         }
     }
     return {};
-    // return std::optional<int>();
+}
+
+std::optional<int> SemanticLocalScopeVisitor::find_function_local(Tokens name)
+{
+    return std::optional<int>();
+}
+
+std::optional<int> SemanticLocalScopeVisitor::find_function(Tokens name)
+{
+    auto function_global = find_function_global(name);
+    if (function_global.has_value())
+    {
+        return function_global;
+    }
+    auto function_local = find_function_local(name);
+    if (function_local.has_value())
+    {
+        return function_local;
+    }
+    return {}; // return std::optional<int>();
 }
 
 void SemanticLocalScopeVisitor::Visit(ASTNode *node)
@@ -33,10 +52,7 @@ void SemanticLocalScopeVisitor::Visit(ASTNode *node)
 
 void SemanticLocalScopeVisitor::Visit(FunctionNode *node)
 {
-    if (!find_function(node->f->FunctionName).has_value() && node->can_export)
-    {
-        std::cout << "hazelc: you can only export global functions" << std::endl;
-    }
+
     for (int i = 0; i < node->stmnts.size(); i++)
     {
         node->stmnts[i]->Accept(this);

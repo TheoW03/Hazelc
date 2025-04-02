@@ -137,10 +137,15 @@ public:
 
 class SemanticLocalScopeVisitor : public Visitor
 {
-public:
+private:
+    std::optional<int> find_function_global(Tokens name);
+    std::optional<int> find_function_local(Tokens name);
     std::map<std::string, SemanticModule> modules;
     SemanticModule current_AST_module;
+
+public:
     SemanticLocalScopeVisitor(std::map<std::string, SemanticModule> modules);
+
     std::optional<int> find_function(Tokens name);
     void Visit(ASTNode *node) override;
     void Visit(FunctionNode *node) override;
