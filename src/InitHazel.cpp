@@ -7,6 +7,9 @@
 #include <stdexcept>
 #include <visitor.h>
 #include <filesystem>
+#include <Frontend/SemanticCheckScopes.h>
+#include <optimization/ConstantFolding.h>
+
 void get_files(std::ifstream &file, std::vector<std::string> &lines)
 {
     std::string str;

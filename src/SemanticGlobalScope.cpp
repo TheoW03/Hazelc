@@ -1,4 +1,4 @@
-#include <visitor.h>
+#include <Frontend/SemanticCheckScopes.h>
 #include <map>
 void SemanticGlobalScopeVisitor::Visit(ASTNode *node)
 {

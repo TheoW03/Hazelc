@@ -1,4 +1,4 @@
-#include <visitor.h>
+#include <Frontend/SemanticCheckScopes.h>
 
 SemanticLocalScopeVisitor::SemanticLocalScopeVisitor(std::map<std::string, SemanticModule> modules)
 {

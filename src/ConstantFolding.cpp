@@ -1,4 +1,4 @@
-#include <visitor.h>
+#include <optimization/ConstantFolding.h>
 
 void ConstantFoldingVisitor::Visit(ASTNode *node)
 {

@@ -79,94 +79,90 @@ public:
 };
 #endif
 
-#ifndef FOLD_EXPR_H
-#define FOLD_EXPR_H
-class FoldExpr
-{
-private:
-    std::shared_ptr<ASTNode> fold_integer(std::shared_ptr<IntegerNode> lhs, Tokens op, std::shared_ptr<IntegerNode> rhs);
-    std::shared_ptr<ASTNode> fold_decimal(std::shared_ptr<DecimalNode> lhs, Tokens op, std::shared_ptr<DecimalNode> rhs);
-    std::shared_ptr<ASTNode> fold_string(std::shared_ptr<StringNode> lhs, Tokens op, std::shared_ptr<StringNode> rhs);
+// #ifndef FOLD_EXPR_H
+// #define FOLD_EXPR_H
+// class FoldExpr
+// {
+// private:
+//     std::shared_ptr<ASTNode> fold_integer(std::shared_ptr<IntegerNode> lhs, Tokens op, std::shared_ptr<IntegerNode> rhs);
+//     std::shared_ptr<ASTNode> fold_decimal(std::shared_ptr<DecimalNode> lhs, Tokens op, std::shared_ptr<DecimalNode> rhs);
+//     std::shared_ptr<ASTNode> fold_string(std::shared_ptr<StringNode> lhs, Tokens op, std::shared_ptr<StringNode> rhs);
 
-public:
-    FoldExpr();
-    std::shared_ptr<ASTNode> fold_expr(std::shared_ptr<ASTNode> n);
-};
+// public:
+//     FoldExpr();
+//     std::shared_ptr<ASTNode> fold_expr(std::shared_ptr<ASTNode> n);
+// };
 
-#endif
+// #endif
 
-#ifndef SEMANTIC_H
-#define SEMANTIC_H
-class ConstantFoldingVisitor : public Visitor
-{
-public:
-    ConstantFoldingVisitor();
-    void Visit(ASTNode *node) override;
-    void Visit(FunctionNode *node) override;
-    void Visit(ModuleNode *node) override;
-    void Visit(ReturnNode *node) override;
-    void Visit(FunctionCallNode *node) override;
-    void Visit(ProgramNode *node) override;
-};
-#endif
-#ifndef SCOPE_H
-#define SCOPE_H
+// #ifndef SEMANTIC_H
+// #define SEMANTIC_H
+// class ConstantFoldingVisitor : public Visitor
+// {
+// public:
+//     ConstantFoldingVisitor();
+//     void Visit(ASTNode *node) override;
+//     void Visit(FunctionNode *node) override;
+//     void Visit(ModuleNode *node) override;
+//     void Visit(ReturnNode *node) override;
+//     void Visit(FunctionCallNode *node) override;
+//     void Visit(ProgramNode *node) override;
+// };
+// #endif
 
-#endif
+// #ifndef SEMANTIC_TOP_H
+// #define SEMANTIC_TOP_H
+// class SemanticGlobalScopeVisitor : public Visitor
+// {
+// public:
+//     std::map<std::string, std::shared_ptr<ModuleNode>> avail_modules;
+//     std::set<std::string> module_functions;
+//     std::set<std::string> exported_functions;
+//     std::map<std::string, SemanticModule> modules;
+//     std::shared_ptr<ModuleNode> current;
+//     SemanticModule current_AST_module;
+//     void Visit(ASTNode *node) override;
+//     void Visit(FunctionNode *node) override;
+//     void Visit(ModuleNode *node) override;
+//     void Visit(ReturnNode *node) override;
+//     void Visit(FunctionCallNode *node) override;
+//     void Visit(ProgramNode *node) override;
+// };
+// #endif
 
-#ifndef SEMANTIC_TOP_H
-#define SEMANTIC_TOP_H
-class SemanticGlobalScopeVisitor : public Visitor
-{
-public:
-    std::map<std::string, std::shared_ptr<ModuleNode>> avail_modules;
-    std::set<std::string> module_functions;
-    std::set<std::string> exported_functions;
-    std::map<std::string, SemanticModule> modules;
-    std::shared_ptr<ModuleNode> current;
-    SemanticModule current_AST_module;
-    void Visit(ASTNode *node) override;
-    void Visit(FunctionNode *node) override;
-    void Visit(ModuleNode *node) override;
-    void Visit(ReturnNode *node) override;
-    void Visit(FunctionCallNode *node) override;
-    void Visit(ProgramNode *node) override;
-};
-#endif
+// #ifndef FUNCTION_LOCAL_SCOPE_H
+// #define FUNCTION_LOCAL_SCOPE_H
+// struct FunctionLocalScope
+// {
+//     std::set<std::string> functions;
+// };
+// #endif
 
-#ifndef FUNCTION_LOCAL_SCOPE_H
-#define FUNCTION_LOCAL_SCOPE_H
-struct FunctionLocalScope
-{
-    std::set<std::string> functions;
-};
-#endif
+// #ifndef SEMANTIC_SCOPE_VISTOR_H
+// #define SEMANTIC_SCOPE_VISTOR_H
 
-#ifndef SEMANTIC_SCOPE_VISTOR_H
-#define SEMANTIC_SCOPE_VISTOR_H
+// class SemanticLocalScopeVisitor : public Visitor
+// {
+// private:
+//     std::vector<FunctionLocalScope> scope;
+//     std::optional<int> find_function_global(Tokens name);
+//     std::optional<int> find_function_local(Tokens name);
+//     std::map<std::string, SemanticModule> modules;
+//     SemanticModule current_AST_module;
 
-class SemanticLocalScopeVisitor : public Visitor
-{
-private:
-    std::vector<FunctionLocalScope> scope;
-    std::optional<int> find_function_global(Tokens name);
-    std::optional<int> find_function_local(Tokens name);
-    std::map<std::string, SemanticModule> modules;
-    SemanticModule current_AST_module;
+// public:
+//     SemanticLocalScopeVisitor(std::map<std::string, SemanticModule> modules);
 
-public:
-    SemanticLocalScopeVisitor(std::map<std::string, SemanticModule> modules);
-
-    std::optional<int> find_function(Tokens name);
-    void Visit(ASTNode *node) override;
-    void Visit(FunctionNode *node) override;
-    void Visit(ModuleNode *node) override;
-    void Visit(ReturnNode *node) override;
-    void Visit(FunctionCallNode *node) override;
-    void Visit(ProgramNode *node) override;
-    void Visit(ExprNode *node) override;
-};
-#endif
+//     std::optional<int> find_function(Tokens name);
+//     void Visit(ASTNode *node) override;
+//     void Visit(FunctionNode *node) override;
+//     void Visit(ModuleNode *node) override;
+//     void Visit(ReturnNode *node) override;
+//     void Visit(FunctionCallNode *node) override;
+//     void Visit(ProgramNode *node) override;
+//     void Visit(ExprNode *node) override;
+// };
+// #endif
 
 #ifndef COMPILER_H
 #define COMPILER_H
