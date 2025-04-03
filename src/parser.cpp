@@ -212,6 +212,13 @@ std::optional<std::shared_ptr<ASTNode>> parse_bitshift(std::vector<Tokens> &toke
     }
     return lhs;
 }
+std::optional<std::shared_ptr<BranchNode>> parse_branch(std::vector<Tokens> &tokens)
+{
+    std::vector<std::shared_ptr<ASTNode>> parse_scope(std::vector<Tokens> & tokens);
+    auto condition = expr_parse(tokens);
+    auto stmnts = parse_scope(tokens);
+    return std::make_shared<BranchNode>(condition.value(), stmnts);
+}
 std::optional<std::shared_ptr<ConditionalNode>> parse_conditional(std::vector<Tokens> &tokens)
 {
     std::optional<std::shared_ptr<Type>> parse_type(std::vector<Tokens> & tokens);
@@ -219,6 +226,13 @@ std::optional<std::shared_ptr<ConditionalNode>> parse_conditional(std::vector<To
     match_and_remove(TokenType::Colon, tokens);
     auto type = parse_type(tokens);
     std::vector<std::shared_ptr<BranchNode>> c;
+    match_and_remove(TokenType::Indents, tokens);
+    while (!match_and_remove(TokenType::Dedents, tokens).has_value() //
+           && get_next_token(tokens).type != TokenType::EndOfFile)
+    {
+        c.push_back(parse_branch(tokens).value());
+    }
+
     return std::make_shared<ConditionalNode>(c, type.value());
 }
 std::optional<std::shared_ptr<ASTNode>> expr_parse(std::vector<Tokens> &tokens)
