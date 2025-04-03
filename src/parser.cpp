@@ -221,6 +221,7 @@ std::optional<std::shared_ptr<ASTNode>> expr_parse(std::vector<Tokens> &tokens)
     {
         return expression(tokens);
     }
+    return {};
 }
 std::vector<std::shared_ptr<FunctionRefNode>> parse_params(std::vector<Tokens> &tokens)
 {

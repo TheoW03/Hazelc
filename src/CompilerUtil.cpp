@@ -20,6 +20,7 @@ TypeOfExpr get_bool_expr_type(std::shared_ptr<ASTNode> n, ProgramScope ctx)
         return get_bool_expr_type(c->rhs, ctx);
     if (dynamic_cast<BooleanExprNode *>(c->rhs.get()))
         return get_bool_expr_type(c->rhs, ctx);
+    return TypeOfExpr::Void_Type;
 }
 TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n, ProgramScope ctx)
 {
@@ -52,6 +53,7 @@ TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n, ProgramScope ctx)
                 return TypeOfExpr::String_Type;
             }
         }
+        return TypeOfExpr::Void_Type;
         // if (f.)
         // auto c =
     }
@@ -64,6 +66,7 @@ TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n, ProgramScope ctx)
         return get_bool_expr_type(c->rhs, ctx);
     if (dynamic_cast<BooleanExprNode *>(c->lhs.get()))
         return get_bool_expr_type(c->lhs, ctx);
+    return TypeOfExpr::Void_Type;
 }
 // std::shared_ptr<ASTNode> fold(std::shared_ptr<ASTNode> node)
 // {

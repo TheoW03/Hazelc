@@ -99,6 +99,11 @@ OptionalType CompilerContext::compile_Type_Optional(std::shared_ptr<Type> ty)
         auto p = dynamic_cast<NativeType *>(ty.get());
         return NativeTypes[p->type.type];
     }
+    else
+    {
+        exit(EXIT_FAILURE);
+    }
+    // return
 }
 Thunks CompilerContext::get_thunk_types(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<FunctionRefNode> n)
 
@@ -162,6 +167,7 @@ OptionalType CompilerContext::get_type(std::shared_ptr<Type> type)
             return get_byte_type();
         }
     }
+    exit(EXIT_FAILURE);
 }
 
 void CompilerContext::AddModule(std::string module_name, CompiledModule module)
