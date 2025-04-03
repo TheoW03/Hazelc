@@ -1,4 +1,4 @@
-#include <visitor.h>
+#include <backend/compiler_visitors.h>
 #include <backend/CompilerUtil.h>
 #include <backend/CompilerContext.h>
 

@@ -1,4 +1,4 @@
-#include <visitor.h>
+#include <backend/compiler_visitors.h>
 #include <backend/CompilerUtil.h>
 
 CompileHighLevel::CompileHighLevel(llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context) : module(module), builder(builder), context(context)

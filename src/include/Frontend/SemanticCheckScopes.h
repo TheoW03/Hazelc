@@ -1,5 +1,28 @@
 #include <visitor.h>
 
+#ifndef SEMANTUC_FUCN
+#define SEMANTUC_FUCN
+struct SemanticFunction
+{
+    std::vector<std::shared_ptr<Type>> paremeters;
+    std::shared_ptr<Type> returnType;
+};
+
+#endif
+
+#ifndef SEMANTIC_MODULE_H
+#define SEMANTIC_MODULE_H
+
+struct SemanticModule
+{
+    std::set<std::string> functions;
+    std::set<std::string> exported_functions;
+    std::vector<Tokens> imports;
+    // std::shared_ptr<ModuleNode> module;
+    // std::map<std::string, std::vector<SemanticFunction>> functions;
+};
+
+#endif
 #ifndef SEMANTIC_TOP_H
 #define SEMANTIC_TOP_H
 class SemanticGlobalScopeVisitor : public Visitor
