@@ -301,7 +301,9 @@ class BranchNode : public ASTNode
 {
 public:
     BranchNode();
-    BranchNode(std::shared_ptr<ASTNode> condition, std::vector<std::shared_ptr<ASTNode>> expr);
+    std::shared_ptr<ASTNode> condition;
+    std::vector<std::shared_ptr<ASTNode>> stmnts;
+    BranchNode(std::shared_ptr<ASTNode> condition, std::vector<std::shared_ptr<ASTNode>> stmnts);
     void Accept(Visitor *v) override;
     std::string to_string();
 };
@@ -314,6 +316,8 @@ class Visitor;
 class ConditionalNode : public ASTNode
 {
 public:
+    std::vector<std::shared_ptr<BranchNode>> branches;
+    std::shared_ptr<Type> type;
     ConditionalNode();
     ConditionalNode(std::vector<std::shared_ptr<BranchNode>> branches,
                     std::shared_ptr<Type> type);

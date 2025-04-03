@@ -339,10 +339,13 @@ ConditionalNode::ConditionalNode()
 
 ConditionalNode::ConditionalNode(std::vector<std::shared_ptr<BranchNode>> branches, std::shared_ptr<Type> type)
 {
+    this->branches = branches;
+    this->type = type;
 }
 
 void ConditionalNode::Accept(Visitor *v)
 {
+    v->Visit(this);
 }
 
 std::string ConditionalNode::to_string()
@@ -353,8 +356,10 @@ BranchNode::BranchNode()
 {
 }
 
-BranchNode::BranchNode(std::shared_ptr<ASTNode> condition, std::vector<std::shared_ptr<ASTNode>> expr)
+BranchNode::BranchNode(std::shared_ptr<ASTNode> condition, std::vector<std::shared_ptr<ASTNode>> stmnts)
 {
+    this->stmnts = stmnts;
+    this->condition = condition;
 }
 
 void BranchNode::Accept(Visitor *v)

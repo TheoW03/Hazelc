@@ -27,6 +27,9 @@ public:
     virtual void Visit(BooleanExprNode *node);
     virtual void Visit(BooleanConstNode *node);
     virtual void Visit(ExprNode *node);
+    virtual void Visit(ConditionalNode *node);
+    virtual void Visit(BranchNode *node);
+
     virtual void Visit(ListNode *node);
 };
 #endif

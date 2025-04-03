@@ -57,6 +57,14 @@ void Visitor::Visit(ExprNode *node)
 {
 }
 
+void Visitor::Visit(ConditionalNode *node)
+{
+}
+
+void Visitor::Visit(BranchNode *node)
+{
+}
+
 void Visitor::Visit(ListNode *node)
 {
 }
