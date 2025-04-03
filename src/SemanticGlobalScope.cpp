@@ -16,7 +16,10 @@ void SemanticGlobalScopeVisitor::Visit(FunctionNode *node)
         std::cout << "repeating function name, \"" << node->f->FunctionName.value << "\"" << std::endl;
         exit(EXIT_FAILURE);
     }
-
+    if (node->can_export)
+    {
+        this->exported_functions.insert(node->f->FunctionName.value);
+    }
     // std::map<std::string, std::vector<SemanticFunction>> func;
     // // SemanticFunction f = {no};
     // std::vector<SemanticFunction> functions;
@@ -61,10 +64,12 @@ void SemanticGlobalScopeVisitor::Visit(ProgramNode *node)
         SemanticModule c;
         // this->current_AST_module = c;
         current_module->Accept(this);
-        c = {this->module_functions, current_module->imports};
+        c = {this->module_functions, this->exported_functions, current_module->imports};
+
         // this->modules.push_back(c);
         this->modules.insert(std::make_pair(key, c));
         this->module_functions.clear();
+        this->exported_functions.clear();
     }
     // DEBUG
     // for (int i = 0; i < this->modules.size(); i++)

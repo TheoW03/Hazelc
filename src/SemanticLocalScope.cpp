@@ -17,7 +17,7 @@ std::optional<int> SemanticLocalScopeVisitor::find_function_global(Tokens name)
         auto imports = current_AST_module.imports;
         for (int i = 0; i < imports.size(); i++)
         {
-            if (modules[imports[i].value].functions.find(name.value) != global_functions.end())
+            if (modules[imports[i].value].exported_functions.find(name.value) != modules[imports[i].value].exported_functions.end())
             {
                 return 1;
             }
@@ -28,7 +28,14 @@ std::optional<int> SemanticLocalScopeVisitor::find_function_global(Tokens name)
 
 std::optional<int> SemanticLocalScopeVisitor::find_function_local(Tokens name)
 {
-    return std::optional<int>();
+    for (int i = 0; i < scope.size(); i++)
+    {
+        if (scope[i].functions.find(name.value) != scope[i].functions.end())
+        {
+            return 1;
+        }
+    }
+    return {};
 }
 
 std::optional<int> SemanticLocalScopeVisitor::find_function(Tokens name)
@@ -52,13 +59,25 @@ void SemanticLocalScopeVisitor::Visit(ASTNode *node)
 
 void SemanticLocalScopeVisitor::Visit(FunctionNode *node)
 {
+    if ((find_function_global(node->f->FunctionName).has_value() && scope.size() != 0) //
+        || find_function_local(node->f->FunctionName).has_value())
+    {
+        std::cout << "there is an already defined function \"" << node->f->FunctionName.value << "\"" << node->f->FunctionName.line_num << std::endl;
+        exit(EXIT_FAILURE);
+    }
+    if (scope.size() > 1)
+    {
+        scope[scope.size() - 1].functions.insert(node->f->FunctionName.value);
+    }
+    FunctionLocalScope f;
+    scope.push_back(f);
 
     for (int i = 0; i < node->stmnts.size(); i++)
     {
         node->stmnts[i]->Accept(this);
     }
+    scope.erase(scope.end() - 1);
 }
-
 void SemanticLocalScopeVisitor::Visit(ModuleNode *node)
 {
     for (int i = 0; i < node->functions.size(); i++)
