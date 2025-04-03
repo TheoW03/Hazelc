@@ -212,10 +212,20 @@ std::optional<std::shared_ptr<ASTNode>> parse_bitshift(std::vector<Tokens> &toke
     }
     return lhs;
 }
+std::optional<std::shared_ptr<ConditionalNode>> parse_conditional(std::vector<Tokens> &tokens)
+{
+    std::optional<std::shared_ptr<Type>> parse_type(std::vector<Tokens> & tokens);
+    match_and_remove(TokenType::Conditional, tokens);
+    match_and_remove(TokenType::Colon, tokens);
+    auto type = parse_type(tokens);
+    std::vector<std::shared_ptr<BranchNode>> c;
+    return std::make_shared<ConditionalNode>(c, type.value());
+}
 std::optional<std::shared_ptr<ASTNode>> expr_parse(std::vector<Tokens> &tokens)
 {
     if (look_ahead(TokenType::Conditional, tokens))
     {
+        return parse_conditional(tokens);
     }
     else
     {

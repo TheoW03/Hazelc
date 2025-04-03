@@ -332,3 +332,36 @@ std::string ProgramNode::to_string()
 {
     return std::string();
 }
+
+ConditionalNode::ConditionalNode()
+{
+}
+
+ConditionalNode::ConditionalNode(std::vector<std::shared_ptr<BranchNode>> branches, std::shared_ptr<Type> type)
+{
+}
+
+void ConditionalNode::Accept(Visitor *v)
+{
+}
+
+std::string ConditionalNode::to_string()
+{
+    return std::string();
+}
+BranchNode::BranchNode()
+{
+}
+
+BranchNode::BranchNode(std::shared_ptr<ASTNode> condition, std::vector<std::shared_ptr<ASTNode>> expr)
+{
+}
+
+void BranchNode::Accept(Visitor *v)
+{
+}
+
+std::string BranchNode::to_string()
+{
+    return std::string();
+}

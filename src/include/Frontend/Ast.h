@@ -29,6 +29,7 @@ public:
     std::string to_string();
 };
 #endif
+
 #ifndef TYPE_H
 #define TYPE_H
 class Type
@@ -289,6 +290,34 @@ public:
     Tokens value;
     CharNode(Tokens value);
     void Accept(Visitor *v);
+    std::string to_string();
+};
+#endif
+
+#ifndef BRANCH_NODE_H
+#define BRANCH_NODE_H
+class Visitor;
+class BranchNode : public ASTNode
+{
+public:
+    BranchNode();
+    BranchNode(std::shared_ptr<ASTNode> condition, std::vector<std::shared_ptr<ASTNode>> expr);
+    void Accept(Visitor *v) override;
+    std::string to_string();
+};
+#endif
+
+#ifndef CONDITIONAL_H
+#define CONDITIONAL_H
+
+class Visitor;
+class ConditionalNode : public ASTNode
+{
+public:
+    ConditionalNode();
+    ConditionalNode(std::vector<std::shared_ptr<BranchNode>> branches,
+                    std::shared_ptr<Type> type);
+    void Accept(Visitor *v) override;
     std::string to_string();
 };
 #endif
