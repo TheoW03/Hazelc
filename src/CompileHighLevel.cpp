@@ -57,7 +57,11 @@ void CompileHighLevel::Visit(FunctionNode *node)
     // std::cout << "func name: " << node->f->FunctionName.value << std::endl;
     // compiler_context.add_function(node->f->FunctionName, CompileFunctionHeader(node->f));
     if (is_global)
+    {
         this->func_map.insert(std::make_pair(node->f->FunctionName.value, compiled_function));
+        if (node->can_export)
+            this->exported_func_map.insert(std::make_pair(node->f->FunctionName.value, compiled_function));
+    }
     is_global = false;
     this->compiled_functions.push(compiled_function);
     for (int i = 0; i < node->stmnts.size(); i++)
@@ -102,8 +106,12 @@ void CompileHighLevel::Visit(ProgramNode *node)
     for (const auto &[key, current_module] : node->avail_modules)
     {
         current_module->Accept(this);
-        compiler_context.AddModule(current_module->name.value, {func_map, current_module->imports, this->compiled_functions});
+        compiler_context.AddModule(current_module->name.value, {func_map,
+                                                                this->exported_func_map,
+                                                                current_module->imports,
+                                                                this->compiled_functions});
         this->func_map.clear();
+        this->exported_func_map.clear();
         this->compiled_functions = {};
 
         // std::cout << "Key: " << key << ", Value: " << value << std::endl;

@@ -15,6 +15,7 @@ public:
     CompiledModuleClass();
     CompiledModuleClass(CompiledModule CompiledModule);
     std::optional<Function> get_function(Tokens name);
+    std::optional<Function> get_exported_function(Tokens name);
     std::vector<Tokens> get_import_names();
     Function get_current_function();
 };

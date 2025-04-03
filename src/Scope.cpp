@@ -36,9 +36,9 @@ std::optional<Function> ProgramScope::get_global_function(Tokens name)
         auto import_list = this->current_module.get_import_names();
         for (int i = 0; i < import_list.size(); i++)
         {
-            if (modules[import_list[i].value].get_function(name).has_value())
+            if (modules[import_list[i].value].get_exported_function(name).has_value())
             {
-                return modules[import_list[i].value].get_function(name).value();
+                return modules[import_list[i].value].get_exported_function(name).value();
             }
         }
         return {};
@@ -55,6 +55,7 @@ std::optional<int> ProgramScope::addLocal(Tokens name, Function function)
     if (this->local_functions.find(name.value) != this->local_functions.end())
     {
         local_functions[name.value] = function;
+        std::cout << "aaa" << std::endl;
         return {};
     }
     else
@@ -86,6 +87,15 @@ std::vector<Tokens> CompiledModuleClass::get_import_names()
     return compiled_module.imports;
 }
 
+std::optional<Function> CompiledModuleClass::get_exported_function(Tokens name)
+{
+
+    if (this->compiled_module.export_function.find(name.value) == this->compiled_module.export_function.end())
+    {
+        return {};
+    }
+    return this->compiled_module.export_function[name.value];
+}
 Function CompiledModuleClass::get_current_function()
 {
     auto f = this->compiled_module.functions.front();
