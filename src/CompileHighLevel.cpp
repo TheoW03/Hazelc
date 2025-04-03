@@ -1,5 +1,6 @@
 #include <visitor.h>
 #include <backend/CompilerUtil.h>
+#include <backend/ComplierVisitors.h>
 
 CompileHighLevel::CompileHighLevel(llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context) : module(module), builder(builder), context(context)
 {
