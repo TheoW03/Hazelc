@@ -127,3 +127,8 @@ llvm::Value *OptionalType::get_none(llvm::IRBuilder<> &builder)
 {
     return nullptr;
 }
+
+llvm::Type *OptionalType::get_type()
+{
+    return this->type;
+}

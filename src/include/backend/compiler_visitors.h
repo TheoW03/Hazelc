@@ -76,6 +76,7 @@ private:
 
     llvm::Value *IntegerBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
     llvm::Value *FloatBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
+    llvm::Value *CompileBranch(std::vector<std::shared_ptr<ASTNode>> stmnts);
 
 public:
     llvm::Module &module;

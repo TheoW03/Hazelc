@@ -117,6 +117,18 @@ llvm::Value *CompileExpr::FloatBool(llvm::Value *lhs, Tokens op, llvm::Value *rh
     auto math = BoolFloatMathExpr(lhs_val, op, rhs_val);
     return BoolType.set_loaded_value(math, builder);
 }
+llvm::Value *CompileExpr::CompileBranch(std::vector<std::shared_ptr<ASTNode>> stmnts)
+{
+    for (int i = 0; i < stmnts.size(); i++)
+    {
+        if (dynamic_cast<ReturnNode *>(stmnts[i].get()))
+        {
+            auto c = dynamic_cast<ReturnNode *>(stmnts[i].get());
+            return Expression(c->Expr);
+        }
+    }
+}
+
 llvm::Value *CompileExpr::FloatMathExpression(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
 {
     switch (op.type)
@@ -239,7 +251,12 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
     }
     else if (dynamic_cast<BranchNode *>(node.get()))
     {
-        // auto branch = dynamic_cast<BranchNode>(node.get());
+        // auto =
+        // return Expression()
+        auto branch = dynamic_cast<BranchNode *>(node.get());
+
+        // auto c = dynamic_cast<ReturnNode *>(branch->stmnts[0].get());
+        return Expression(branch->condition);
         // return Expression()
     }
     else if (dynamic_cast<ConditionalNode *>(node.get()))
@@ -249,20 +266,28 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         // llvm::BasicBlock *ifTrue = llvm::BasicBlock::Create(context, "if.true", program.get_current_function().function);
         // llvm::BasicBlock *ElseTrue = llvm::BasicBlock::Create(context, "else.true", program.get_current_function().function);
         auto type = compiler_context.get_type(condition->type);
-        llvm::PHINode *phi = builder.CreatePHI(type.type, condition->branches.size(), "iftmp");
-
-        for (int i = 0; i < condition->branches.size(); i += 2)
+        llvm::PHINode *phi = builder.CreatePHI(type.get_type(), condition->branches.size(), "iftmp");
+        for (int i = 0; i < condition->branches.size(); i++)
         {
+
             auto branch = condition->branches[i];
             llvm::BasicBlock *ifTrue = llvm::BasicBlock::Create(context, "if.true", program.get_current_function().function);
             llvm::BasicBlock *ElseTrue = llvm::BasicBlock::Create(context, "else.true", program.get_current_function().function);
+            auto condition = Expression(branch);
+            condition = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(compiler_context.get_boolean_type().type, condition, 1, "str2"));
+            builder.CreateCondBr(condition, ifTrue, ElseTrue);
+            builder.SetInsertPoint(ifTrue);
+            auto value = CompileBranch(branch->stmnts);
+            value = builder.CreateLoad(type.type, value);
+            phi->addIncoming(value, ifTrue);
+            builder.SetInsertPoint(ElseTrue);
 
             // use phi to append on
             // and keep going
-            auto condition = Expression(branch);
 
             // Expression(condition->branches[i]);
         }
+        return phi;
     }
     else if (dynamic_cast<CharNode *>(node.get()))
     {
