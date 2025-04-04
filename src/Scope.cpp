@@ -50,6 +50,11 @@ Function ProgramScope::get_current_function()
     return current_module.get_current_function();
 }
 
+Function ProgramScope::set_current_function()
+{
+    return current_module.set_current_function();
+}
+
 std::optional<int> ProgramScope::addLocal(Tokens name, Function function)
 {
     if (this->local_functions.find(name.value) != this->local_functions.end())
@@ -98,7 +103,12 @@ std::optional<Function> CompiledModuleClass::get_exported_function(Tokens name)
 }
 Function CompiledModuleClass::get_current_function()
 {
-    auto f = this->compiled_module.functions.front();
+    return this->current_function;
+}
+
+Function CompiledModuleClass::set_current_function()
+{
+    this->current_function = this->compiled_module.functions.front();
     compiled_module.functions.pop();
-    return f;
+    return this->current_function;
 }

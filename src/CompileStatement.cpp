@@ -15,8 +15,8 @@ void CompileStatement::Visit(ASTNode *node)
 
 void CompileStatement::Visit(FunctionNode *node)
 {
-    auto c = this->program_scope.get_current_function();
-
+    // auto c = this->program_scope.get_current_function();
+    auto c = this->program_scope.set_current_function();
     if (this->program_scope.get_global_function(c.name).has_value())
     {
         auto func = program_scope.get_function(node->f->FunctionName);

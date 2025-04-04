@@ -28,7 +28,8 @@ public:
     void Visit(ASTNode *node) override;
     void Visit(FunctionNode *node) override;
     void Visit(ModuleNode *node) override;
-
+    void Visit(BranchNode *node) override;
+    void Visit(ConditionalNode *node) override;
     void Visit(ReturnNode *node) override;
     void Visit(FunctionCallNode *node) override;
     void Visit(ProgramNode *node) override;
@@ -43,6 +44,7 @@ public:
 #define COMPILE_STATEMENT_H
 class CompileStatement : public Visitor
 {
+
 public:
     llvm::Module &module;
     CompiledModule current_module;

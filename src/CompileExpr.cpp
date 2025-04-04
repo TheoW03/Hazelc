@@ -237,6 +237,33 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
 
         return get_int_type.set_loaded_value(number, builder);
     }
+    else if (dynamic_cast<BranchNode *>(node.get()))
+    {
+        // auto branch = dynamic_cast<BranchNode>(node.get());
+        // return Expression()
+    }
+    else if (dynamic_cast<ConditionalNode *>(node.get()))
+    {
+        auto condition = dynamic_cast<ConditionalNode *>(node.get());
+        // program.get_current_function().function.
+        // llvm::BasicBlock *ifTrue = llvm::BasicBlock::Create(context, "if.true", program.get_current_function().function);
+        // llvm::BasicBlock *ElseTrue = llvm::BasicBlock::Create(context, "else.true", program.get_current_function().function);
+        auto type = compiler_context.get_type(condition->type);
+        llvm::PHINode *phi = builder.CreatePHI(type.type, condition->branches.size(), "iftmp");
+
+        for (int i = 0; i < condition->branches.size(); i += 2)
+        {
+            auto branch = condition->branches[i];
+            llvm::BasicBlock *ifTrue = llvm::BasicBlock::Create(context, "if.true", program.get_current_function().function);
+            llvm::BasicBlock *ElseTrue = llvm::BasicBlock::Create(context, "else.true", program.get_current_function().function);
+
+            // use phi to append on
+            // and keep going
+            auto condition = Expression(branch);
+
+            // Expression(condition->branches[i]);
+        }
+    }
     else if (dynamic_cast<CharNode *>(node.get()))
     {
 
