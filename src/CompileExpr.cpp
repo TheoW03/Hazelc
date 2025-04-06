@@ -261,32 +261,37 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
     }
     else if (dynamic_cast<ConditionalNode *>(node.get()))
     {
-        auto condition = dynamic_cast<ConditionalNode *>(node.get());
+        auto condition_stmnt = dynamic_cast<ConditionalNode *>(node.get());
         // program.get_current_function().function.
         // llvm::BasicBlock *ifTrue = llvm::BasicBlock::Create(context, "if.true", program.get_current_function().function);
-        // llvm::BasicBlock *ElseTrue = llvm::BasicBlock::Create(context, "else.true", program.get_current_function().function);
-        auto type = compiler_context.get_type(condition->type);
-        llvm::PHINode *phi = builder.CreatePHI(type.get_type(), condition->branches.size(), "iftmp");
-        for (int i = 0; i < condition->branches.size(); i++)
-        {
+        llvm::BasicBlock *endTrue = llvm::BasicBlock::Create(context, "end.true", program.get_current_function().function);
+        auto type = compiler_context.get_type(condition_stmnt->type);
+        llvm::PHINode *phi = builder.CreatePHI(type.get_type(), condition_stmnt->branches.size() + 1, "iftmp");
 
-            auto branch = condition->branches[i];
+        for (int i = 0; i < condition_stmnt->branches.size(); i++)
+        {
+            auto condition = Expression(condition_stmnt->branches[i]->condition);
             llvm::BasicBlock *ifTrue = llvm::BasicBlock::Create(context, "if.true", program.get_current_function().function);
-            llvm::BasicBlock *ElseTrue = llvm::BasicBlock::Create(context, "else.true", program.get_current_function().function);
-            auto condition = Expression(branch);
-            condition = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(compiler_context.get_boolean_type().type, condition, 1, "str2"));
-            builder.CreateCondBr(condition, ifTrue, ElseTrue);
+            llvm::BasicBlock *ElsTrue = llvm::BasicBlock::Create(context, "else.true", program.get_current_function().function);
+            condition = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(compiler_context.get_boolean_type().type, condition, 0, "str2"));
+
+            if (i < condition_stmnt->branches.size() - 1)
+            {
+                builder.CreateCondBr(condition, ifTrue, ElsTrue);
+            }
+            else
+            {
+                builder.CreateCondBr(condition, ifTrue, endTrue);
+            }
             builder.SetInsertPoint(ifTrue);
-            auto value = CompileBranch(branch->stmnts);
+
+            auto value = CompileBranch(condition_stmnt->branches[i]->stmnts);
             value = builder.CreateLoad(type.type, value);
             phi->addIncoming(value, ifTrue);
-            builder.SetInsertPoint(ElseTrue);
-
-            // use phi to append on
-            // and keep going
-
-            // Expression(condition->branches[i]);
+            builder.CreateBr(endTrue);
+            builder.SetInsertPoint(ElsTrue);
         }
+        builder.SetInsertPoint(endTrue);
         return phi;
     }
     else if (dynamic_cast<CharNode *>(node.get()))
