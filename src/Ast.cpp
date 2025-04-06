@@ -364,6 +364,7 @@ BranchNode::BranchNode(std::shared_ptr<ASTNode> condition, std::vector<std::shar
 
 void BranchNode::Accept(Visitor *v)
 {
+    v->Visit(this);
 }
 
 std::string BranchNode::to_string()

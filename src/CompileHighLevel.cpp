@@ -92,8 +92,36 @@ void CompileHighLevel::Visit(ModuleNode *node)
     functions.clear();
 }
 
+void CompileHighLevel::Visit(BranchNode *node)
+{
+    std::vector<std::shared_ptr<ASTNode>> filter_functions;
+    std::cout << "hhh" << std::endl;
+
+    for (int i = 0; i < node->stmnts.size(); i++)
+    {
+        node->stmnts[i]->Accept(this);
+        if (dynamic_cast<FunctionNode *>(node->stmnts[i].get()))
+        {
+            this->functions.push_back(node->stmnts[i]);
+        }
+        else
+        {
+            filter_functions.push_back(node->stmnts[i]);
+        }
+    }
+    node->stmnts = filter_functions;
+}
+
+void CompileHighLevel::Visit(ConditionalNode *node)
+{
+    for (int i = 0; i < node->branches.size(); i++)
+    {
+        node->branches[i]->Accept(this);
+    }
+}
 void CompileHighLevel::Visit(ReturnNode *node)
 {
+    node->Expr->Accept(this);
 }
 
 void CompileHighLevel::Visit(FunctionCallNode *node)

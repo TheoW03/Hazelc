@@ -21,6 +21,7 @@ public:
     llvm::Value *set_loaded_value(llvm::Value *value, llvm::IRBuilder<> &builder);
     llvm::Value *get_value(llvm::IRBuilder<> &builder);
     llvm::Value *get_none(llvm::IRBuilder<> &builder);
+    llvm::Type *get_type();
 };
 #endif
 

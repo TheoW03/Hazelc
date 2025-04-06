@@ -235,22 +235,36 @@ std::optional<std::shared_ptr<BranchNode>> parse_branch(std::vector<Tokens> &tok
 std::optional<std::shared_ptr<ConditionalNode>> parse_conditional(std::vector<Tokens> &tokens)
 {
     std::optional<std::shared_ptr<Type>> parse_type(std::vector<Tokens> & tokens);
-    match_and_remove(TokenType::Conditional, tokens);
     match_and_remove(TokenType::Colon, tokens);
     auto type = parse_type(tokens);
     std::vector<std::shared_ptr<BranchNode>> c;
     match_and_remove(TokenType::Indents, tokens);
     while (!match_and_remove(TokenType::Dedents, tokens).has_value() //
-           && get_next_token(tokens).type != TokenType::EndOfFile)
+           && get_next_token(tokens).type != TokenType::EndOfFile && !look_ahead(TokenType::Default, tokens))
     {
+
         c.push_back(parse_branch(tokens).value());
     }
+    if (match_and_remove(TokenType::Default, tokens).has_value())
+    {
+        std::vector<std::shared_ptr<ASTNode>> parse_scope(std::vector<Tokens> & tokens);
 
+        auto s = parse_scope(tokens);
+        Tokens fake_bool = {"true", TokenType::True, get_next_token(tokens).line_num};
+        auto condutio = std::make_shared<BooleanConstNode>(fake_bool);
+        c.push_back(std::make_shared<BranchNode>(condutio, s));
+    }
+    else
+    {
+        std::cout << "hazelc: conditionals must always have a defualt condition, denoted as $defualt" << std::endl;
+        std::cout << "hazelc: compilation terminated" << std::endl;
+        exit(EXIT_FAILURE);
+    }
     return std::make_shared<ConditionalNode>(c, type.value());
 }
 std::optional<std::shared_ptr<ASTNode>> expr_parse(std::vector<Tokens> &tokens)
 {
-    if (look_ahead(TokenType::Conditional, tokens))
+    if (match_and_remove(TokenType::Conditional, tokens).has_value())
     {
         return parse_conditional(tokens);
     }

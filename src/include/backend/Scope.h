@@ -10,6 +10,7 @@ class CompiledModuleClass
 {
 private:
     CompiledModule compiled_module;
+    Function current_function;
 
 public:
     CompiledModuleClass();
@@ -18,6 +19,7 @@ public:
     std::optional<Function> get_exported_function(Tokens name);
     std::vector<Tokens> get_import_names();
     Function get_current_function();
+    Function set_current_function();
 };
 #endif
 
@@ -37,6 +39,7 @@ public:
     void set_current(Tokens name);
     Function get_function(Tokens name);
     Function get_current_function();
+    Function set_current_function();
     std::optional<int> addLocal(Tokens name, Function function);
 };
 
