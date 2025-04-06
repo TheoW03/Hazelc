@@ -235,7 +235,6 @@ std::optional<std::shared_ptr<BranchNode>> parse_branch(std::vector<Tokens> &tok
 std::optional<std::shared_ptr<ConditionalNode>> parse_conditional(std::vector<Tokens> &tokens)
 {
     std::optional<std::shared_ptr<Type>> parse_type(std::vector<Tokens> & tokens);
-    match_and_remove(TokenType::Conditional, tokens);
     match_and_remove(TokenType::Colon, tokens);
     auto type = parse_type(tokens);
     std::vector<std::shared_ptr<BranchNode>> c;
@@ -250,7 +249,7 @@ std::optional<std::shared_ptr<ConditionalNode>> parse_conditional(std::vector<To
 }
 std::optional<std::shared_ptr<ASTNode>> expr_parse(std::vector<Tokens> &tokens)
 {
-    if (look_ahead(TokenType::Conditional, tokens))
+    if (match_and_remove(TokenType::Conditional, tokens).has_value())
     {
         return parse_conditional(tokens);
     }
