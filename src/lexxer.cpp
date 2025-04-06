@@ -157,7 +157,7 @@ std::map<std::string, TokenType> get_keyword_map()
     token_map[":"] = TokenType::Colon;
     token_map[","] = TokenType::Comma;
 
-    token_map["$default"] = TokenType::Default;
+    token_map["$defualt"] = TokenType::Default;
 
     token_map["None"] = TokenType::None;
     token_map["["] = TokenType::Open_Bracket;
