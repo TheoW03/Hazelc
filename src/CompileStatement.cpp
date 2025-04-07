@@ -1,6 +1,7 @@
 #include <backend/compiler_visitors.h>
 #include <backend/CompilerUtil.h>
 #include <backend/CompilerContext.h>
+#include <llvm/IR/Verifier.h>
 
 CompileStatement::CompileStatement(llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context,
                                    CompilerContext compiler_context) : module(module), builder(builder), context(context)
@@ -55,7 +56,18 @@ void CompileStatement::Visit(ModuleNode *node)
 void CompileStatement::Visit(ReturnNode *node)
 {
     CompileExpr c(module, builder, context, compiler_context, this->program_scope);
-    builder.CreateRet(c.Expression(node->Expr));
+    auto ty = compiler_context.get_type(program_scope.get_current_function().ret_type);
+    // auto value = builder.CreateLoad(ty.get_type(), c.Expression(node->Expr));
+    // program_scope.get_current_function().function->viewCFGOnly();
+    // llvm::raw_ostream *output = &llvm::outs();
+    auto value = c.Expression(node->Expr);
+    if (value->getType()->isPointerTy())
+    {
+        value = builder.CreateLoad(ty.type, value);
+    }
+    builder.CreateRet(value);
+    // auto error = llvm::verifyFunction(*(program_scope.get_current_function().function), output);
+    // program_scope.get_current_function().function->viewCFG();
 }
 
 void CompileStatement::Visit(ProgramNode *node)

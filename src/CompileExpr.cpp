@@ -264,34 +264,53 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         auto condition_stmnt = dynamic_cast<ConditionalNode *>(node.get());
         // program.get_current_function().function.
         // llvm::BasicBlock *ifTrue = llvm::BasicBlock::Create(context, "if.true", program.get_current_function().function);
-        llvm::BasicBlock *endTrue = llvm::BasicBlock::Create(context, "end.true", program.get_current_function().function);
         auto type = compiler_context.get_type(condition_stmnt->type);
-        llvm::PHINode *phi = builder.CreatePHI(type.get_type(), condition_stmnt->branches.size() + 1, "iftmp");
+        llvm::PHINode *phi = builder.CreatePHI(type.type, condition_stmnt->branches.size(), "iftmp");
 
+        llvm::BasicBlock *endTrue = llvm::BasicBlock::Create(context, "end.true", program.get_current_function().function);
         for (int i = 0; i < condition_stmnt->branches.size(); i++)
         {
             auto condition = Expression(condition_stmnt->branches[i]->condition);
             llvm::BasicBlock *ifTrue = llvm::BasicBlock::Create(context, "if.true", program.get_current_function().function);
-            llvm::BasicBlock *ElsTrue = llvm::BasicBlock::Create(context, "else.true", program.get_current_function().function);
             condition = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(compiler_context.get_boolean_type().type, condition, 0, "str2"));
 
             if (i < condition_stmnt->branches.size() - 1)
             {
+                llvm::BasicBlock *ElsTrue = llvm::BasicBlock::Create(context, "else.true", program.get_current_function().function);
                 builder.CreateCondBr(condition, ifTrue, ElsTrue);
+                builder.SetInsertPoint(ifTrue);
+
+                auto value = CompileBranch(condition_stmnt->branches[i]->stmnts);
+                // auto new_val = builder.CreateAlloca(value->getType());
+                // value = builder.CreateStore(value, new_val);
+                // value = builder.CreateLoad(type.get_type(), value);
+                // value->getType()->dump();
+                if (value->getType()->isPointerTy())
+                    value = builder.CreateLoad(type.type, value);
+
+                // std::cout << "type value post  load" << value->getType() << std::endl;
+
+                phi->addIncoming(value, ifTrue);
+                builder.CreateBr(endTrue);
+                builder.SetInsertPoint(ElsTrue);
             }
             else
             {
                 builder.CreateCondBr(condition, ifTrue, endTrue);
-            }
-            builder.SetInsertPoint(ifTrue);
+                builder.SetInsertPoint(ifTrue);
 
-            auto value = CompileBranch(condition_stmnt->branches[i]->stmnts);
-            value = builder.CreateLoad(type.type, value);
-            phi->addIncoming(value, ifTrue);
-            builder.CreateBr(endTrue);
-            builder.SetInsertPoint(ElsTrue);
+                auto value = CompileBranch(condition_stmnt->branches[i]->stmnts);
+                // auto new_val = builder.CreateAlloca(value->getType());
+                // value = builder.CreateStore(value, new_val);
+                // auto v =
+                if (value->getType()->isPointerTy())
+                    value = builder.CreateLoad(type.get_type(), value);
+                phi->addIncoming(value, ifTrue);
+                builder.CreateBr(endTrue);
+                builder.SetInsertPoint(endTrue);
+            }
         }
-        builder.SetInsertPoint(endTrue);
+        // std::cout << phi->
         return phi;
     }
     else if (dynamic_cast<CharNode *>(node.get()))

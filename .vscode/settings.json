@@ -70,7 +70,8 @@
         "variant": "cpp",
         "any": "cpp",
         "stdlib.h": "c",
-        "filesystem": "cpp"
+        "filesystem": "cpp",
+        "queue": "cpp"
     },
     "editor.fontFamily": "'Droid Sans Mono', 'monospace', monospace",
     "editor.fontLigatures": false
