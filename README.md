@@ -25,8 +25,11 @@ cmake --build build --config Release -DPROFILING={ON|OFF}
 ./hazelc --help
 ```
 
-this is a fairly early project so most features are not impl yet 
-please read the Langauge definition. 
+> [!WARNING]  
+> Hazelc is in the early-mid in-dev phase.  
+>
+> if you want to consider using the Hazel programming langauge. Please reachout 
+
 
 [documentation]
 
