@@ -281,6 +281,7 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
 
                 auto value = CompileBranch(condition_stmnt->branches[i]->stmnts);
                 value = ValueOrLoad(builder, value, type.get_type());
+
                 phi_nodes.push_back({ifTrue, value});
                 builder.CreateBr(endTrue);
                 builder.SetInsertPoint(ElsTrue);
@@ -290,7 +291,6 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
                 // builder.CreateCondBr(condition, ifTrue, endTrue);
                 builder.CreateBr(ifTrue);
                 builder.SetInsertPoint(ifTrue);
-
                 auto value = CompileBranch(condition_stmnt->branches[i]->stmnts);
                 value = ValueOrLoad(builder, value, type.get_type());
                 phi_nodes.push_back({ifTrue, value});
@@ -298,7 +298,7 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
             }
         }
         builder.SetInsertPoint(endTrue);
-        llvm::PHINode *phi = builder.CreatePHI(type.type, condition_stmnt->branches.size(), "iftmp");
+        llvm::PHINode *phi = builder.CreatePHI(type.type, phi_nodes.size(), "iftmp");
         for (int i = 0; i < phi_nodes.size(); i++)
         {
             phi->addIncoming(std::get<1>(phi_nodes[i]), std::get<0>(phi_nodes[i]));
