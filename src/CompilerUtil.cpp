@@ -128,3 +128,10 @@ llvm::Type *OptionalType::get_type()
 {
     return this->type;
 }
+
+llvm::Value *ValueOrLoad(llvm::IRBuilder<> &builder, llvm::Value *value, llvm::Type *type)
+{
+    if (value->getType()->isPointerTy())
+        value = builder.CreateLoad(type, value);
+    return value;
+}

@@ -281,15 +281,8 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
                 builder.SetInsertPoint(ifTrue);
 
                 auto value = CompileBranch(condition_stmnt->branches[i]->stmnts);
-                // auto new_val = builder.CreateAlloca(value->getType());
-                // value = builder.CreateStore(value, new_val);
-                // value = builder.CreateLoad(type.get_type(), value);
-                // value->getType()->dump();
                 if (value->getType()->isPointerTy())
                     value = builder.CreateLoad(type.type, value);
-
-                // std::cout << "type value post  load" << value->getType() << std::endl;
-
                 phi->addIncoming(value, ifTrue);
                 builder.CreateBr(endTrue);
                 builder.SetInsertPoint(ElsTrue);
@@ -300,11 +293,9 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
                 builder.SetInsertPoint(ifTrue);
 
                 auto value = CompileBranch(condition_stmnt->branches[i]->stmnts);
-                // auto new_val = builder.CreateAlloca(value->getType());
-                // value = builder.CreateStore(value, new_val);
-                // auto v =
-                if (value->getType()->isPointerTy())
-                    value = builder.CreateLoad(type.get_type(), value);
+                value = ValueOrLoad(builder, value, type.get_type());
+                // if (value->getType()->isPointerTy())
+                //     value = builder.CreateLoad(type.get_type(), value);
                 phi->addIncoming(value, ifTrue);
                 builder.CreateBr(endTrue);
                 builder.SetInsertPoint(endTrue);

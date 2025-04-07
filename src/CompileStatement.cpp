@@ -61,10 +61,11 @@ void CompileStatement::Visit(ReturnNode *node)
     // program_scope.get_current_function().function->viewCFGOnly();
     // llvm::raw_ostream *output = &llvm::outs();
     auto value = c.Expression(node->Expr);
-    if (value->getType()->isPointerTy())
-    {
-        value = builder.CreateLoad(ty.type, value);
-    }
+    value = ValueOrLoad(builder, value, ty.type);
+    // if (value->getType()->isPointerTy())
+    // {
+    //     value = builder.CreateLoad(ty.type, value);
+    // }
     builder.CreateRet(value);
     // auto error = llvm::verifyFunction(*(program_scope.get_current_function().function), output);
     // program_scope.get_current_function().function->viewCFG();
