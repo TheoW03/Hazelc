@@ -265,8 +265,7 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         // program.get_current_function().function.
         // llvm::BasicBlock *ifTrue = llvm::BasicBlock::Create(context, "if.true", program.get_current_function().function);
         auto type = compiler_context.get_type(condition_stmnt->type);
-        llvm::PHINode *phi = builder.CreatePHI(type.type, condition_stmnt->branches.size(), "iftmp");
-
+        std::vector<std::tuple<llvm::BasicBlock *, llvm::Value *>> phi_nodes;
         llvm::BasicBlock *endTrue = llvm::BasicBlock::Create(context, "end.true", program.get_current_function().function);
         for (int i = 0; i < condition_stmnt->branches.size(); i++)
         {
@@ -281,27 +280,29 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
                 builder.SetInsertPoint(ifTrue);
 
                 auto value = CompileBranch(condition_stmnt->branches[i]->stmnts);
-                if (value->getType()->isPointerTy())
-                    value = builder.CreateLoad(type.type, value);
-                phi->addIncoming(value, ifTrue);
+                value = ValueOrLoad(builder, value, type.get_type());
+                phi_nodes.push_back({ifTrue, value});
                 builder.CreateBr(endTrue);
                 builder.SetInsertPoint(ElsTrue);
             }
             else
             {
-                builder.CreateCondBr(condition, ifTrue, endTrue);
+                // builder.CreateCondBr(condition, ifTrue, endTrue);
+                builder.CreateBr(ifTrue);
                 builder.SetInsertPoint(ifTrue);
 
                 auto value = CompileBranch(condition_stmnt->branches[i]->stmnts);
                 value = ValueOrLoad(builder, value, type.get_type());
-                // if (value->getType()->isPointerTy())
-                //     value = builder.CreateLoad(type.get_type(), value);
-                phi->addIncoming(value, ifTrue);
+                phi_nodes.push_back({ifTrue, value});
                 builder.CreateBr(endTrue);
-                builder.SetInsertPoint(endTrue);
             }
         }
-        // std::cout << phi->
+        builder.SetInsertPoint(endTrue);
+        llvm::PHINode *phi = builder.CreatePHI(type.type, condition_stmnt->branches.size(), "iftmp");
+        for (int i = 0; i < phi_nodes.size(); i++)
+        {
+            phi->addIncoming(std::get<1>(phi_nodes[i]), std::get<0>(phi_nodes[i]));
+        }
         return phi;
     }
     else if (dynamic_cast<CharNode *>(node.get()))
