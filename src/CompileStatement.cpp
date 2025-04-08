@@ -24,14 +24,17 @@ void CompileStatement::Visit(FunctionNode *node)
         auto func = program_scope.get_function(node->f->FunctionName);
         llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, "entry", func.function);
         this->block = EntryBlock;
+
         builder.SetInsertPoint(EntryBlock);
     }
     else
     {
         program_scope.addLocal(c.name, c);
         llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, "entry", c.function);
+        this->block = EntryBlock;
         builder.SetInsertPoint(EntryBlock);
     }
+    c.function->dump();
     for (int i = 0; i < node->stmnts.size(); i++)
     {
         node->stmnts[i]->Accept(this);

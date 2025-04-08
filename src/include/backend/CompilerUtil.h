@@ -3,6 +3,7 @@
 #include <map>
 #include <iostream>
 #include <queue>
+#include <stack>
 #include <Frontend/Token.h>
 #include <Frontend/Ast.h>
 #include "llvm/IR/LLVMContext.h"

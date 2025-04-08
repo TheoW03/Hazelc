@@ -65,7 +65,7 @@ void SemanticLocalScopeVisitor::Visit(FunctionNode *node)
         std::cout << "there is an already defined function \"" << node->f->FunctionName.value << "\"" << node->f->FunctionName.line_num << std::endl;
         exit(EXIT_FAILURE);
     }
-    if (scope.size() > 1)
+    if (scope.size() >= 1)
     {
         scope[scope.size() - 1].functions.insert(node->f->FunctionName.value);
     }
