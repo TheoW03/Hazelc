@@ -121,7 +121,12 @@ llvm::Value *OptionalType::get_value(llvm::IRBuilder<> &builder)
 
 llvm::Value *OptionalType::get_none(llvm::IRBuilder<> &builder)
 {
-    return nullptr;
+    llvm::Value *structPtr = builder.CreateAlloca(this->type);
+    auto destField1ptr = builder.CreateStructGEP(this->type, structPtr, 1, "OptionalStructPtr1");
+    auto isNone = llvm::ConstantInt::get(builder.getInt1Ty(), 1);
+    builder.CreateStore(isNone, destField1ptr);
+
+    return structPtr;
 }
 
 llvm::Type *OptionalType::get_type()

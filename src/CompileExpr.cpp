@@ -262,6 +262,11 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         return Expression(branch->condition);
         // return Expression()
     }
+    else if (dynamic_cast<NoneNode *>(node.get()))
+    {
+        return {
+            this->block, compiler_context.get_type(program.get_current_function().ret_type).get_none(builder)};
+    }
     else if (dynamic_cast<ConditionalNode *>(node.get()))
     {
         auto condition_stmnt = dynamic_cast<ConditionalNode *>(node.get());
