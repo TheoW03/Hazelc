@@ -18,10 +18,12 @@ void CompileStatement::Visit(FunctionNode *node)
 {
     // auto c = this->program_scope.get_current_function();
     auto c = this->program_scope.set_current_function();
+    std::cout << node->f->FunctionName.value << std::endl;
     if (this->program_scope.get_global_function(c.name).has_value())
     {
         auto func = program_scope.get_function(node->f->FunctionName);
         llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, "entry", func.function);
+        this->block = EntryBlock;
         builder.SetInsertPoint(EntryBlock);
     }
     else
@@ -55,18 +57,19 @@ void CompileStatement::Visit(ModuleNode *node)
 
 void CompileStatement::Visit(ReturnNode *node)
 {
-    CompileExpr c(module, builder, context, compiler_context, this->program_scope);
+    CompileExpr c(module, builder, context, compiler_context, this->program_scope, this->block);
     auto ty = compiler_context.get_type(program_scope.get_current_function().ret_type);
     // auto value = builder.CreateLoad(ty.get_type(), c.Expression(node->Expr));
     // program_scope.get_current_function().function->viewCFGOnly();
     // llvm::raw_ostream *output = &llvm::outs();
     auto value = c.Expression(node->Expr);
-    value = ValueOrLoad(builder, value, ty.type);
+    this->block = value.block;
+    auto loaded_value = ValueOrLoad(builder, value.value, ty.type);
     // if (value->getType()->isPointerTy())
     // {
     //     value = builder.CreateLoad(ty.type, value);
     // }
-    builder.CreateRet(value);
+    builder.CreateRet(value.value);
     // auto error = llvm::verifyFunction(*(program_scope.get_current_function().function), output);
     // program_scope.get_current_function().function->viewCFG();
 }

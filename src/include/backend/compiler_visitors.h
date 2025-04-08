@@ -44,6 +44,8 @@ public:
 #define COMPILE_STATEMENT_H
 class CompileStatement : public Visitor
 {
+private:
+    llvm::BasicBlock *block;
 
 public:
     llvm::Module &module;
@@ -64,6 +66,15 @@ public:
 
 #endif
 
+#ifndef PHI_NODE_STRUCTURE
+#define PHI_NODE_STRUCTURE
+struct ValueStruct
+{
+    llvm::BasicBlock *block;
+    llvm::Value *value;
+};
+#endif
+
 #ifndef COMPILE_EXPR_H
 #define COMPILE_EXPR_H
 class CompileExpr
@@ -76,23 +87,27 @@ private:
 
     llvm::Value *IntegerBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
     llvm::Value *FloatBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
-    llvm::Value *CompileBranch(std::vector<std::shared_ptr<ASTNode>> stmnts);
+    ValueStruct CompileBranch(std::vector<std::shared_ptr<ASTNode>> stmnts);
+
+    // PhiNodeStruct HandleConditional(std::shared_ptr<ASTNode> node);
 
 public:
     llvm::Module &module;
     ProgramScope program;
+    llvm::BasicBlock *block;
     // std::map<std::string, Function> func_map;
     CompilerContext compiler_context;
     llvm::IRBuilder<> &builder;
     llvm::LLVMContext &context;
-    CompileExpr(llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context,
-                CompilerContext compiler_context,
-                ProgramScope program);
+    CompileExpr(llvm::Module &module,
+                llvm::IRBuilder<> &builder,
+                llvm::LLVMContext &context,
+                CompilerContext compiler_context, ProgramScope program, llvm::BasicBlock *block);
     llvm::Value *IntMathExpression(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
     llvm::Value *FloatMathExpression(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
     llvm::Value *BoolIntMathExpr(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
     llvm::Value *BoolFloatMathExpr(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
     llvm::Value *StringMathExpr(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
-    llvm::Value *Expression(std::shared_ptr<ASTNode> node);
+    ValueStruct Expression(std::shared_ptr<ASTNode> node);
 };
 #endif

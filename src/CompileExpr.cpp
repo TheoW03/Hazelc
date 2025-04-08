@@ -5,12 +5,15 @@
 CompileExpr::CompileExpr(llvm::Module &module,
                          llvm::IRBuilder<> &builder,
                          llvm::LLVMContext &context,
-                         CompilerContext compiler_context, ProgramScope program) : module(module),
-                                                                                   builder(builder),
-                                                                                   context(context)
+                         CompilerContext compiler_context,
+                         ProgramScope program,
+                         llvm::BasicBlock *block) : module(module),
+                                                    builder(builder),
+                                                    context(context)
 {
     this->compiler_context = compiler_context;
     this->program = program;
+    this->block = block;
 
     // this->func_map = func_map;
 }
@@ -117,7 +120,7 @@ llvm::Value *CompileExpr::FloatBool(llvm::Value *lhs, Tokens op, llvm::Value *rh
     auto math = BoolFloatMathExpr(lhs_val, op, rhs_val);
     return BoolType.set_loaded_value(math, builder);
 }
-llvm::Value *CompileExpr::CompileBranch(std::vector<std::shared_ptr<ASTNode>> stmnts)
+ValueStruct CompileExpr::CompileBranch(std::vector<std::shared_ptr<ASTNode>> stmnts)
 {
     for (int i = 0; i < stmnts.size(); i++)
     {
@@ -238,7 +241,7 @@ llvm::Value *CompileExpr::StringMathExpr(llvm::Value *lhs, Tokens op, llvm::Valu
     // return destStructPtr;
 }
 
-llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
+ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
 {
     if (dynamic_cast<IntegerNode *>(node.get()))
     {
@@ -247,7 +250,7 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         auto get_int_type = compiler_context.get_integer_type();
         auto number = llvm::ConstantInt::get(builder.getInt64Ty(), c->number);
 
-        return get_int_type.set_loaded_value(number, builder);
+        return {this->block, get_int_type.set_loaded_value(number, builder)};
     }
     else if (dynamic_cast<BranchNode *>(node.get()))
     {
@@ -269,20 +272,20 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         llvm::BasicBlock *endTrue = llvm::BasicBlock::Create(context, "end.true", program.get_current_function().function);
         for (int i = 0; i < condition_stmnt->branches.size(); i++)
         {
-            auto condition = Expression(condition_stmnt->branches[i]->condition);
+            auto condition = Expression(condition_stmnt->branches[i]->condition).value;
             llvm::BasicBlock *ifTrue = llvm::BasicBlock::Create(context, "if.true", program.get_current_function().function);
-            condition = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(compiler_context.get_boolean_type().type, condition, 0, "str2"));
+            condition = builder.CreateLoad(builder.getInt1Ty(),
+                                           builder.CreateStructGEP(compiler_context.get_boolean_type().type, condition, 0, "str2"));
 
             if (i < condition_stmnt->branches.size() - 1)
             {
                 llvm::BasicBlock *ElsTrue = llvm::BasicBlock::Create(context, "else.true", program.get_current_function().function);
                 builder.CreateCondBr(condition, ifTrue, ElsTrue);
                 builder.SetInsertPoint(ifTrue);
-
+                this->block = ifTrue;
                 auto value = CompileBranch(condition_stmnt->branches[i]->stmnts);
-                value = ValueOrLoad(builder, value, type.get_type());
-
-                phi_nodes.push_back({ifTrue, value});
+                auto loaded_val = ValueOrLoad(builder, value.value, type.get_type());
+                phi_nodes.push_back({value.block, loaded_val});
                 builder.CreateBr(endTrue);
                 builder.SetInsertPoint(ElsTrue);
             }
@@ -291,19 +294,21 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
                 // builder.CreateCondBr(condition, ifTrue, endTrue);
                 builder.CreateBr(ifTrue);
                 builder.SetInsertPoint(ifTrue);
+                this->block = ifTrue;
                 auto value = CompileBranch(condition_stmnt->branches[i]->stmnts);
-                value = ValueOrLoad(builder, value, type.get_type());
-                phi_nodes.push_back({ifTrue, value});
+                auto loaded_val = ValueOrLoad(builder, value.value, type.get_type());
+                phi_nodes.push_back({value.block, loaded_val});
                 builder.CreateBr(endTrue);
             }
         }
         builder.SetInsertPoint(endTrue);
+        this->block = endTrue;
         llvm::PHINode *phi = builder.CreatePHI(type.type, phi_nodes.size(), "iftmp");
         for (int i = 0; i < phi_nodes.size(); i++)
         {
             phi->addIncoming(std::get<1>(phi_nodes[i]), std::get<0>(phi_nodes[i]));
         }
-        return phi;
+        return {endTrue, phi};
     }
     else if (dynamic_cast<CharNode *>(node.get()))
     {
@@ -312,21 +317,21 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         auto char_type = compiler_context.get_byte_type();
         auto value = llvm::ConstantInt::get(llvm::Type::getInt8Ty(context), c->value.value[0]);
 
-        return char_type.set_loaded_value(value, builder);
+        return {this->block, char_type.set_loaded_value(value, builder)};
     }
     else if (dynamic_cast<DecimalNode *>(node.get()))
     {
         auto c = dynamic_cast<DecimalNode *>(node.get());
         auto float_type = compiler_context.get_float_type();
         auto value = llvm::ConstantFP::get(context, llvm::APFloat(c->number));
-        return float_type.set_loaded_value(value, builder);
+        return {this->block, float_type.set_loaded_value(value, builder)};
     }
     else if (dynamic_cast<BooleanConstNode *>(node.get()))
     {
         auto c = dynamic_cast<BooleanConstNode *>(node.get());
         auto bool_type = compiler_context.get_boolean_type();
         auto value = llvm::ConstantInt::get(llvm::Type::getInt1Ty(context), c->value.type == TokenType::True ? 1 : 0);
-        return bool_type.set_loaded_value(value, builder);
+        return {this->block, bool_type.set_loaded_value(value, builder)};
     }
     else if (dynamic_cast<StringNode *>(node.get()))
     {
@@ -339,7 +344,7 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         auto value = this->CompileStr(str, length, structPtr);
         auto str_optional_type = compiler_context.get_string_type();
 
-        return str_optional_type.set_loaded_value(value, builder);
+        return {this->block, str_optional_type.set_loaded_value(value, builder)};
     }
     else if (dynamic_cast<FunctionCallNode *>(node.get()))
     {
@@ -347,7 +352,7 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         auto fu = program.get_function(c->name);
         auto function_call = builder.CreateCall(fu.function, {});
         OptionalType type_of_func = compiler_context.get_type(fu.ret_type);
-        return type_of_func.set_loaded_value(function_call, builder);
+        return {this->block, type_of_func.set_loaded_value(function_call, builder)};
     }
     else if (dynamic_cast<ExprNode *>(node.get()))
     {
@@ -360,11 +365,11 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         switch (get_type)
         {
         case Integer_Type:
-            return IntegerMath(lhs, c->operation, rhs);
+            return {this->block, IntegerMath(lhs.value, c->operation, rhs.value)};
         case Float_Type:
-            return FloatMath(lhs, c->operation, rhs);
+            return {this->block, FloatMath(lhs.value, c->operation, rhs.value)};
         case String_Type:
-            return StringMath(lhs, c->operation, rhs);
+            return {this->block, StringMath(lhs.value, c->operation, rhs.value)};
         default:
             break;
         }
@@ -379,12 +384,12 @@ llvm::Value *CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         switch (get_type)
         {
         case Integer_Type:
-            return IntegerBool(lhs, c->op, rhs);
+            return {this->block, IntegerBool(lhs.value, c->op, rhs.value)};
         case Float_Type:
-            return FloatBool(lhs, c->op, rhs);
+            return {this->block, FloatBool(lhs.value, c->op, rhs.value)};
         default:
             break;
         }
     }
-    return nullptr;
+    return {this->block, nullptr};
 }
