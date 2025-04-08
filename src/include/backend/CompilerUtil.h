@@ -65,6 +65,7 @@ struct CompiledModule
 };
 #endif
 
+llvm::Value *ValueOrLoad(llvm::IRBuilder<> &builder, llvm::Value *value, llvm::Type *type);
 // #ifndef CONTEXT_H
 // #define CONTEXT_H
 

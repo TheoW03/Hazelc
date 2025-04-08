@@ -58,7 +58,7 @@ Output parse_cmd(std::vector<std::string> args)
                                "cli documentation", 0};
     option_handlers["version"] = {[](std::string &value, Output &o)
                                   {
-                                      std::cout << "1.0.0" << std::endl;
+                                      std::cout << "hazelc: 1.0.0-alpha" << std::endl;
                                   },
                                   "prints version", 0};
     option_handlers["object-file"] = {[](std::string &value, Output &o)

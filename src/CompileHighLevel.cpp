@@ -95,7 +95,6 @@ void CompileHighLevel::Visit(ModuleNode *node)
 void CompileHighLevel::Visit(BranchNode *node)
 {
     std::vector<std::shared_ptr<ASTNode>> filter_functions;
-    std::cout << "hhh" << std::endl;
 
     for (int i = 0; i < node->stmnts.size(); i++)
     {
