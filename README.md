@@ -3,7 +3,7 @@
 ![](https://img.shields.io/badge/License-GPLv3-blue.svg)
 ![](https://tokei.rs/b1/github/TheoW03/hazel)
 
-this a compiler for the Hazel programming language.
+this a llvm backend compiler for the Hazel programming language.
 
 ## What is Hazel
 
@@ -12,7 +12,7 @@ Hazel is a purely functional, declartive programming language.
 The syntax and design was heavily inspired by other functional languages like Haskell.
 
 
-## build instrcutions
+## Build Instructions
 
 make sure you have CMake v3.22.1 and the LLVM version 14.0.0
 if not download them here
@@ -31,14 +31,11 @@ cmake --build build --config Release -DPROFILING={ON|OFF}
 ```
 
 > [!WARNING]  
-> Hazelc is in the early-mid in-dev phase.  
+> Hazelc is in the indev pre alpga phase.  
 >
 > if you want to consider using the Hazel programming langauge. Please reachout 
 
 
-[documentation]
-
-[documentation]: <https://docs.google.com/document/d/12JWLuCte1r-tfAHKesndeBFRdnv7tT663QnIC2gSafY/edit?tab=t.0#heading=h.85eivsfcywf4>
 
 [llvm]: <https://releases.llvm.org/download.html>
 
