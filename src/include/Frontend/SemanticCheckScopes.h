@@ -74,5 +74,9 @@ public:
     void Visit(FunctionCallNode *node) override;
     void Visit(ProgramNode *node) override;
     void Visit(ExprNode *node) override;
+    void Visit(BooleanExprNode *node) override;
+
+    void Visit(ConditionalNode *node) override;
+    void Visit(BranchNode *node) override;
 };
 #endif

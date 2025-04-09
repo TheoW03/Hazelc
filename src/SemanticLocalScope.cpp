@@ -115,3 +115,29 @@ void SemanticLocalScopeVisitor::Visit(ExprNode *node)
     node->lhs->Accept(this);
     node->rhs->Accept(this);
 }
+
+void SemanticLocalScopeVisitor::Visit(BooleanExprNode *node)
+{
+    node->lhs->Accept(this);
+    node->rhs->Accept(this);
+}
+
+void SemanticLocalScopeVisitor::Visit(ConditionalNode *node)
+{
+    for (int i = 0; i < node->branches.size(); i++)
+    {
+        node->branches[i]->Accept(this);
+    }
+}
+
+void SemanticLocalScopeVisitor::Visit(BranchNode *node)
+{
+    FunctionLocalScope f;
+    node->condition->Accept(this);
+    scope.push_back(f);
+    for (int i = 0; i < node->stmnts.size(); i++)
+    {
+        node->stmnts[i]->Accept(this);
+    }
+    scope.erase(scope.end() - 1);
+}
