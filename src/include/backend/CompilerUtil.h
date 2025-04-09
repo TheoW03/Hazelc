@@ -62,7 +62,7 @@ struct CompiledModule
     std::map<std::string, Function> func_map;
     std::map<std::string, Function> export_function;
     std::vector<Tokens> imports;
-    std::queue<Function> functions;
+    std::stack<Function> functions;
 };
 #endif
 

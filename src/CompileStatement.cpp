@@ -50,11 +50,12 @@ void CompileStatement::Visit(FunctionNode *node)
 
 void CompileStatement::Visit(ModuleNode *node)
 {
-
+    auto functions = node->functions;
+    std::reverse(functions.begin(), functions.end());
     for (int i = 0; i < node->functions.size(); i++)
     {
         // program_scope.set_current(node->name);
-        node->functions[i]->Accept(this);
+        functions[i]->Accept(this);
     }
 }
 
