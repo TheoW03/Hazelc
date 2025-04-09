@@ -3,6 +3,7 @@
 #include <map>
 #include <iostream>
 #include <queue>
+#include <stack>
 #include <Frontend/Token.h>
 #include <Frontend/Ast.h>
 #include "llvm/IR/LLVMContext.h"
@@ -61,7 +62,7 @@ struct CompiledModule
     std::map<std::string, Function> func_map;
     std::map<std::string, Function> export_function;
     std::vector<Tokens> imports;
-    std::queue<Function> functions;
+    std::stack<Function> functions;
 };
 #endif
 

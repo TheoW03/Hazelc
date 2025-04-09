@@ -1,11 +1,16 @@
-# Hazel
+# Hazelc
 
 ![](https://img.shields.io/badge/License-GPLv3-blue.svg)
 ![](https://tokei.rs/b1/github/TheoW03/hazel)
 
-Hazel is a declarative functional paradigm programming language. 
+this a compiler for the Hazel programming language.
 
-This is the Compiler for it, hazelc
+## What is Hazel
+
+Hazel is a purely functional, declartive programming language.
+
+The syntax and design was heavily inspired by other functional languages like Haskell.
+
 
 ## build instrcutions
 

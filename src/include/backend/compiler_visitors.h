@@ -19,7 +19,7 @@ public:
     CompilerContext compiler_context;
     std::map<std::string, Function> func_map;
     std::map<std::string, Function> exported_func_map;
-    std::queue<Function> compiled_functions;
+    std::stack<Function> compiled_functions;
     bool is_global;
 
     llvm::IRBuilder<> &builder;
