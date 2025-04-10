@@ -34,7 +34,6 @@ void CompileStatement::Visit(FunctionNode *node)
         this->block = EntryBlock;
         builder.SetInsertPoint(EntryBlock);
     }
-    c.function->dump();
     for (int i = 0; i < node->stmnts.size(); i++)
     {
         node->stmnts[i]->Accept(this);
