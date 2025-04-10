@@ -30,6 +30,7 @@ enum TypeOfExpr
     Integer_Type,
     Float_Type,
     String_Type,
+    None_Type,
     Void_Type
 };
 

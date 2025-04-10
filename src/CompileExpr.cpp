@@ -115,9 +115,18 @@ llvm::Value *CompileExpr::FloatBool(llvm::Value *lhs, Tokens op, llvm::Value *rh
 
     auto float_type = compiler_context.get_float_type();
     auto BoolType = compiler_context.get_boolean_type();
-    auto lhs_val = builder.CreateLoad(builder.getInt64Ty(), builder.CreateStructGEP(float_type.type, lhs, 0, "int_lhs"));
-    auto rhs_val = builder.CreateLoad(builder.getInt64Ty(), builder.CreateStructGEP(float_type.type, rhs, 0, "int_rhs"));
+    auto lhs_val = builder.CreateLoad(builder.getDoubleTy(), builder.CreateStructGEP(float_type.type, lhs, 0, "int_lhs"));
+    auto rhs_val = builder.CreateLoad(builder.getDoubleTy(), builder.CreateStructGEP(float_type.type, rhs, 0, "int_rhs"));
     auto math = BoolFloatMathExpr(lhs_val, op, rhs_val);
+    return BoolType.set_loaded_value(math, builder);
+}
+llvm::Value *CompileExpr::NoneBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
+{
+    auto BoolType = compiler_context.get_boolean_type();
+
+    auto lhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(lhs->getType(), lhs, 1, "int_lhs"));
+    auto rhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(rhs->getType(), rhs, 1, "int_rhs"));
+    auto math = BoolIntMathExpr(lhs_val, op, rhs_val);
     return BoolType.set_loaded_value(math, builder);
 }
 ValueStruct CompileExpr::CompileBranch(std::vector<std::shared_ptr<ASTNode>> stmnts)
@@ -391,6 +400,8 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         case Integer_Type:
             return {this->block, IntegerBool(lhs.value, c->op, rhs.value)};
         case Float_Type:
+            return {this->block, FloatBool(lhs.value, c->op, rhs.value)};
+        case None_Type:
             return {this->block, FloatBool(lhs.value, c->op, rhs.value)};
         default:
             break;

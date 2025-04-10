@@ -42,7 +42,7 @@ Output parse_cmd(std::vector<std::string> args)
                                        "prints tokens taken by the lexxer", 0};
     option_handlers["help"] = {[&option_handlers](std::string &value, Output &o)
                                {
-                                   std::cout << "hazelc v1.0.0" << std::endl;
+                                   std::cout << "hazelc v1.0.0 pre-alpha" << std::endl;
                                    std::cout << "" << std::endl;
                                    std::cout << "   hazelc is a LLVM compiler for hazel, a functional paradigm programming langauge." << std::endl;
                                    std::cout << "" << std::endl;
@@ -58,7 +58,7 @@ Output parse_cmd(std::vector<std::string> args)
                                "cli documentation", 0};
     option_handlers["version"] = {[](std::string &value, Output &o)
                                   {
-                                      std::cout << "hazelc: 1.0.0-alpha" << std::endl;
+                                      std::cout << "hazelc: 1.0.0-prealpha" << std::endl;
                                   },
                                   "prints version", 0};
     option_handlers["object-file"] = {[](std::string &value, Output &o)

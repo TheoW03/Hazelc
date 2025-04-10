@@ -14,6 +14,8 @@ TypeOfExpr get_bool_expr_type(std::shared_ptr<ASTNode> n, ProgramScope ctx)
         return TypeOfExpr::Float_Type;
     else if (dynamic_cast<BooleanConstNode *>(c->lhs.get()) && dynamic_cast<BooleanConstNode *>(c->rhs.get()))
         return TypeOfExpr::Integer_Type;
+    else if (dynamic_cast<NoneNode *>(c->lhs.get()) && dynamic_cast<NoneNode *>(c->rhs.get()))
+        return TypeOfExpr::None_Type;
     if (dynamic_cast<BooleanExprNode *>(c->lhs.get()))
         return get_bool_expr_type(c->lhs, ctx);
     if (dynamic_cast<BooleanExprNode *>(c->rhs.get()))
@@ -44,11 +46,11 @@ TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n, ProgramScope ctx)
             {
                 return TypeOfExpr::Integer_Type;
             }
-            else if (p->type.type == TokenType::Integer)
+            else if (p->type.type == TokenType::Decimal)
             {
                 return TypeOfExpr::Float_Type;
             }
-            else if (p->type.type == TokenType::Integer)
+            else if (p->type.type == TokenType::string)
             {
                 return TypeOfExpr::String_Type;
             }
