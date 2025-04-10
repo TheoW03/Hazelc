@@ -5,6 +5,8 @@
 
 class TreeShake : public Visitor
 {
+private:
+    std::set<std::string> visited_modules;
 
 public:
     std::map<std::string, std::shared_ptr<ModuleNode>> used_modules;
