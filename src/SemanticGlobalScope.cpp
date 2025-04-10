@@ -1,5 +1,9 @@
 #include <Frontend/SemanticCheckScopes.h>
 #include <map>
+
+// pass to resolve global scope
+// it creates a list data structure of the different modules and there imports
+// so we can then validate the local scope
 void SemanticGlobalScopeVisitor::Visit(ASTNode *node)
 {
 }

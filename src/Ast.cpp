@@ -1,6 +1,7 @@
 #include <Frontend/Ast.h>
 #include <visitor.h>
 #include <map>
+#include "Ast.h"
 
 ASTNode::~ASTNode()
 {
@@ -328,6 +329,22 @@ void ProgramNode::Accept(Visitor *v)
     v->Visit(this);
 }
 
+std::optional<std::shared_ptr<ModuleNode>> ProgramNode::getMainModule()
+{
+
+    for (const auto &[key, current_module] : this->avail_modules)
+    {
+        for (int i = 0; i < current_module->functions.size(); i++)
+        {
+            auto c = dynamic_cast<FunctionNode *>(current_module->functions[i].get());
+            if (c->f->FunctionName.value == "main")
+            {
+                return current_module;
+            }
+        }
+    }
+    return {};
+}
 std::string ProgramNode::to_string()
 {
     return std::string();

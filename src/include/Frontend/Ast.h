@@ -242,10 +242,14 @@ class Visitor;
 
 class ProgramNode : public ASTNode
 {
+
 public:
     std::map<std::string, std::shared_ptr<ModuleNode>> avail_modules;
+    std::map<std::string, std::shared_ptr<ModuleNode>> used_modules;
+
     ProgramNode(std::map<std::string, std::shared_ptr<ModuleNode>> modules);
     void Accept(Visitor *v);
+    std::optional<std::shared_ptr<ModuleNode>> getMainModule();
     std::string to_string();
 };
 #endif

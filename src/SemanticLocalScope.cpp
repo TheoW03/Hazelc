@@ -5,6 +5,8 @@ SemanticLocalScopeVisitor::SemanticLocalScopeVisitor(std::map<std::string, Seman
     this->modules = modules;
 }
 
+// these find functions, optional so we can do more stuff with them
+
 std::optional<int> SemanticLocalScopeVisitor::find_function_global(Tokens name)
 {
     auto global_functions = this->current_AST_module.functions;
@@ -134,7 +136,7 @@ void SemanticLocalScopeVisitor::Visit(BranchNode *node)
 {
     FunctionLocalScope f;
     node->condition->Accept(this);
-    scope.push_back(f);
+    scope.push_back(f); // allocates and deallocates scope
     for (int i = 0; i < node->stmnts.size(); i++)
     {
         node->stmnts[i]->Accept(this);

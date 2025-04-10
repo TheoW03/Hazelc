@@ -1,5 +1,8 @@
 #include <optimization/ConstantFolding.h>
 
+// this is a pass designed to fold constants
+// it geos accroess to all expr Nodes and if they are constants
+// it substitues with solved values
 void ConstantFoldingVisitor::Visit(ASTNode *node)
 {
 }
