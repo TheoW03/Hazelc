@@ -44,7 +44,7 @@ add_llvm_executable(${EXECUTABLE_NAME}
    src/Scope.cpp
    src/CompilerContext.cpp
    src/SemanticGlobalScope.cpp
-   src/ResolveImports.cpp
+   src/TreeShake.cpp
    src/SemanticLocalScope.cpp
 
 )

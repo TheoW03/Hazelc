@@ -110,6 +110,5 @@ Function CompiledModuleClass::set_current_function()
 {
     this->current_function = this->compiled_module.functions.top();
     this->compiled_module.functions.pop();
-    std::cout << this->compiled_module.functions.size() << current_function.name.value << std::endl;
     return this->current_function;
 }

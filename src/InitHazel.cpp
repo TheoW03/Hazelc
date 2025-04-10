@@ -6,7 +6,7 @@
 #include <cli.h>
 #include <stdexcept>
 #include <visitor.h>
-#include <optimization/ResolveImports.h>
+#include <optimization/TreeShake.h>
 #include <filesystem>
 #include <Frontend/SemanticCheckScopes.h>
 #include <optimization/ConstantFolding.h>
@@ -77,10 +77,12 @@ void runPasses(std::shared_ptr<ProgramNode> node, Output cli)
 
     if (cli.gen_file == FileType::exe_file)
     {
-        Imports *imporrts = new Imports;
+
+        TreeShake *imporrts = new TreeShake;
 
         node->Accept(imporrts);
         node->avail_modules = imporrts->used_modules;
+        std::cout << "hazelc: Treeshake" << std::endl;
     }
 }
 

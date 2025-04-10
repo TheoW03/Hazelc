@@ -1,19 +1,19 @@
-#include <optimization/ResolveImports.h>
+#include <optimization/TreeShake.h>
 
-Imports::Imports() {}
-void Imports::Visit(ProgramNode *node)
+// this pass impls a "tree-shake" it goes through each module
+// creates a data strcuture of the modules that are used
+// its only implemented if the user doesnt link along with create an object file
+
+TreeShake::TreeShake() {}
+void TreeShake::Visit(ProgramNode *node)
 {
 
     auto mainModule = node->getMainModule().value();
     this->used_modules.insert(std::make_pair(mainModule->name.value, mainModule));
     this->avail_modules = node->avail_modules;
     mainModule->Accept(this);
-    for (const auto &[key, current_module] : this->used_modules)
-    {
-        std::cout << "imported path: " << current_module->name.value << std::endl;
-    }
 }
-void Imports::Visit(ModuleNode *node)
+void TreeShake::Visit(ModuleNode *node)
 {
     for (int i = 0; i < node->imports.size(); i++)
     {
