@@ -1,6 +1,9 @@
 #include <backend/compiler_visitors.h>
 #include <backend/CompilerUtil.h>
 
+// hazel first compiles all functions and headers
+// so it seperates the functions out of the function nodes and compiles all functions and imports
+// it creates a data strcuture, in ProgramScope
 CompileHighLevel::CompileHighLevel(llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context) : module(module), builder(builder), context(context)
 {
     std::map<std::string, llvm::Function *> CFunctions;

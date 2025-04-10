@@ -20,7 +20,8 @@ void TreeShake::Visit(ModuleNode *node)
         auto m = avail_modules[node->imports[i].value];
         if (this->used_modules.find(m->name.value) == this->used_modules.end())
         {
-            std::cout << m->name.value << std::endl;
+            // if a module is already visited we dont visit
+            //(supposed to resolve if main depends on foo and bar and foo depends on bar)
             this->used_modules.insert(std::make_pair(m->name.value, m));
             m->Accept(this);
         }

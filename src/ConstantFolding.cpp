@@ -3,6 +3,7 @@
 // this is a pass designed to fold constants
 // it geos accroess to all expr Nodes and if they are constants
 // it substitues with solved values
+
 void ConstantFoldingVisitor::Visit(ASTNode *node)
 {
 }
@@ -127,6 +128,8 @@ std::shared_ptr<ASTNode> FoldExpr::fold_expr(std::shared_ptr<ASTNode> n)
         auto expr = dynamic_cast<ExprNode *>(n.get());
         auto lhs = fold_expr(expr->lhs);
         auto rhs = fold_expr(expr->rhs);
+
+        // if they are constants we solve them and create a new node with the solved expression
         if (dynamic_cast<IntegerNode *>(lhs.get()) && dynamic_cast<IntegerNode *>(rhs.get()))
         {
             auto lhsInt = dynamic_cast<IntegerNode *>(lhs.get())->number;
