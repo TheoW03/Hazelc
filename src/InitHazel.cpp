@@ -6,6 +6,7 @@
 #include <cli.h>
 #include <stdexcept>
 #include <visitor.h>
+#include <optimization/ResolveImports.h>
 #include <filesystem>
 #include <Frontend/SemanticCheckScopes.h>
 #include <optimization/ConstantFolding.h>
@@ -53,7 +54,7 @@ std::vector<std::string> get_lines(Output cli)
     return lines;
 }
 
-void runPasses(std::shared_ptr<ProgramNode> node)
+void runPasses(std::shared_ptr<ProgramNode> node, Output cli)
 {
     // This runs intermediate passes
     // that take care of error checking and basic optimization if needed
@@ -73,6 +74,14 @@ void runPasses(std::shared_ptr<ProgramNode> node)
         new SemanticLocalScopeVisitor(semantic->modules);
     node->Accept(semantic_local);
     std::cout << "" << std::endl;
+
+    if (cli.gen_file == FileType::exe_file)
+    {
+        Imports *imporrts = new Imports;
+
+        node->Accept(imporrts);
+        node->avail_modules = imporrts->used_modules;
+    }
 }
 
 int Init(std::vector<std::string> args)
@@ -100,7 +109,7 @@ int Init(std::vector<std::string> args)
 
     std::cout << "hazelc: parsed" << std::endl;
     std::cout << "" << std::endl;
-    runPasses(modules);
+    runPasses(modules, cli);
 
     // SemanticAnalysisTopLevel seman_analy;
     InitCompiler(cli, modules);

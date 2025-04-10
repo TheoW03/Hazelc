@@ -2,7 +2,7 @@
 #include <iostream>
 #include <memory>
 #include <map>
-
+#include <optional>
 #ifndef ASTNODE_H
 #define ASTNODE_H
 class Visitor;

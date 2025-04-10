@@ -1,7 +1,6 @@
 #include <Frontend/Ast.h>
 #include <visitor.h>
 #include <map>
-#include "Ast.h"
 
 ASTNode::~ASTNode()
 {

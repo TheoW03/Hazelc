@@ -19,6 +19,7 @@ Output parse_cmd(std::vector<std::string> args)
              Parse_F>
         option_handlers;
     std::string optop;
+    o.gen_file = FileType::exe_file;
     std::map<char, std::string> short_hand;
     short_hand['c'] = "object-file";
     short_hand['o'] = "output-file";
