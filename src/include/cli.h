@@ -16,7 +16,8 @@ enum FileType
 {
     Assembly_File,
     Object_file,
-    Ir_file
+    Ir_file,
+    exe_file
 };
 #endif
 #ifndef OUT_H
