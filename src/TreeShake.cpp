@@ -15,6 +15,7 @@ void TreeShake::Visit(ProgramNode *node)
     this->visited_modules.insert(mainModule->name.value);
 
     mainModule->Accept(this);
+    node->avail_modules = this->used_modules;
 }
 void TreeShake::Visit(ModuleNode *node)
 {

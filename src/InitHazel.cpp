@@ -81,7 +81,6 @@ void runPasses(std::shared_ptr<ProgramNode> node, Output cli)
         TreeShake *imporrts = new TreeShake;
 
         node->Accept(imporrts);
-        node->avail_modules = imporrts->used_modules;
         std::cout << "hazelc: Treeshake" << std::endl;
     }
 }
