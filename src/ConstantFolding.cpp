@@ -129,7 +129,8 @@ std::shared_ptr<ASTNode> FoldExpr::fold_expr(std::shared_ptr<ASTNode> n)
         auto lhs = fold_expr(expr->lhs);
         auto rhs = fold_expr(expr->rhs);
 
-        // if they are constants we solve them and create a new node with the solved expression
+        // if they are constants
+        // we solve them and create a new node with the solved expression
         if (dynamic_cast<IntegerNode *>(lhs.get()) && dynamic_cast<IntegerNode *>(rhs.get()))
         {
             auto lhsInt = dynamic_cast<IntegerNode *>(lhs.get())->number;

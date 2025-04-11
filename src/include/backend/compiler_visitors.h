@@ -61,7 +61,6 @@ public:
 
     void Visit(ReturnNode *node) override;
     void Visit(ProgramNode *node) override;
-    void Visit(FunctionCallNode *node) override;
 };
 
 #endif

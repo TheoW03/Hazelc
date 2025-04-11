@@ -78,11 +78,10 @@ void runPasses(std::shared_ptr<ProgramNode> node, Output cli)
     ResolveRecursiveModules *recureivemod = new ResolveRecursiveModules;
     std::cout << "hazelc: checking recursive imports" << std::endl;
     node->Accept(recureivemod);
-    if (cli.gen_file == FileType::exe_file)
+    auto mainModule = node->getMainModule();
+    if (mainModule.has_value())
     {
-
         TreeShake *imporrts = new TreeShake;
-
         node->Accept(imporrts);
         std::cout << "hazelc: Treeshake" << std::endl;
     }
@@ -90,8 +89,6 @@ void runPasses(std::shared_ptr<ProgramNode> node, Output cli)
 
 int Init(std::vector<std::string> args)
 {
-
-    /* code */
 
     auto cli = parse_cmd(args);
     if (cli.files.size() == 0)

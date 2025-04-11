@@ -19,7 +19,10 @@ void CompileStatement::Visit(ASTNode *node)
 
 void CompileStatement::Visit(FunctionNode *node)
 {
-    // auto c = this->program_scope.get_current_function();
+
+    // all functions are stored in a stack. the compiler pulls a function from the stack
+    // sees if its a global or local function
+    // if local we put it in the local scope. if global we generate it
     auto c = this->program_scope.set_current_function();
     if (this->program_scope.get_global_function(c.name).has_value())
     {
@@ -93,9 +96,4 @@ void CompileStatement::Visit(ProgramNode *node)
     // {
     //     node->modules[i]->Accept(this);
     // }
-}
-
-void CompileStatement::Visit(FunctionCallNode *node)
-{
-    builder.CreateCall(this->program_scope.get_function(node->name).function, {});
 }
