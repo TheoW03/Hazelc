@@ -75,6 +75,9 @@ void runPasses(std::shared_ptr<ProgramNode> node, Output cli)
     node->Accept(semantic_local);
     std::cout << "" << std::endl;
 
+    ResolveRecursiveModules *recureivemod = new ResolveRecursiveModules;
+    std::cout << "hazelc: checking recursive imports" << std::endl;
+    node->Accept(recureivemod);
     if (cli.gen_file == FileType::exe_file)
     {
 
