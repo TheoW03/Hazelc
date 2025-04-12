@@ -80,7 +80,7 @@ void CompileStatement::Visit(ReturnNode *node)
     // {
     //     value = builder.CreateLoad(ty.type, value);
     // }
-    builder.CreateRet(value.value);
+    builder.CreateRet(loaded_value);
     // auto error = llvm::verifyFunction(*(program_scope.get_current_function().function), output);
     // program_scope.get_current_function().function->viewCFG();
 }

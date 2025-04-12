@@ -86,6 +86,8 @@ private:
 
     llvm::Value *IntegerBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
     llvm::Value *FloatBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
+    llvm::Value *BoolBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
+
     llvm::Value *NoneBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
     ValueStruct CompileBranch(std::vector<std::shared_ptr<ASTNode>> stmnts);
 
@@ -107,6 +109,7 @@ public:
     llvm::Value *FloatMathExpression(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
     llvm::Value *BoolIntMathExpr(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
     llvm::Value *BoolFloatMathExpr(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
+    llvm::Value *BoolBoolExpr(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
     llvm::Value *StringMathExpr(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
     ValueStruct Expression(std::shared_ptr<ASTNode> node);
 };
