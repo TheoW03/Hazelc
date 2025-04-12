@@ -1,0 +1,3 @@
+module C
+
+export let s : integer => 1

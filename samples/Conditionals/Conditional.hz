@@ -1,0 +1,12 @@
+module cc
+
+let b : boolean => false
+let c : boolean => c
+let f : integer => f
+let g : integer => g
+
+let main : integer =>
+conditional : integer
+    b = false => f
+    c = true => g
+    $defualt => 1
