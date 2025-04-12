@@ -154,6 +154,10 @@ OptionalType CompilerContext::get_type(std::shared_ptr<Type> type)
         {
             return get_integer_type();
         }
+        else if (p->type.type == TokenType::boolean)
+        {
+            return get_boolean_type();
+        }
         else if (p->type.type == TokenType::Decimal)
         {
             return get_float_type();

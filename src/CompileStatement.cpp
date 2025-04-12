@@ -65,11 +65,14 @@ void CompileStatement::Visit(ModuleNode *node)
 
 void CompileStatement::Visit(ReturnNode *node)
 {
+
     CompileExpr c(module, builder, context, compiler_context, this->program_scope, this->block);
+
     auto ty = compiler_context.get_type(program_scope.get_current_function().ret_type);
     // auto value = builder.CreateLoad(ty.get_type(), c.Expression(node->Expr));
     // program_scope.get_current_function().function->viewCFGOnly();
     // llvm::raw_ostream *output = &llvm::outs();
+
     auto value = c.Expression(node->Expr);
     this->block = value.block;
     auto loaded_value = ValueOrLoad(builder, value.value, ty.type);

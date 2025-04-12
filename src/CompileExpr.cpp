@@ -342,9 +342,12 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
     }
     else if (dynamic_cast<BooleanConstNode *>(node.get()))
     {
+        std::cout << "h" << std::endl;
+
         auto c = dynamic_cast<BooleanConstNode *>(node.get());
         auto bool_type = compiler_context.get_boolean_type();
-        auto value = llvm::ConstantInt::get(llvm::Type::getInt1Ty(context), c->value.type == TokenType::True ? 1 : 0);
+        auto value = llvm::ConstantInt::get(builder.getInt1Ty(), c->val);
+        // auto value = llvm::ConstantInt::get(llvm::Type::getInt1Ty(context), c->value.type == TokenType::True ? 1 : 0);
         return {this->block, bool_type.set_loaded_value(value, builder)};
     }
     else if (dynamic_cast<StringNode *>(node.get()))
