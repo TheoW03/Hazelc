@@ -132,8 +132,10 @@ class Visitor;
 class BooleanConstNode : public ASTNode
 {
 public:
-    Tokens value;
+    bool val;
     BooleanConstNode(Tokens value);
+    BooleanConstNode(bool value);
+
     void Accept(Visitor *v);
     std::string to_string();
 };

@@ -1,5 +1,4 @@
 #include <optimization/ConstantFolding.h>
-
 // this is a pass designed to fold constants
 // it geos accroess to all expr Nodes and if they are constants
 // it substitues with solved values
@@ -73,7 +72,6 @@ std::shared_ptr<ASTNode> FoldExpr::fold_integer(std::shared_ptr<IntegerNode> lhs
         break;
     case Left_Shift:
     {
-        int v = lhs->number << rhs->number;
         return std::make_shared<IntegerNode>(lhs->number << rhs->number);
         break;
     }
@@ -120,6 +118,73 @@ std::shared_ptr<ASTNode> FoldExpr::fold_string(std::shared_ptr<StringNode> lhs, 
     return nullptr;
 }
 
+std::shared_ptr<ASTNode> FoldExpr::fold_bool_integer(std::shared_ptr<IntegerNode> lhs, Tokens op, std::shared_ptr<IntegerNode> rhs)
+{
+    switch (op.type)
+    {
+    case EQ:
+        return std::make_shared<BooleanConstNode>(lhs->number == rhs->number);
+    case NE:
+        return std::make_shared<BooleanConstNode>(lhs->number != rhs->number);
+    case LT:
+        return std::make_shared<BooleanConstNode>(lhs->number < rhs->number);
+    case LTE:
+        return std::make_shared<BooleanConstNode>(lhs->number <= rhs->number);
+    case GT:
+        return std::make_shared<BooleanConstNode>(lhs->number > rhs->number);
+    case GTE:
+        return std::make_shared<BooleanConstNode>(lhs->number >= rhs->number);
+    }
+}
+
+std::shared_ptr<ASTNode> FoldExpr::fold_bool_const(std::shared_ptr<BooleanConstNode> lhs, Tokens op, std::shared_ptr<BooleanConstNode> rhs)
+{
+    switch (op.type)
+    {
+    case And:
+        return std::make_shared<BooleanConstNode>(lhs->val && rhs->val);
+    case Or:
+        return std::make_shared<BooleanConstNode>(lhs->val || rhs->val);
+    }
+}
+
+std::shared_ptr<ASTNode> FoldExpr::fold_bool_bool(std::shared_ptr<BooleanConstNode> lhs, Tokens op, std::shared_ptr<BooleanConstNode> rhs)
+{
+    switch (op.type)
+    {
+    case EQ:
+        return std::make_shared<BooleanConstNode>(lhs->val == rhs->val);
+    case NE:
+        return std::make_shared<BooleanConstNode>(lhs->val != rhs->val);
+    case LT:
+        return std::make_shared<BooleanConstNode>(lhs->val < rhs->val);
+    case LTE:
+        return std::make_shared<BooleanConstNode>(lhs->val <= rhs->val);
+    case GT:
+        return std::make_shared<BooleanConstNode>(lhs->val > rhs->val);
+    case GTE:
+        return std::make_shared<BooleanConstNode>(lhs->val >= rhs->val);
+    }
+}
+
+std::shared_ptr<ASTNode> FoldExpr::fold_bool_decimal(std::shared_ptr<DecimalNode> lhs, Tokens op, std::shared_ptr<DecimalNode> rhs)
+{
+    switch (op.type)
+    {
+    case EQ:
+        return std::make_shared<BooleanConstNode>(lhs->number == rhs->number);
+    case NE:
+        return std::make_shared<BooleanConstNode>(lhs->number != rhs->number);
+    case LT:
+        return std::make_shared<BooleanConstNode>(lhs->number < rhs->number);
+    case LTE:
+        return std::make_shared<BooleanConstNode>(lhs->number <= rhs->number);
+    case GT:
+        return std::make_shared<BooleanConstNode>(lhs->number > rhs->number);
+    case GTE:
+        return std::make_shared<BooleanConstNode>(lhs->number >= rhs->number);
+    }
+}
 std::shared_ptr<ASTNode> FoldExpr::fold_expr(std::shared_ptr<ASTNode> n)
 {
 
@@ -153,7 +218,45 @@ std::shared_ptr<ASTNode> FoldExpr::fold_expr(std::shared_ptr<ASTNode> n)
             return fold_string(std::make_shared<StringNode>(lhsInt),
                                expr->operation, std::make_shared<StringNode>(rhsInt));
         }
+        else if (dynamic_cast<BooleanConstNode *>(lhs.get()) && dynamic_cast<BooleanConstNode *>(rhs.get()))
+        {
+            auto lhsInt = dynamic_cast<BooleanConstNode *>(lhs.get())->val;
+            auto rhsInt = dynamic_cast<BooleanConstNode *>(rhs.get())->val;
+            return fold_bool_const(std::make_shared<BooleanConstNode>(lhsInt),
+                                   expr->operation, std::make_shared<BooleanConstNode>(rhsInt));
+        }
         return std::make_shared<ExprNode>(lhs, expr->operation, rhs);
+    }
+    else if (dynamic_cast<BooleanExprNode *>(n.get()))
+    {
+        auto expr = dynamic_cast<BooleanExprNode *>(n.get());
+        auto lhs = fold_expr(expr->lhs);
+        auto rhs = fold_expr(expr->rhs);
+        if (dynamic_cast<IntegerNode *>(lhs.get()) && dynamic_cast<IntegerNode *>(rhs.get()))
+        {
+            auto lhsInt = dynamic_cast<IntegerNode *>(lhs.get())->number;
+            auto rhsInt = dynamic_cast<IntegerNode *>(rhs.get())->number;
+
+            return fold_bool_integer(std::make_shared<IntegerNode>(lhsInt),
+                                     expr->op, std::make_shared<IntegerNode>(rhsInt));
+        }
+        if (dynamic_cast<DecimalNode *>(lhs.get()) && dynamic_cast<DecimalNode *>(rhs.get()))
+        {
+            auto lhsInt = dynamic_cast<DecimalNode *>(lhs.get())->number;
+            auto rhsInt = dynamic_cast<DecimalNode *>(rhs.get())->number;
+
+            return fold_bool_decimal(std::make_shared<DecimalNode>(lhsInt),
+                                     expr->op, std::make_shared<DecimalNode>(rhsInt));
+        }
+        if (dynamic_cast<BooleanConstNode *>(lhs.get()) && dynamic_cast<BooleanConstNode *>(rhs.get()))
+        {
+            auto lhsInt = dynamic_cast<BooleanConstNode *>(lhs.get())->val;
+            auto rhsInt = dynamic_cast<BooleanConstNode *>(rhs.get())->val;
+
+            return fold_bool_integer(std::make_shared<IntegerNode>(lhsInt),
+                                     expr->op, std::make_shared<IntegerNode>(rhsInt));
+        }
+        return std::make_shared<BooleanExprNode>(lhs, expr->op, rhs);
     }
     return n;
 }

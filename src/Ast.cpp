@@ -239,9 +239,13 @@ std::string BooleanExprNode::to_string()
 
 BooleanConstNode::BooleanConstNode(Tokens value)
 {
-    this->value = value;
+    this->val = (value.type == TokenType::True) ? true : false;
 }
 
+BooleanConstNode::BooleanConstNode(bool value)
+{
+    this->val = value;
+}
 void BooleanConstNode::Accept(Visitor *v)
 {
     v->Visit(this);

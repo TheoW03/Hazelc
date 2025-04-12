@@ -8,6 +8,10 @@ private:
     std::shared_ptr<ASTNode> fold_integer(std::shared_ptr<IntegerNode> lhs, Tokens op, std::shared_ptr<IntegerNode> rhs);
     std::shared_ptr<ASTNode> fold_decimal(std::shared_ptr<DecimalNode> lhs, Tokens op, std::shared_ptr<DecimalNode> rhs);
     std::shared_ptr<ASTNode> fold_string(std::shared_ptr<StringNode> lhs, Tokens op, std::shared_ptr<StringNode> rhs);
+    std::shared_ptr<ASTNode> fold_bool_integer(std::shared_ptr<IntegerNode> lhs, Tokens op, std::shared_ptr<IntegerNode> rhs);
+    std::shared_ptr<ASTNode> fold_bool_const(std::shared_ptr<BooleanConstNode> lhs, Tokens op, std::shared_ptr<BooleanConstNode> rhs);
+    std::shared_ptr<ASTNode> fold_bool_bool(std::shared_ptr<BooleanConstNode> lhs, Tokens op, std::shared_ptr<BooleanConstNode> rhs);
+    std::shared_ptr<ASTNode> fold_bool_decimal(std::shared_ptr<DecimalNode> lhs, Tokens op, std::shared_ptr<DecimalNode> rhs);
 
 public:
     FoldExpr();
