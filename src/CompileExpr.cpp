@@ -120,6 +120,16 @@ llvm::Value *CompileExpr::FloatBool(llvm::Value *lhs, Tokens op, llvm::Value *rh
     auto math = BoolFloatMathExpr(lhs_val, op, rhs_val);
     return BoolType.set_loaded_value(math, builder);
 }
+
+llvm::Value *CompileExpr::BoolBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
+{
+    auto integer_type = compiler_context.get_boolean_type();
+    auto BoolType = compiler_context.get_boolean_type();
+    auto lhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(integer_type.type, lhs, 0, "int_lhs"));
+    auto rhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(integer_type.type, rhs, 0, "int_rhs"));
+    auto math = BoolIntMathExpr(lhs_val, op, rhs_val);
+    return BoolType.set_loaded_value(math, builder);
+}
 llvm::Value *CompileExpr::NoneBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
 {
     auto BoolType = compiler_context.get_boolean_type();
@@ -205,6 +215,11 @@ llvm::Value *CompileExpr::BoolFloatMathExpr(llvm::Value *lhs, Tokens op, llvm::V
     }
 }
 
+llvm::Value *CompileExpr::BoolBoolExpr(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
+{
+    return nullptr;
+}
+
 llvm::Value *CompileExpr::StringMathExpr(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
 {
 
@@ -288,6 +303,8 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         {
             auto condition = Expression(condition_stmnt->branches[i]->condition).value;
             llvm::BasicBlock *ifTrue = llvm::BasicBlock::Create(context, "if.true", program.get_current_function().function);
+            condition->dump();
+
             condition = builder.CreateLoad(builder.getInt1Ty(),
                                            builder.CreateStructGEP(compiler_context.get_boolean_type().type, condition, 0, "str2"));
 
@@ -398,6 +415,7 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         auto lhs = Expression(c->lhs);
         auto rhs = Expression(c->rhs);
         auto get_type = get_bool_expr_type(node, this->program);
+        std::cout << get_type << std::endl;
         switch (get_type)
         {
         case Integer_Type:
@@ -406,6 +424,8 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
             return {this->block, FloatBool(lhs.value, c->op, rhs.value)};
         case None_Type:
             return {this->block, FloatBool(lhs.value, c->op, rhs.value)};
+        case Boolean_Type:
+            return {this->block, BoolBool(lhs.value, c->op, rhs.value)};
         default:
             break;
         }

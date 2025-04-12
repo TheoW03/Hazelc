@@ -13,9 +13,34 @@ TypeOfExpr get_bool_expr_type(std::shared_ptr<ASTNode> n, ProgramScope ctx)
     else if (dynamic_cast<DecimalNode *>(c->lhs.get()) && dynamic_cast<DecimalNode *>(c->rhs.get()))
         return TypeOfExpr::Float_Type;
     else if (dynamic_cast<BooleanConstNode *>(c->lhs.get()) && dynamic_cast<BooleanConstNode *>(c->rhs.get()))
-        return TypeOfExpr::Integer_Type;
+        return TypeOfExpr::Boolean_Type;
     else if (dynamic_cast<NoneNode *>(c->lhs.get()) && dynamic_cast<NoneNode *>(c->rhs.get()))
         return TypeOfExpr::None_Type;
+    else if (dynamic_cast<FunctionCallNode *>(c->lhs.get()))
+    {
+        auto d = dynamic_cast<FunctionCallNode *>(c->lhs.get());
+        auto f = ctx.get_function(d->name);
+        if (dynamic_cast<NativeType *>(f.ret_type.get()))
+        {
+            auto p = dynamic_cast<NativeType *>(f.ret_type.get());
+            if (p->type.type == TokenType::Integer)
+            {
+                return TypeOfExpr::Integer_Type;
+            }
+            else if (p->type.type == TokenType::Decimal)
+            {
+                return TypeOfExpr::Float_Type;
+            }
+            else if (p->type.type == TokenType::string)
+            {
+                return TypeOfExpr::String_Type;
+            }
+            else if (p->type.type == TokenType::boolean)
+            {
+                return TypeOfExpr::Boolean_Type;
+            }
+        }
+    }
     if (dynamic_cast<BooleanExprNode *>(c->lhs.get()))
         return get_bool_expr_type(c->lhs, ctx);
     if (dynamic_cast<BooleanExprNode *>(c->rhs.get()))
@@ -53,6 +78,10 @@ TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n, ProgramScope ctx)
             else if (p->type.type == TokenType::string)
             {
                 return TypeOfExpr::String_Type;
+            }
+            else if (p->type.type == TokenType::boolean)
+            {
+                return TypeOfExpr::Boolean_Type;
             }
         }
         return TypeOfExpr::Void_Type;
