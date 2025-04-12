@@ -16,3 +16,4 @@ hazelc
 *.ll
 Theory/test.c
 Theory/test2.c
+*.hz
