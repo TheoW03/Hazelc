@@ -24,11 +24,16 @@ cmake --build build --config Release -DPROFILING={ON|OFF}
 ./hazelc --help
 ```
 
+## Documentation
 
+- [langauge-definition]
+
+- [examples]
 
 [llvm]: <https://releases.llvm.org/download.html>
 
 [cmake]: <https://cmake.org/download/>
-
+[langauge-definition]: <https://github.com/TheoW03/Hazelc/blob/master/Hazel_docs.pdf>
+[examples]: <https://github.com/TheoW03/Hazelc/tree/master/samples>
 [lines-of-code-badge]: <https://tokei.rs/b1/github/TheoW03/Hazel>
 [gpl]:<https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0>

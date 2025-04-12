@@ -1,0 +1,17 @@
+module types
+
+let integer_type : integer => 1
+
+let float_type : decimal => 3.1415
+
+let string_type : string => "hello " ++ " world"
+
+let boolean_type : boolean => true
+
+let char_type : character => 'a'
+
+let byte_type : byte => 0x10
+
+let uint : unsigned_integer => 100
+
+let ubyte : unsigned_byte => 1000
