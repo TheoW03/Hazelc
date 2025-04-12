@@ -150,7 +150,7 @@ OptionalType CompilerContext::get_type(std::shared_ptr<Type> type)
     if (dynamic_cast<NativeType *>(type.get()))
     {
         auto p = dynamic_cast<NativeType *>(type.get());
-        if (p->type.type == TokenType::Integer)
+        if (p->type.type == TokenType::Integer || p->type.type == TokenType::Uinteger)
         {
             return get_integer_type();
         }
@@ -166,7 +166,7 @@ OptionalType CompilerContext::get_type(std::shared_ptr<Type> type)
         {
             return get_string_type();
         }
-        else if (p->type.type == TokenType::character || p->type.type == TokenType::Byte)
+        else if (p->type.type == TokenType::character || p->type.type == TokenType::Byte || p->type.type == TokenType::Ubyte)
         {
             return get_byte_type();
         }
