@@ -21,6 +21,7 @@ llvm::Value *CompileExpr::CompileStr(llvm::Value *str, llvm::Value *length, llvm
 {
 
     // strings are strcutures
+    // that conatin  the string and length
     auto c = compiler_context.get_string_type(this->context, builder);
     auto destField0ptr = builder.CreateStructGEP(c, structure, 0, "destStructPtrF0");
     builder.CreateStore(str, destField0ptr);
@@ -149,6 +150,7 @@ ValueStruct CompileExpr::CompileBranch(std::vector<std::shared_ptr<ASTNode>> stm
             return Expression(c->Expr);
         }
     }
+    return {this->block, nullptr};
 }
 
 llvm::Value *CompileExpr::FloatMathExpression(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
@@ -227,9 +229,12 @@ llvm::Value *CompileExpr::StringMathExpr(llvm::Value *lhs, Tokens op, llvm::Valu
     {
     case Concation:
     {
+
+        // rn to do concat we use from the C stdlib
+        // defined as
+        // int snprintf ( char * dest, size_t n, const char * format, ... );
         auto fmt = builder.CreateGlobalString("%s%s");
         auto snprinft = compiler_context.CFunctions["snprintf"];
-        // auto c = comiler_context.get_string_type(context, builder);
         auto c = compiler_context.get_string_type(context, builder);
 
         auto lenthlhs = builder.CreateLoad(builder.getInt64Ty(), builder.CreateStructGEP(c, lhs, 1, "str1"));
@@ -276,16 +281,6 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
 
         return {this->block, get_int_type.set_loaded_value(number, builder)};
     }
-    else if (dynamic_cast<BranchNode *>(node.get()))
-    {
-        // auto =
-        // return Expression()
-        auto branch = dynamic_cast<BranchNode *>(node.get());
-
-        // auto c = dynamic_cast<ReturnNode *>(branch->stmnts[0].get());
-        return Expression(branch->condition);
-        // return Expression()
-    }
     else if (dynamic_cast<NoneNode *>(node.get()))
     {
         return {
@@ -303,8 +298,8 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         {
             auto condition = Expression(condition_stmnt->branches[i]->condition).value;
             llvm::BasicBlock *ifTrue = llvm::BasicBlock::Create(context, "if.true", program.get_current_function().function);
-            condition->dump();
 
+            //
             condition = builder.CreateLoad(builder.getInt1Ty(),
                                            builder.CreateStructGEP(compiler_context.get_boolean_type().type, condition, 0, "str2"));
 
@@ -359,12 +354,10 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
     }
     else if (dynamic_cast<BooleanConstNode *>(node.get()))
     {
-        std::cout << "h" << std::endl;
 
         auto c = dynamic_cast<BooleanConstNode *>(node.get());
         auto bool_type = compiler_context.get_boolean_type();
         auto value = llvm::ConstantInt::get(builder.getInt1Ty(), c->val);
-        // auto value = llvm::ConstantInt::get(llvm::Type::getInt1Ty(context), c->value.type == TokenType::True ? 1 : 0);
         return {this->block, bool_type.set_loaded_value(value, builder)};
     }
     else if (dynamic_cast<StringNode *>(node.get()))
@@ -415,15 +408,14 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         auto lhs = Expression(c->lhs);
         auto rhs = Expression(c->rhs);
         auto get_type = get_bool_expr_type(node, this->program);
-        std::cout << get_type << std::endl;
         switch (get_type)
         {
         case Integer_Type:
             return {this->block, IntegerBool(lhs.value, c->op, rhs.value)};
         case Float_Type:
             return {this->block, FloatBool(lhs.value, c->op, rhs.value)};
-        case None_Type:
-            return {this->block, FloatBool(lhs.value, c->op, rhs.value)};
+        // case None_Type:
+        //     return {this->block, BoolBool(lhs.value, c->op, rhs.value)};
         case Boolean_Type:
             return {this->block, BoolBool(lhs.value, c->op, rhs.value)};
         default:
