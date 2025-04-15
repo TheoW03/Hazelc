@@ -61,7 +61,13 @@ void ResolveRecursiveModules::Visit(ModuleNode *node)
 {
     for (int i = 0; i < node->imports.size(); i++)
     {
+        if (this->avail_modules.find(node->imports[i].value) == this->avail_modules.end())
+        {
+            std::cout << "invalid import \"" << node->imports[i].value << "\" in module \"" << node->name.value << "\"" << std::endl;
+            exit(EXIT_FAILURE);
+        }
         auto m = avail_modules[node->imports[i].value];
+
         if (visited_modules.find(m->name.value) != visited_modules.end())
         {
             std::cout << "hazelc: cicurlar import module " << node->name.value << " depends on module " << m->name.value << std::endl;
