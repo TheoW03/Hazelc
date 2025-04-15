@@ -21,6 +21,7 @@ public:
     std::map<std::string, Function> exported_func_map;
     std::stack<Function> compiled_functions;
     bool is_global;
+    llvm::StructType *params;
 
     llvm::IRBuilder<> &builder;
     llvm::LLVMContext &context;
@@ -54,7 +55,8 @@ public:
     llvm::IRBuilder<> &builder;
     llvm::LLVMContext &context;
     ProgramScope program_scope;
-    CompileStatement(llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context, CompilerContext compiler_context);
+    llvm::StructType *params;
+    CompileStatement(llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context, CompilerContext compiler_context, llvm::StructType *params);
     void Visit(ASTNode *node) override;
     void Visit(FunctionNode *node) override;
     void Visit(ModuleNode *node) override;
@@ -97,6 +99,7 @@ public:
     llvm::Module &module;
     ProgramScope program;
     llvm::BasicBlock *block;
+    llvm::StructType *params;
     // std::map<std::string, Function> func_map;
     CompilerContext compiler_context;
     llvm::IRBuilder<> &builder;
@@ -104,7 +107,7 @@ public:
     CompileExpr(llvm::Module &module,
                 llvm::IRBuilder<> &builder,
                 llvm::LLVMContext &context,
-                CompilerContext compiler_context, ProgramScope program, llvm::BasicBlock *block);
+                CompilerContext compiler_context, ProgramScope program, llvm::BasicBlock *block, llvm::StructType *params);
     llvm::Value *IntMathExpression(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
     llvm::Value *FloatMathExpression(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
     llvm::Value *BoolIntMathExpr(llvm::Value *lhs, Tokens op, llvm::Value *rhs);

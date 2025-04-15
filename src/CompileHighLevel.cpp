@@ -40,8 +40,8 @@ CompileHighLevel::CompileHighLevel(llvm::Module &module, llvm::IRBuilder<> &buil
 
     NativeTypes.insert(std::make_pair(TokenType::string, OptionalType(context, builder, string_type)));
 
-    auto param_structure = llvm::StructType::create(context, "params");
-    this->compiler_context = CompilerContext(CFunctions, NativeTypes, string_type, param_structure);
+    this->params = llvm::StructType::create(context, "params");
+    this->compiler_context = CompilerContext(CFunctions, NativeTypes, string_type);
 }
 
 void CompileHighLevel::Visit(ASTNode *node)
@@ -166,7 +166,7 @@ Function CompileHighLevel::CompileFunctionHeader(std::shared_ptr<FunctionRefNode
     //     f.push_back(c);
     //     a.push_back(c.function->getType());
     // }
-    llvm::FunctionType *functype = this->compiler_context.compile_Function_Type(builder, context, n);
+    llvm::FunctionType *functype = this->compiler_context.compile_Function_Type(builder, context, this->params, n);
     llvm::Function *function = llvm::Function::Create(
         functype, llvm::Function::ExternalLinkage, n->FunctionName.value, module);
 

@@ -33,7 +33,6 @@ public:
 class CompilerContext
 {
 public:
-    llvm::StructType *params;
     std::map<std::string, Function> func_map;
     std::map<std::string, CompiledModuleClass> modules;
     std::map<std::string, llvm::Function *> CFunctions;
@@ -47,7 +46,7 @@ public:
     CompilerContext();
     CompilerContext(std::map<std::string, llvm::Function *> CFunctions,
                     std::map<TokenType, OptionalType> NativeTypes,
-                    llvm::StructType *str_type, llvm::StructType *parameter);
+                    llvm::StructType *str_type);
     // Function get_function(Tokens name);
     // Function get_local_function(Tokens name);
     // void add_local_function(Tokens name, Function function);
@@ -56,10 +55,10 @@ public:
     // void compile_cfunctions(llvm::Module &module, llvm::LLVMContext &context, llvm::IRBuilder<> &builder);
     llvm::StructType *get_string_type(llvm::LLVMContext &context, llvm::IRBuilder<> &builder);
     llvm::Type *compile_Type(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<Type> ty);
-    llvm::FunctionType *compile_Function_Type(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<FunctionRefNode> n);
+    llvm::FunctionType *compile_Function_Type(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, llvm::StructType *params, std::shared_ptr<FunctionRefNode> n);
 
     OptionalType compile_Type_Optional(std::shared_ptr<Type> ty);
-    Thunks get_thunk_types(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<FunctionRefNode> n);
+    Thunks get_thunk_types(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<FunctionRefNode> n, llvm::StructType *params);
 
     OptionalType get_integer_type();
     OptionalType get_float_type();

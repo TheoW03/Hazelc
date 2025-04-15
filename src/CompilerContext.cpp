@@ -12,13 +12,12 @@ CompilerContext::CompilerContext()
 }
 
 CompilerContext::CompilerContext(std::map<std::string, llvm::Function *> CFunctions,
-                                 std::map<TokenType, OptionalType> NativeTypes, llvm::StructType *str_type, llvm::StructType *parameter)
+                                 std::map<TokenType, OptionalType> NativeTypes, llvm::StructType *str_type)
 {
 
     this->CFunctions = CFunctions;
     this->NativeTypes = NativeTypes;
     this->string_type = str_type;
-    this->params = parameter;
 }
 
 llvm::StructType *CompilerContext::get_string_type(llvm::LLVMContext &context, llvm::IRBuilder<> &builder)
@@ -79,17 +78,17 @@ llvm::Type *CompilerContext::compile_Type(llvm::IRBuilder<> &builder, llvm::LLVM
     return builder.getVoidTy();
 }
 
-llvm::FunctionType *CompilerContext::compile_Function_Type(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<FunctionRefNode> n)
+llvm::FunctionType *CompilerContext::compile_Function_Type(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, llvm::StructType *params, std::shared_ptr<FunctionRefNode> n)
 {
     auto c = n->RetType;
     for (int i = 0; i < n->params.size(); i++)
     {
-        auto funct = compile_Function_Type(builder, context, n->params[i]);
+        auto funct = compile_Function_Type(builder, context, params, n->params[i]);
         // this->params->
         // a.push_back(get_thunk_types(builder, context, n->params[i]).thunk_type);
     }
     llvm::FunctionType *functype = llvm::FunctionType::get(
-        compile_Type_Optional(c).type, this->params, false);
+        compile_Type_Optional(c).type, params, false);
     return functype;
 }
 OptionalType CompilerContext::compile_Type_Optional(std::shared_ptr<Type> ty)
@@ -105,14 +104,14 @@ OptionalType CompilerContext::compile_Type_Optional(std::shared_ptr<Type> ty)
     }
     // return
 }
-Thunks CompilerContext::get_thunk_types(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<FunctionRefNode> n)
+Thunks CompilerContext::get_thunk_types(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<FunctionRefNode> n, llvm::StructType *parans)
 
 {
 
     // std::vector<Thunks> thunks;
     // this->string_type = llvm::StructType::create(context, "Thunk");
     auto thunk = llvm::StructType::create(context, "Thunk");
-    auto funct = compile_Function_Type(builder, context, n);
+    auto funct = compile_Function_Type(builder, context, parans, n);
     std::vector<llvm::Type *> elements = {compile_Type_Optional(n->RetType).type, llvm::PointerType::getUnqual(funct), builder.getInt1Ty()};
     // this->string_type->setBody(elements);
     thunk->setBody(elements);
