@@ -12,13 +12,13 @@ CompilerContext::CompilerContext()
 }
 
 CompilerContext::CompilerContext(std::map<std::string, llvm::Function *> CFunctions,
-                                 std::map<TokenType, OptionalType> NativeTypes, llvm::StructType *str_type)
+                                 std::map<TokenType, OptionalType> NativeTypes, llvm::StructType *str_type, llvm::StructType *parameter)
 {
 
     this->CFunctions = CFunctions;
     this->NativeTypes = NativeTypes;
-
     this->string_type = str_type;
+    this->params = parameter;
 }
 
 llvm::StructType *CompilerContext::get_string_type(llvm::LLVMContext &context, llvm::IRBuilder<> &builder)
@@ -82,14 +82,14 @@ llvm::Type *CompilerContext::compile_Type(llvm::IRBuilder<> &builder, llvm::LLVM
 llvm::FunctionType *CompilerContext::compile_Function_Type(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<FunctionRefNode> n)
 {
     auto c = n->RetType;
-    std::vector<llvm::Type *> a;
     for (int i = 0; i < n->params.size(); i++)
     {
         auto funct = compile_Function_Type(builder, context, n->params[i]);
-        a.push_back(get_thunk_types(builder, context, n->params[i]).thunk_type);
+        // this->params->
+        // a.push_back(get_thunk_types(builder, context, n->params[i]).thunk_type);
     }
     llvm::FunctionType *functype = llvm::FunctionType::get(
-        compile_Type_Optional(c).type, a, false);
+        compile_Type_Optional(c).type, this->params, false);
     return functype;
 }
 OptionalType CompilerContext::compile_Type_Optional(std::shared_ptr<Type> ty)

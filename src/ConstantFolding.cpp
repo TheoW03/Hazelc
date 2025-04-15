@@ -3,10 +3,10 @@
 // it geos accroess to all expr Nodes and if they are constants
 // it substitues with solved values
 
-void ConstantFoldingVisitor::Visit(ASTNode *node)
+ConstantFoldingVisitor::ConstantFoldingVisitor()
 {
 }
-ConstantFoldingVisitor::ConstantFoldingVisitor()
+void ConstantFoldingVisitor::Visit(ASTNode *node)
 {
 }
 void ConstantFoldingVisitor::Visit(FunctionNode *node)
@@ -135,6 +135,7 @@ std::shared_ptr<ASTNode> FoldExpr::fold_bool_integer(std::shared_ptr<IntegerNode
     case GTE:
         return std::make_shared<BooleanConstNode>(lhs->number >= rhs->number);
     }
+    return nullptr;
 }
 
 std::shared_ptr<ASTNode> FoldExpr::fold_bool_const(std::shared_ptr<BooleanConstNode> lhs, Tokens op, std::shared_ptr<BooleanConstNode> rhs)
@@ -146,6 +147,7 @@ std::shared_ptr<ASTNode> FoldExpr::fold_bool_const(std::shared_ptr<BooleanConstN
     case Or:
         return std::make_shared<BooleanConstNode>(lhs->val || rhs->val);
     }
+    return nullptr;
 }
 
 std::shared_ptr<ASTNode> FoldExpr::fold_bool_bool(std::shared_ptr<BooleanConstNode> lhs, Tokens op, std::shared_ptr<BooleanConstNode> rhs)
@@ -165,6 +167,7 @@ std::shared_ptr<ASTNode> FoldExpr::fold_bool_bool(std::shared_ptr<BooleanConstNo
     case GTE:
         return std::make_shared<BooleanConstNode>(lhs->val >= rhs->val);
     }
+    return nullptr;
 }
 
 std::shared_ptr<ASTNode> FoldExpr::fold_bool_decimal(std::shared_ptr<DecimalNode> lhs, Tokens op, std::shared_ptr<DecimalNode> rhs)
@@ -184,6 +187,7 @@ std::shared_ptr<ASTNode> FoldExpr::fold_bool_decimal(std::shared_ptr<DecimalNode
     case GTE:
         return std::make_shared<BooleanConstNode>(lhs->number >= rhs->number);
     }
+    return nullptr;
 }
 std::shared_ptr<ASTNode> FoldExpr::fold_expr(std::shared_ptr<ASTNode> n)
 {

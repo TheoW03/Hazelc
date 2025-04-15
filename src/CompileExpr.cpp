@@ -377,6 +377,7 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
     {
         auto c = dynamic_cast<FunctionCallNode *>(node.get());
         auto fu = program.get_function(c->name);
+        // auto v =
         auto function_call = builder.CreateCall(fu.function, {});
         OptionalType type_of_func = compiler_context.get_type(fu.ret_type);
         return {this->block, type_of_func.set_loaded_value(function_call, builder)};

@@ -33,6 +33,7 @@ public:
 class CompilerContext
 {
 public:
+    llvm::StructType *params;
     std::map<std::string, Function> func_map;
     std::map<std::string, CompiledModuleClass> modules;
     std::map<std::string, llvm::Function *> CFunctions;
@@ -46,7 +47,7 @@ public:
     CompilerContext();
     CompilerContext(std::map<std::string, llvm::Function *> CFunctions,
                     std::map<TokenType, OptionalType> NativeTypes,
-                    llvm::StructType *str_type);
+                    llvm::StructType *str_type, llvm::StructType *parameter);
     // Function get_function(Tokens name);
     // Function get_local_function(Tokens name);
     // void add_local_function(Tokens name, Function function);
