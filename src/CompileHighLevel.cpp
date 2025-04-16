@@ -166,33 +166,34 @@ Function CompileHighLevel::CompileFunctionHeader(std::shared_ptr<FunctionRefNode
     //     f.push_back(c);
     //     a.push_back(c.function->getType());
     // }
-    llvm::FunctionType *functype = this->compile_Function_Type(n);
+    auto functype = this->compile_Function_Type(n);
     llvm::Function *function = llvm::Function::Create(
-        functype, llvm::Function::ExternalLinkage, n->FunctionName.value, module);
+        std::get<0>(functype), llvm::Function::ExternalLinkage, n->FunctionName.value, module);
 
-    return {function, f, n->RetType, n->FunctionName};
+    return {function, f, n->RetType, n->FunctionName, std::get<1>(functype)};
 }
 
 ProgramScope CompileHighLevel::getProgramScope()
 {
     return ProgramScope(this->modules);
 }
-
-llvm::FunctionType *CompileHighLevel::compile_Function_Type(std::shared_ptr<FunctionRefNode> n)
+std::tuple<llvm::FunctionType *, std::vector<Thunks>> CompileHighLevel::compile_Function_Type(std::shared_ptr<FunctionRefNode> n)
 {
     auto c = n->RetType;
+    std::vector<Thunks> thunks;
     for (int i = 0; i < n->params.size(); i++)
     {
         auto funct = compile_Function_Type(n->params[i]);
-        params_struct.push_back(get_thunk_types(n->params[i]).thunk_type);
+        auto p = get_thunk_types(n->params[i]);
+        params_struct.push_back(p.thunk_type);
+        thunks.push_back(p);
         // this->params->
         // a.push_back(get_thunk_types(builder, context, n->params[i]).thunk_type);
     }
     llvm::FunctionType *functype = llvm::FunctionType::get(
         compiler_context.compile_Type_Optional(c).type, params, false);
-    return functype;
+    return {functype, thunks};
 }
-
 Thunks CompileHighLevel::get_thunk_types(std::shared_ptr<FunctionRefNode> n)
 {
 
@@ -200,7 +201,9 @@ Thunks CompileHighLevel::get_thunk_types(std::shared_ptr<FunctionRefNode> n)
     // this->string_type = llvm::StructType::create(context, "Thunk");
     auto thunk = llvm::StructType::create(context, "Thunk");
     auto funct = compile_Function_Type(n);
-    std::vector<llvm::Type *> elements = {compiler_context.compile_Type_Optional(n->RetType).type, llvm::PointerType::getUnqual(funct), builder.getInt1Ty()};
+
+    std::vector<llvm::Type *> elements = {compiler_context.compile_Type_Optional(n->RetType).type,
+                                          llvm::PointerType::getUnqual(std::get<0>(funct)), builder.getInt1Ty()};
     thunk->setBody(elements);
     return {thunk, nullptr};
 }
