@@ -184,11 +184,23 @@ llvm::FunctionType *CompileHighLevel::compile_Function_Type(std::shared_ptr<Func
     for (int i = 0; i < n->params.size(); i++)
     {
         auto funct = compile_Function_Type(n->params[i]);
-        params_struct.push_back(compiler_context.get_thunk_types(builder, context, n->params[i], this->params).thunk_type);
+        params_struct.push_back(get_thunk_types(n->params[i]).thunk_type);
         // this->params->
         // a.push_back(get_thunk_types(builder, context, n->params[i]).thunk_type);
     }
     llvm::FunctionType *functype = llvm::FunctionType::get(
         compiler_context.compile_Type_Optional(c).type, params, false);
     return functype;
+}
+
+Thunks CompileHighLevel::get_thunk_types(std::shared_ptr<FunctionRefNode> n)
+{
+
+    // std::vector<Thunks> thunks;
+    // this->string_type = llvm::StructType::create(context, "Thunk");
+    auto thunk = llvm::StructType::create(context, "Thunk");
+    auto funct = compile_Function_Type(n);
+    std::vector<llvm::Type *> elements = {compiler_context.compile_Type_Optional(n->RetType).type, llvm::PointerType::getUnqual(funct), builder.getInt1Ty()};
+    thunk->setBody(elements);
+    return {thunk, nullptr};
 }

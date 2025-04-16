@@ -39,6 +39,7 @@ public:
     Function CompileFunctionHeader(std::shared_ptr<FunctionRefNode> n);
     ProgramScope getProgramScope();
     llvm::FunctionType *compile_Function_Type(std::shared_ptr<FunctionRefNode> n);
+    Thunks get_thunk_types(std::shared_ptr<FunctionRefNode> n);
 };
 
 #endif
