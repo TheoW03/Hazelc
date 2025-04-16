@@ -14,6 +14,7 @@ private:
 
 public:
     llvm::Module &module;
+    std::vector<llvm::Type *> params_struct;
     std::vector<std::shared_ptr<ASTNode>> functions;
     // llvm::StructType *paramType;
     CompilerContext compiler_context;
@@ -37,6 +38,7 @@ public:
 
     Function CompileFunctionHeader(std::shared_ptr<FunctionRefNode> n);
     ProgramScope getProgramScope();
+    llvm::FunctionType *compile_Function_Type(std::shared_ptr<FunctionRefNode> n);
 };
 
 #endif

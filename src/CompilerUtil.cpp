@@ -5,6 +5,8 @@
 #include <memory>
 #include <backend/CompilerContext.h>
 
+// these get the type of the expression
+// used because the LLCM has seperation for floats and
 TypeOfExpr get_bool_expr_type(std::shared_ptr<ASTNode> n, ProgramScope ctx)
 {
     auto c = dynamic_cast<BooleanExprNode *>(n.get());
@@ -119,6 +121,7 @@ OptionalType::OptionalType(llvm::LLVMContext &context, llvm::IRBuilder<> &builde
 
 llvm::Value *OptionalType::set_loaded_value(llvm::Value *value, llvm::IRBuilder<> &builder)
 {
+
     llvm::Value *structPtr = builder.CreateAlloca(this->type);
     auto destField0ptr = builder.CreateStructGEP(this->type, structPtr, 0, "OptionalStructPtr0");
 

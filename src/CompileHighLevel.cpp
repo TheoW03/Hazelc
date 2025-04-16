@@ -159,14 +159,14 @@ Function CompileHighLevel::CompileFunctionHeader(std::shared_ptr<FunctionRefNode
     auto c = n->RetType;
 
     std::vector<Function> f;
-    // std::vector<llvm::Type *> a;
+    std::vector<llvm::Type *> a;
     // for (int i = 0; i < n->params.size(); i++)
     // {
     //     auto c = CompileFunctionHeader(n->params[i]);
     //     f.push_back(c);
     //     a.push_back(c.function->getType());
     // }
-    llvm::FunctionType *functype = this->compiler_context.compile_Function_Type(builder, context, this->params, n);
+    llvm::FunctionType *functype = this->compile_Function_Type(n);
     llvm::Function *function = llvm::Function::Create(
         functype, llvm::Function::ExternalLinkage, n->FunctionName.value, module);
 
@@ -176,4 +176,19 @@ Function CompileHighLevel::CompileFunctionHeader(std::shared_ptr<FunctionRefNode
 ProgramScope CompileHighLevel::getProgramScope()
 {
     return ProgramScope(this->modules);
+}
+
+llvm::FunctionType *CompileHighLevel::compile_Function_Type(std::shared_ptr<FunctionRefNode> n)
+{
+    auto c = n->RetType;
+    for (int i = 0; i < n->params.size(); i++)
+    {
+        auto funct = compile_Function_Type(n->params[i]);
+        params_struct.push_back(compiler_context.get_thunk_types(builder, context, n->params[i], this->params).thunk_type);
+        // this->params->
+        // a.push_back(get_thunk_types(builder, context, n->params[i]).thunk_type);
+    }
+    llvm::FunctionType *functype = llvm::FunctionType::get(
+        compiler_context.compile_Type_Optional(c).type, params, false);
+    return functype;
 }

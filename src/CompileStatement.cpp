@@ -72,7 +72,7 @@ void CompileStatement::Visit(ReturnNode *node)
     auto ty = compiler_context.get_type(program_scope.get_current_function().ret_type);
     // auto value = builder.CreateLoad(ty.get_type(), c.Expression(node->Expr));
     // program_scope.get_current_function().function->viewCFGOnly();
-    // llvm::raw_ostream *output = &llvm::outs();
+    llvm::raw_ostream *output = &llvm::outs();
 
     auto value = c.Expression(node->Expr);
     this->block = value.block;
@@ -82,7 +82,7 @@ void CompileStatement::Visit(ReturnNode *node)
     //     value = builder.CreateLoad(ty.type, value);
     // }
     builder.CreateRet(loaded_value);
-    // auto error = llvm::verifyFunction(*(program_scope.get_current_function().function), output);
+    auto error = llvm::verifyFunction(*(program_scope.get_current_function().function), output);
     // program_scope.get_current_function().function->viewCFG();
 }
 

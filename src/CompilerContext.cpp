@@ -87,6 +87,7 @@ llvm::FunctionType *CompilerContext::compile_Function_Type(llvm::IRBuilder<> &bu
         // this->params->
         // a.push_back(get_thunk_types(builder, context, n->params[i]).thunk_type);
     }
+    // params->setBody()
     llvm::FunctionType *functype = llvm::FunctionType::get(
         compile_Type_Optional(c).type, params, false);
     return functype;
