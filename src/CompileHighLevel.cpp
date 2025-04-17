@@ -190,8 +190,9 @@ std::tuple<llvm::FunctionType *, std::vector<Thunks>> CompileHighLevel::compile_
         // this->params->
         // a.push_back(get_thunk_types(builder, context, n->params[i]).thunk_type);
     }
+    auto retty = llvm::PointerType::get(compiler_context.compile_Type_Optional(c).type, 0);
     llvm::FunctionType *functype = llvm::FunctionType::get(
-        compiler_context.compile_Type_Optional(c).type, params, false);
+        retty, params, false);
     return {functype, thunks};
 }
 Thunks CompileHighLevel::get_thunk_types(std::shared_ptr<FunctionRefNode> n)
