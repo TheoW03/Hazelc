@@ -20,9 +20,9 @@ CompilerContext::CompilerContext(std::map<std::string, llvm::Function *> CFuncti
     this->string_type = str_type;
 }
 
-llvm::StructType *CompilerContext::get_string_type(llvm::LLVMContext &context, llvm::IRBuilder<> &builder)
+llvm::StructType *CompilerContext::get_string_inner_type()
 {
-    return string_type;
+    return this->string_type;
 }
 llvm::Type *CompilerContext::compile_Type(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<Type> ty)
 {
@@ -50,7 +50,7 @@ llvm::Type *CompilerContext::compile_Type(llvm::IRBuilder<> &builder, llvm::LLVM
         }
         else if (p->type.type == TokenType::string)
         {
-            return this->get_string_type(context, builder);
+            return this->get_string_inner_type();
         }
     }
     // NOTE:
