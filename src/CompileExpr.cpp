@@ -392,12 +392,13 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         auto fu = program.get_function(c->name);
         // auto v =
         llvm::Value *param_ptr = builder.CreateAlloca(this->params);
-        // auto func =
-        auto function_call = builder.CreateCall(fu.function, {ValueOrLoad(builder, param_ptr, this->params)});
-
         OptionalType type_of_func = compiler_context.get_type(fu.ret_type);
-        auto val = builder.CreateStructGEP(type_of_func.type, function_call, 0);
-        val = ValueOrLoad(builder, val, type_of_func.inner);
+        auto retTy = builder.CreateAlloca(type_of_func.get_type());
+        // auto func =
+        auto function_call = builder.CreateCall(fu.function, {ValueOrLoad(builder, param_ptr, this->params), retTy});
+        function_call->addParamAttr(1, llvm::Attribute::getWithStructRetType(context, type_of_func.get_type()));
+        // auto val = builder.CreateStructGEP(type_of_func.type, function_call, 0);
+        // val = ValueOrLoad(builder, val, type_of_func.inner);
         // auto rhs_struct_ptr = builder.Crea(function_call, ptrType);
         // function_call->dump();
         // auto s = ValueOrLoad(builder, function_call, type_of_func.type);
@@ -407,7 +408,7 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         // type_of_func.type->dump();
         // auto val = builder.CreateStructGEP(type_of_func.type, s, 0);
         // val->getType()->dump();
-        return {this->block, type_of_func.set_loaded_value(val, builder)};
+        return {this->block, retTy};
     }
     else if (dynamic_cast<ExprNode *>(node.get()))
     {

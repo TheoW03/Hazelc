@@ -33,9 +33,9 @@ void InitCompiler(Output output, std::shared_ptr<ProgramNode> node)
     node->Accept(compile_top);
     std::cout << "hazelc: compiled functions" << std::endl;
     compile_top->params->setBody(compile_top->params_struct);
-    // CompileStatement *compile_statement = new CompileStatement(module, builder, context, compile_top->compiler_context, compile_top->params);
+    CompileStatement *compile_statement = new CompileStatement(module, builder, context, compile_top->compiler_context, compile_top->params);
 
-    // node->Accept(compile_statement);
+    node->Accept(compile_statement);
     delete compile_top;
 
     // Initialize the target registry etc.llvm::InitializeAllTargets();

@@ -76,29 +76,16 @@ void CompileStatement::Visit(ReturnNode *node)
 
     auto value = c.Expression(node->Expr);
     this->block = value.block;
-    // auto loaded_value = ValueOrLoad(builder, value.value, ty.type);
-    // if (value->getType()->isPointerTy())
-    // {
-    //     value = builder.CreateLoad(ty.type, value);
-    // }
-    // if (program_scope.get_current_function().name.value == "main")
-    // {
-    //     auto f = compiler_context.CFunctions["printf"];
-    //     auto string_type = compiler_context.get_string_type();
-    //     auto inner = compiler_context.get_string_type(context, builder);
-    //     auto lhs_val = builder.CreateLoad(inner, builder.CreateStructGEP(string_type.type, value.value, 0, "str_lhs"));
+    auto f = program_scope.get_current_function().function;
+    llvm::Argument *ret_ptr = f->getArg(1);
+    if (program_scope.get_current_function().name.value != "main")
+    {
+        auto val = builder.CreateLoad(ty.inner, builder.CreateStructGEP(ty.get_type(), value.value, 0));
+        auto retval = builder.CreateStructGEP(ty.get_type(), ret_ptr, 0);
+        builder.CreateStore(val, retval);
+    }
 
-    //     llvm::PointerType *ptrType = llvm::PointerType::get(lhs_val->getType(), 0);
-
-    //     // wierd. to access a string, or ptr it must be bit cased 0.0
-    //     // hate that
-    //     auto rhs_struct_ptr = builder.CreateBitCast(lhs_val, ptrType);
-
-    //     auto strRhsPtr = builder.CreateLoad(builder.getInt8PtrTy(), builder.CreateStructGEP(inner, rhs_struct_ptr, 0, "str1"));
-
-    //     builder.CreateCall(f, {builder.CreateGlobalString("HAZEL DEBUG: %s \n"), strRhsPtr});
-    // }
-    builder.CreateRet(value.value);
+    builder.CreateRetVoid();
     auto error = llvm::verifyFunction(*(program_scope.get_current_function().function), output);
     // program_scope.get_current_function().function->viewCFG();
 }
