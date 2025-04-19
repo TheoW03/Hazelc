@@ -168,6 +168,10 @@ Function CompileHighLevel::CompileFunctionHeader(std::shared_ptr<FunctionRefNode
     auto functype = this->compile_Function_Type(n);
     llvm::Function *function = llvm::Function::Create(
         std::get<0>(functype), llvm::Function::ExternalLinkage, n->FunctionName.value, module);
+    auto retty = compiler_context.compile_Type_Optional(c).type;
+
+    function->getArg(1)->addAttr(llvm::Attribute::getWithStructRetType(context, retty));
+    function->getArg(1)->setName("ret");
 
     return {function, f, n->RetType, n->FunctionName, std::get<1>(functype)};
 }
@@ -189,9 +193,15 @@ std::tuple<llvm::FunctionType *, std::vector<Thunks>> CompileHighLevel::compile_
         // this->params->
         // a.push_back(get_thunk_types(builder, context, n->params[i]).thunk_type);
     }
-    auto retty = llvm::PointerType::get(compiler_context.compile_Type_Optional(c).type, 0);
+    auto retty = compiler_context.compile_Type_Optional(c).type;
     llvm::FunctionType *functype = llvm::FunctionType::get(
-        retty, params, false);
+        builder.getVoidTy(),
+        {
+            params,
+            llvm::PointerType::get(retty, 0),
+        },
+        false);
+
     return {functype, thunks};
 }
 Thunks CompileHighLevel::get_thunk_types(std::shared_ptr<FunctionRefNode> n)
