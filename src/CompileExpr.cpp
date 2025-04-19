@@ -106,7 +106,7 @@ llvm::Value *CompileExpr::StringMath(llvm::Value *lhs, Tokens op, llvm::Value *r
     // std::cout << "math type" << std::endl;
     // math->getType()->dump();
     // builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: %s \n"),
-    //    builder.CreateStructGEP(llvm::PointerType::get(math->getType(), 0), math, 0, "str_lhs")});
+    //    builder.CreateStructGEP(math->getType(), math, 0, "str_lhs")});
     // return string_type.set_loaded_value(math, builder);
     return string_type.set_loaded_value(math, builder);
 }
@@ -250,9 +250,10 @@ llvm::Value *CompileExpr::StringMathExpr(llvm::Value *lhs, Tokens op, llvm::Valu
         auto lenthlhs = builder.CreateLoad(builder.getInt64Ty(), builder.CreateStructGEP(c, lhs, 1, "strlenlhs"));
         auto lenthrhs = builder.CreateLoad(builder.getInt64Ty(), builder.CreateStructGEP(c, rhs, 1, "strlnrhs"));
         auto added_lengths = builder.CreateAdd(lenthlhs, lenthrhs);
+        added_lengths = builder.CreateAdd(added_lengths, llvm::ConstantInt::get(builder.getInt64Ty(), 1));
 
         //    builder.CreateStructGEP(c, rhs, 1, "str1")
-        auto dest = builder.CreateAlloca(builder.getInt8PtrTy(), builder.CreateAdd(added_lengths, llvm::ConstantInt::get(builder.getInt64Ty(), 1)));
+        auto dest = builder.CreateAlloca(builder.getInt8PtrTy(), added_lengths);
         auto strRhsPtr = builder.CreateLoad(builder.getInt8PtrTy(), builder.CreateStructGEP(c, rhs, 0, "strlhsval"));
         auto strLhsPtr = builder.CreateLoad(builder.getInt8PtrTy(), builder.CreateStructGEP(c, lhs, 0, "strrhsval"));
 
@@ -261,7 +262,6 @@ llvm::Value *CompileExpr::StringMathExpr(llvm::Value *lhs, Tokens op, llvm::Valu
 
         // builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: %s \n"),
         //    strLhsPtr});
-        rhs->getType()->print(llvm::errs());
 
         builder.CreateCall(snprinft, {
                                          dest,
@@ -271,6 +271,9 @@ llvm::Value *CompileExpr::StringMathExpr(llvm::Value *lhs, Tokens op, llvm::Valu
                                          strRhsPtr,
 
                                      });
+        // builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: %s \n"),
+        //    dest});
+
         llvm::Value *destStructPtr = builder.CreateAlloca(c);
         return this->CompileStr(dest, added_lengths, destStructPtr);
 
