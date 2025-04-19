@@ -38,14 +38,7 @@ void SemanticGlobalScopeVisitor::Visit(FunctionNode *node)
 
 void SemanticGlobalScopeVisitor::Visit(ModuleNode *node)
 {
-    for (int i = 0; i < node->imports.size(); i++)
-    {
-        if (this->avail_modules.find(node->imports[i].value) == this->avail_modules.end())
-        {
-            std::cout << "invalid import \"" << node->imports[i].value << "\" in module \"" << node->name.value << "\"" << std::endl;
-            exit(EXIT_FAILURE);
-        }
-    }
+
     for (int i = 0; i < node->functions.size(); i++)
     {
         node->functions[i]->Accept(this);

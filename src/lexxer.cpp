@@ -452,6 +452,7 @@ void print_tokens(std::vector<Tokens> tokens)
     token_map[TokenType::LTE] = "LTE";
     token_map[TokenType::EQ] = "EQ";
     token_map[TokenType::NE] = "NE";
+    token_map[TokenType::Module] = "module";
 
     token_map[TokenType::Right_Shift] = "right_shift";
     token_map[TokenType::Left_Shift] = "left_shift";
@@ -469,6 +470,6 @@ void print_tokens(std::vector<Tokens> tokens)
 
     for (int i = 0; i < tokens.size(); i++)
     {
-        std::cout << token_map[tokens[i].type] << ": " << tokens[i].value << std::endl;
+        std::cout << token_map[tokens[i].type] << ": \"" << tokens[i].value << "\": " << tokens[i].line_num << std::endl;
     }
 }

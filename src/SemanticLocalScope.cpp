@@ -73,7 +73,10 @@ void SemanticLocalScopeVisitor::Visit(FunctionNode *node)
     }
     FunctionLocalScope f;
     scope.push_back(f);
-
+    for (int i = 0; i < node->f->params.size(); i++)
+    {
+        scope[scope.size() - 1].functions.insert(node->f->params[i]->FunctionName.value);
+    }
     for (int i = 0; i < node->stmnts.size(); i++)
     {
         node->stmnts[i]->Accept(this);
