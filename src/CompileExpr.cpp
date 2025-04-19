@@ -103,9 +103,12 @@ llvm::Value *CompileExpr::StringMath(llvm::Value *lhs, Tokens op, llvm::Value *r
     // auto lhs_struct_ptr = builder.CreateBitCast(lhs_val, ptrType);
 
     auto math = StringMathExpr(lhs_val, op, rhs_val);
-
+    // std::cout << "math type" << std::endl;
+    // math->getType()->dump();
+    // builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: %s \n"),
+    //    builder.CreateStructGEP(llvm::PointerType::get(math->getType(), 0), math, 0, "str_lhs")});
     // return string_type.set_loaded_value(math, builder);
-    return rhs;
+    return string_type.set_loaded_value(math, builder);
 }
 llvm::Value *CompileExpr::IntegerBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
 {
@@ -247,8 +250,9 @@ llvm::Value *CompileExpr::StringMathExpr(llvm::Value *lhs, Tokens op, llvm::Valu
         auto lenthlhs = builder.CreateLoad(builder.getInt64Ty(), builder.CreateStructGEP(c, lhs, 1, "strlenlhs"));
         auto lenthrhs = builder.CreateLoad(builder.getInt64Ty(), builder.CreateStructGEP(c, rhs, 1, "strlnrhs"));
         auto added_lengths = builder.CreateAdd(lenthlhs, lenthrhs);
+
         //    builder.CreateStructGEP(c, rhs, 1, "str1")
-        auto dest = builder.CreateAlloca(builder.getInt8PtrTy(), added_lengths);
+        auto dest = builder.CreateAlloca(builder.getInt8PtrTy(), builder.CreateAdd(added_lengths, llvm::ConstantInt::get(builder.getInt64Ty(), 1)));
         auto strRhsPtr = builder.CreateLoad(builder.getInt8PtrTy(), builder.CreateStructGEP(c, rhs, 0, "strlhsval"));
         auto strLhsPtr = builder.CreateLoad(builder.getInt8PtrTy(), builder.CreateStructGEP(c, lhs, 0, "strrhsval"));
 
@@ -259,21 +263,15 @@ llvm::Value *CompileExpr::StringMathExpr(llvm::Value *lhs, Tokens op, llvm::Valu
         //    strLhsPtr});
         rhs->getType()->print(llvm::errs());
 
-        builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: %s \n"),
-                                                                   strLhsPtr});
         builder.CreateCall(snprinft, {
                                          dest,
                                          added_lengths,
-                                         builder.CreateLoad(builder.getInt8Ty(), fmt),
+                                         fmt,
                                          strLhsPtr,
                                          strRhsPtr,
 
                                      });
         llvm::Value *destStructPtr = builder.CreateAlloca(c);
-        builder.CreateCall(compiler_context.CFunctions["printf"], {
-                                                                      builder.CreateGlobalString("[HAZELC DEBUG]: %s \n"),
-                                                                      dest,
-                                                                  });
         return this->CompileStr(dest, added_lengths, destStructPtr);
 
         // return lhs;
@@ -385,10 +383,12 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         auto c = dynamic_cast<StringNode *>(node.get());
 
         auto a = compiler_context.get_string_inner_type();
-        llvm::Value *structPtr = builder.CreateAlloca(a);
         auto str = builder.CreateGlobalString(c->value);
-        auto length = llvm::ConstantInt::get(llvm::Type::getInt64Ty(context), c->value.size() + 1);
-        auto value = this->CompileStr(str, length, structPtr);
+        auto length = llvm::ConstantInt::get(builder.getInt64Ty(), c->value.size());
+
+        llvm::Value *ptrToFirstElement = builder.CreateGEP(llvm::Type::getInt8Ty(context), str, {builder.getInt32(0)});
+        llvm::Value *structPtr = builder.CreateAlloca(a);
+        auto value = this->CompileStr(ptrToFirstElement, length, structPtr);
         auto str_optional_type = compiler_context.get_string_type();
         return {this->block, str_optional_type.set_loaded_value(value, builder)};
     }
