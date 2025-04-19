@@ -81,8 +81,9 @@ void CompileStatement::Visit(ReturnNode *node)
     if (program_scope.get_current_function().name.value != "main")
     {
         auto val = builder.CreateLoad(ty.inner, builder.CreateStructGEP(ty.get_type(), value.value, 0));
-        auto retval = builder.CreateStructGEP(ty.get_type(), ret_ptr, 0);
-        builder.CreateStore(val, retval);
+        // auto retval = builder.CreateStructGEP(ty.get_type(), ret_ptr, 0);
+        // builder.CreateStore(val, retval);
+        builder.CreateStore(val, ret_ptr);
     }
 
     builder.CreateRetVoid();
