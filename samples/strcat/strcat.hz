@@ -1,0 +1,9 @@
+module string_concat
+
+
+let hello : string => "hello "
+let world : string => "world "
+
+let hello_world : string => hello ++ world
+
+let main : string => hello_world

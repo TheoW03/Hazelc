@@ -94,20 +94,7 @@ llvm::Value *CompileExpr::StringMath(llvm::Value *lhs, Tokens op, llvm::Value *r
 
     auto lhs_val = builder.CreateStructGEP(string_type.type, lhs, 0, "str_lhs");
     auto rhs_val = builder.CreateStructGEP(string_type.type, rhs, 0, "str_rhs");
-    // lhs_val = builder.CreateLoad(llvm::PointerType::get(string_type.inner, 0), lhs_val);
-    // rhs_val = builder.CreateLoad(llvm::PointerType::get(string_type.inner, 0), rhs_val);
-
-    // wierd. to access a string, or ptr it must be bit cased 0.0
-    // hate that
-    // auto rhs_struct_ptr = builder.CreateBitCast(rhs_val, ptrType);
-    // auto lhs_struct_ptr = builder.CreateBitCast(lhs_val, ptrType);
-
     auto math = StringMathExpr(lhs_val, op, rhs_val);
-    // std::cout << "math type" << std::endl;
-    // math->getType()->dump();
-    // builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: %s \n"),
-    //    builder.CreateStructGEP(math->getType(), math, 0, "str_lhs")});
-    // return string_type.set_loaded_value(math, builder);
     return string_type.set_loaded_value(math, builder);
 }
 llvm::Value *CompileExpr::IntegerBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
@@ -272,12 +259,10 @@ llvm::Value *CompileExpr::StringMathExpr(llvm::Value *lhs, Tokens op, llvm::Valu
 
                                      });
         // builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: %s \n"),
-        //    dest});
+        //                                                            dest});
 
         llvm::Value *destStructPtr = builder.CreateAlloca(c);
         return this->CompileStr(dest, added_lengths, destStructPtr);
-
-        // return lhs;
     }
     default:
     {

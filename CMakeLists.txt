@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.22.1)
 project(SimpleProject)
 
-find_package(LLVM REQUIRED CONFIG)
+find_package(LLVM 17 REQUIRED CONFIG)
 set(CMAKE_CXX_STANDARD 20)  # Requires C++20
 include(AddLLVM)
 
