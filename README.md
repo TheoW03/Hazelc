@@ -8,7 +8,7 @@ to make functional programming more apporachable for people coming from imparait
 
 ## Build Instructions
 
-make sure you have CMake v3.22.1 and the LLVM version 14.0.0
+make sure you have CMake v3.22.1 and the LLVM version 17.0.0
 if not download them here
 
 - [cmake]

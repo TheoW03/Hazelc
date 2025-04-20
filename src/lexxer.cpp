@@ -4,6 +4,12 @@
 #include <unordered_set>
 #include <Frontend/Token.h>
 
+// lexer uses a state machine.
+// state 0 takes care of indents
+// state 1 takes care of numbers
+// sttae 2 operators
+// state 3 equal operators (=,=\,=>, <=, >=)
+// state 4 dot operator
 struct Lexxer_Context
 {
     int line_num;

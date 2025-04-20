@@ -4,11 +4,9 @@
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/LLVMContext.h"
 #include <backend/CompilerContext.h>
-// #include <P.h>
 
 CompilerContext::CompilerContext()
 {
-    /* here to make the compiler stop bitching */
 }
 
 CompilerContext::CompilerContext(std::map<std::string, llvm::Function *> CFunctions,

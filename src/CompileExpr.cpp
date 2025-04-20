@@ -2,6 +2,10 @@
 #include <backend/CompilerUtil.h>
 #include <backend/CompilerContext.h>
 
+// This compiles expresssions
+// it doesnt use the visitor pattern as thats cursed so
+// IE using a stack so what I did was basic.
+// TODO: refactor
 CompileExpr::CompileExpr(llvm::Module &module,
                          llvm::IRBuilder<> &builder,
                          llvm::LLVMContext &context,
@@ -230,6 +234,8 @@ llvm::Value *CompileExpr::StringMathExpr(llvm::Value *lhs, Tokens op, llvm::Valu
         // rn to do concat we use from the C stdlib
         // defined as
         // int snprintf ( char * dest, size_t n, const char * format, ... );
+        // stole this from my other compiler project and the structure :P very handy trik :P
+
         auto fmt = builder.CreateGlobalString("%s%s");
         auto snprinft = compiler_context.CFunctions["snprintf"];
         auto c = compiler_context.get_string_inner_type();

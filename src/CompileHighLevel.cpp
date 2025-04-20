@@ -170,6 +170,8 @@ Function CompileHighLevel::CompileFunctionHeader(std::shared_ptr<FunctionRefNode
         std::get<0>(functype), llvm::Function::ExternalLinkage, n->FunctionName.value, module);
     auto retty = compiler_context.compile_Type_Optional(c).type;
 
+    // to be more safer I end up using sret for return types.
+    // since all types in hazel ae infact functions. sret makes the most sense
     function->getArg(1)->addAttr(llvm::Attribute::getWithStructRetType(context, retty));
     function->getArg(1)->setName("ret");
 

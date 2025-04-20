@@ -35,7 +35,7 @@ Output parse_cmd(std::vector<std::string> args)
                                      {
                                          o.print_llvm = 1;
                                      },
-                                     "prints the llvm IR", 0};
+                                     "prints the partially unoptimized llvm IR from the compiler", 0};
     option_handlers["print-tokens"] = {[](std::string &value, Output &o)
                                        {
                                            o.print_tokens = 1;
@@ -45,9 +45,11 @@ Output parse_cmd(std::vector<std::string> args)
                                {
                                    std::cout << "hazelc v1.0.0 pre-alpha" << std::endl;
                                    std::cout << "" << std::endl;
-                                   std::cout << "   hazelc is a LLVM compiler for hazel, a functional paradigm programming langauge." << std::endl;
+                                   std::cout << "   hazelc is a LLVM compiler for hazel, a declartive functional paradigm programming langauge" << std::endl;
                                    std::cout << "" << std::endl;
-                                   std::cout << "usage: hazelc file.. [options] or hazelc [options] file..." << std::endl;
+                                   std::cout << "usage: hazelc file/directory/list of files.. [options] or hazelc [options] file/directory/list of files..." << std::endl;
+                                   std::cout << "       hazelc only takes files with the *.hz file extension" << std::endl;
+
                                    std::cout << "" << std::endl;
 
                                    for (const auto &[key, value] : option_handlers)
@@ -61,7 +63,7 @@ Output parse_cmd(std::vector<std::string> args)
                                   {
                                       std::cout << "hazelc: 1.0.0-prealpha" << std::endl;
                                   },
-                                  "prints version", 0};
+                                  "prints the version information", 0};
     option_handlers["object-file"] = {[](std::string &value, Output &o)
                                       {
                                           o.gen_file = FileType::Object_file;
@@ -77,7 +79,7 @@ Output parse_cmd(std::vector<std::string> args)
                                   {
                                       o.gen_file = FileType::Ir_file;
                                   },
-                                  "out puts an unoptimized ir file", 0};
+                                  "out puts an unoptimized llvm-ir file", 0};
     option_handlers["optimize"] = {[](std::string &value, Output &o) {
 
                                    },

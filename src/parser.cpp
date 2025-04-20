@@ -13,6 +13,13 @@ std::optional<std::shared_ptr<FunctionRefNode>> parse_function_ref(std::vector<T
 using parser = std::optional<std::shared_ptr<ASTNode>> (*)(std::vector<Tokens> &);
 std::optional<std::shared_ptr<ASTNode>> parse_bitshift(std::vector<Tokens> &tokens);
 
+// This is a typical recursive decent parser
+// how it works is program node is the root node
+
+// match and romve has been overloaded to take a vector
+// what it does in that codase is iterate the vector if it contians one tokenType of the 0th element of the list of tokens
+// it removes it and returns it
+
 std::optional<Tokens> match_and_remove(TokenType token_type, std::vector<Tokens> &tokens)
 {
     if (tokens.empty())

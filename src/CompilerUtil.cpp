@@ -108,7 +108,6 @@ TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n, ProgramScope ctx)
 // and a Boolean to represent if its none or some
 OptionalType::OptionalType()
 {
-    /* compiler stop bitching */
 }
 OptionalType::OptionalType(llvm::LLVMContext &context, llvm::IRBuilder<> &builder, llvm::Type *inner)
 
@@ -129,7 +128,6 @@ llvm::Value *OptionalType::set_loaded_value(llvm::Value *value, llvm::IRBuilder<
     auto destField1ptr = builder.CreateStructGEP(this->type, structPtr, 1, "OptionalStructPtr1");
     auto isNone = llvm::ConstantInt::get(builder.getInt1Ty(), 0);
     builder.CreateStore(isNone, destField1ptr);
-    // structPtr->dump();
     return structPtr;
 }
 

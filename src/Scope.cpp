@@ -2,7 +2,7 @@
 
 /**
  * ProgramScope represents the whole scope of the program
- * and control flow. that "CompiledCOntext" was originally doing
+ * and control flow. that "CompiledContext" was originally doing
  */
 ProgramScope::ProgramScope()
 {

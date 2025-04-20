@@ -59,9 +59,10 @@ void runPasses(std::shared_ptr<ProgramNode> node, Output cli)
     // This runs intermediate passes
     // that take care of error checking and basic optimization if needed
 
-    // todo: dont forget in the documentation
-    //  to much that you dont ave access to improted modules
-    //  imports
+    // it uses the visitor pattern for tree traversal.
+    // but what it does is it uses virtual impls the method in an abstract class
+    // so it will only visit the nodes that have the method overriden in that class
+    // handy trick i have stolen from my other compiler project :P
 
     node->Accept(std::make_shared<ResolveRecursiveModules>().get());
     std::cout << "hazelc: resolved recursive imports" << std::endl;

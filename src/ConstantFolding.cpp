@@ -1,8 +1,11 @@
 #include <optimization/ConstantFolding.h>
 // this is a pass designed to fold constants
-// it geos accroess to all expr Nodes and if they are constants
+// it goes accroess to all expr Nodes and if they are constant expressions
+// like "1+1" it solves it for 2.
 // it substitues with solved values
 
+// This is already in the LLVM. however since all types in Hazel are optional structures
+// we cant rely on the LLVM for accurate constant folding. or atleast at -O0.
 ConstantFoldingVisitor::ConstantFoldingVisitor()
 {
 }
