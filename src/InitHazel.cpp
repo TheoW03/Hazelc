@@ -59,30 +59,29 @@ void runPasses(std::shared_ptr<ProgramNode> node, Output cli)
     // This runs intermediate passes
     // that take care of error checking and basic optimization if needed
 
-    std::cout << "hazelc: constant folding" << std::endl;
-    ConstantFoldingVisitor *s2 = new ConstantFoldingVisitor;
-    node->Accept(s2);
+    // it uses the visitor pattern for tree traversal.
+    // but what it does is it uses virtual impls the method in an abstract class
+    // so it will only visit the nodes that have the method overriden in that class
+    // handy trick i have stolen from my other compiler project :P
 
-    // todo: dont forget in the documentation
-    //  to much that you dont ave access to improted modules
-    //  imports
-    std::cout << "hazelc: semantic analysis" << std::endl;
-    SemanticGlobalScopeVisitor *semantic =
-        new SemanticGlobalScopeVisitor;
-    node->Accept(semantic);
-    SemanticLocalScopeVisitor *semantic_local =
-        new SemanticLocalScopeVisitor(semantic->modules);
-    node->Accept(semantic_local);
+    node->Accept(std::make_shared<ResolveRecursiveModules>().get());
+    std::cout << "hazelc: resolved recursive imports" << std::endl;
+    // SemanticGlobalScopeVisitor *semantic =
+    // new SemanticGlobalScopeVisitor;
+    auto semantic = std::make_shared<SemanticGlobalScopeVisitor>();
+    node->Accept(semantic.get());
+    std::cout << "hazelc: resolved Global Scope" << std::endl;
+    auto semantic_local = std::make_shared<SemanticLocalScopeVisitor>(semantic->modules);
+    node->Accept(semantic_local.get());
+    std::cout << "hazelc: resolved Local scope" << std::endl;
     std::cout << "" << std::endl;
-
-    ResolveRecursiveModules *recureivemod = new ResolveRecursiveModules;
-    std::cout << "hazelc: checking recursive imports" << std::endl;
-    node->Accept(recureivemod);
+    node->Accept(std::make_shared<ConstantFoldingVisitor>().get());
+    std::cout << "hazelc: constant folding" << std::endl;
     auto mainModule = node->getMainModule();
     if (mainModule.has_value())
     {
-        TreeShake *imporrts = new TreeShake;
-        node->Accept(imporrts);
+        std::shared_ptr<TreeShake> shake_imports = std::make_shared<TreeShake>();
+        node->Accept(shake_imports.get());
         std::cout << "hazelc: Treeshake" << std::endl;
     }
 }

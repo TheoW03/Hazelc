@@ -26,7 +26,6 @@ CompileHighLevel::CompileHighLevel(llvm::Module &module, llvm::IRBuilder<> &buil
 
     auto string_type = llvm::StructType::create(context, "string");
     std::vector<llvm::Type *> elements = {builder.getInt8PtrTy(), builder.getInt64Ty()};
-
     string_type->setBody(elements);
     NativeTypes.insert(std::make_pair(TokenType::Integer, OptionalType(context, builder, builder.getInt64Ty())));
     NativeTypes.insert(std::make_pair(TokenType::Uinteger, OptionalType(context, builder, builder.getInt64Ty())));
@@ -39,6 +38,8 @@ CompileHighLevel::CompileHighLevel(llvm::Module &module, llvm::IRBuilder<> &buil
     NativeTypes.insert(std::make_pair(TokenType::Ubyte, OptionalType(context, builder, builder.getInt8Ty())));
 
     NativeTypes.insert(std::make_pair(TokenType::string, OptionalType(context, builder, string_type)));
+
+    this->params = llvm::StructType::create(context, "params");
     this->compiler_context = CompilerContext(CFunctions, NativeTypes, string_type);
 }
 
@@ -157,21 +158,64 @@ Function CompileHighLevel::CompileFunctionHeader(std::shared_ptr<FunctionRefNode
     auto c = n->RetType;
 
     std::vector<Function> f;
-    // std::vector<llvm::Type *> a;
+    std::vector<llvm::Type *> a;
     // for (int i = 0; i < n->params.size(); i++)
     // {
     //     auto c = CompileFunctionHeader(n->params[i]);
     //     f.push_back(c);
     //     a.push_back(c.function->getType());
     // }
-    llvm::FunctionType *functype = this->compiler_context.compile_Function_Type(builder, context, n);
+    auto functype = this->compile_Function_Type(n);
     llvm::Function *function = llvm::Function::Create(
-        functype, llvm::Function::ExternalLinkage, n->FunctionName.value, module);
+        std::get<0>(functype), llvm::Function::ExternalLinkage, n->FunctionName.value, module);
+    auto retty = compiler_context.compile_Type_Optional(c).type;
 
-    return {function, f, n->RetType, n->FunctionName};
+    // to be more safer I end up using sret for return types.
+    // since all types in hazel ae infact functions. sret makes the most sense
+    function->getArg(1)->addAttr(llvm::Attribute::getWithStructRetType(context, retty));
+    function->getArg(1)->setName("ret");
+
+    return {function, f, n->RetType, n->FunctionName, std::get<1>(functype)};
 }
 
 ProgramScope CompileHighLevel::getProgramScope()
 {
     return ProgramScope(this->modules);
+}
+std::tuple<llvm::FunctionType *, std::vector<Thunks>> CompileHighLevel::compile_Function_Type(std::shared_ptr<FunctionRefNode> n)
+{
+    auto c = n->RetType;
+    std::vector<Thunks> thunks;
+    for (int i = 0; i < n->params.size(); i++)
+    {
+        auto funct = compile_Function_Type(n->params[i]);
+        auto p = get_thunk_types(n->params[i]);
+        params_struct.push_back(p.thunk_type);
+        thunks.push_back(p);
+        // this->params->
+        // a.push_back(get_thunk_types(builder, context, n->params[i]).thunk_type);
+    }
+    auto retty = compiler_context.compile_Type_Optional(c).type;
+    llvm::FunctionType *functype = llvm::FunctionType::get(
+        builder.getVoidTy(),
+        {
+            params,
+            llvm::PointerType::get(retty, 0),
+        },
+        false);
+
+    return {functype, thunks};
+}
+Thunks CompileHighLevel::get_thunk_types(std::shared_ptr<FunctionRefNode> n)
+{
+
+    // std::vector<Thunks> thunks;
+    // this->string_type = llvm::StructType::create(context, "Thunk");
+    auto thunk = llvm::StructType::create(context, "Thunk");
+    auto funct = compile_Function_Type(n);
+
+    std::vector<llvm::Type *> elements = {compiler_context.compile_Type_Optional(n->RetType).type,
+                                          llvm::PointerType::getUnqual(std::get<0>(funct)), builder.getInt1Ty()};
+    thunk->setBody(elements);
+    return {thunk, nullptr};
 }

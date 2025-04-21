@@ -13,7 +13,8 @@
 #include <Frontend/parser.h>
 #include <map>
 #include <backend/compiler_visitors.h>
-#include "llvm/Support/Host.h"
+// #include "llvm/Support/Host.h"
+#include "llvm/TargetParser/Host.h"
 #include <fstream>
 #include "llvm/IR/LLVMContext.h"
 #include <cli.h>
@@ -32,7 +33,8 @@ void InitCompiler(Output output, std::shared_ptr<ProgramNode> node)
     CompileHighLevel *compile_top = new CompileHighLevel(module, builder, context);
     node->Accept(compile_top);
     std::cout << "hazelc: compiled functions" << std::endl;
-    CompileStatement *compile_statement = new CompileStatement(module, builder, context, compile_top->compiler_context);
+    compile_top->params->setBody(compile_top->params_struct);
+    CompileStatement *compile_statement = new CompileStatement(module, builder, context, compile_top->compiler_context, compile_top->params);
 
     node->Accept(compile_statement);
     delete compile_top;

@@ -1,0 +1,15 @@
+module string_concat
+
+
+let hello : string => "hello "
+let world : string => "world "
+
+let hello_world : string => hello ++ world
+
+
+(*
+
+    main doesnt have to return an integer but this trick is out of the lack of type checking i have for hazel right now
+    to do things like this you would have to use a monad most likely
+*)
+let main : string => hello_world

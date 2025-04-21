@@ -53,12 +53,12 @@ public:
     // void add_function(Tokens name, Function f);
     // Function get_current();
     // void compile_cfunctions(llvm::Module &module, llvm::LLVMContext &context, llvm::IRBuilder<> &builder);
-    llvm::StructType *get_string_type(llvm::LLVMContext &context, llvm::IRBuilder<> &builder);
+    llvm::StructType *get_string_inner_type();
     llvm::Type *compile_Type(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<Type> ty);
-    llvm::FunctionType *compile_Function_Type(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<FunctionRefNode> n);
+    // llvm::FunctionType *compile_Function_Type(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, llvm::StructType *params, std::shared_ptr<FunctionRefNode> n);
 
     OptionalType compile_Type_Optional(std::shared_ptr<Type> ty);
-    Thunks get_thunk_types(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<FunctionRefNode> n);
+    // Thunks get_thunk_types(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<FunctionRefNode> n, llvm::StructType *params);
 
     OptionalType get_integer_type();
     OptionalType get_float_type();

@@ -1,12 +1,15 @@
 #include <optimization/ConstantFolding.h>
 // this is a pass designed to fold constants
-// it geos accroess to all expr Nodes and if they are constants
+// it goes accroess to all expr Nodes and if they are constant expressions
+// like "1+1" it solves it for 2.
 // it substitues with solved values
 
-void ConstantFoldingVisitor::Visit(ASTNode *node)
+// This is already in the LLVM. however since all types in Hazel are optional structures
+// we cant rely on the LLVM for accurate constant folding. or atleast at -O0.
+ConstantFoldingVisitor::ConstantFoldingVisitor()
 {
 }
-ConstantFoldingVisitor::ConstantFoldingVisitor()
+void ConstantFoldingVisitor::Visit(ASTNode *node)
 {
 }
 void ConstantFoldingVisitor::Visit(FunctionNode *node)
@@ -135,6 +138,7 @@ std::shared_ptr<ASTNode> FoldExpr::fold_bool_integer(std::shared_ptr<IntegerNode
     case GTE:
         return std::make_shared<BooleanConstNode>(lhs->number >= rhs->number);
     }
+    return nullptr;
 }
 
 std::shared_ptr<ASTNode> FoldExpr::fold_bool_const(std::shared_ptr<BooleanConstNode> lhs, Tokens op, std::shared_ptr<BooleanConstNode> rhs)
@@ -146,6 +150,7 @@ std::shared_ptr<ASTNode> FoldExpr::fold_bool_const(std::shared_ptr<BooleanConstN
     case Or:
         return std::make_shared<BooleanConstNode>(lhs->val || rhs->val);
     }
+    return nullptr;
 }
 
 std::shared_ptr<ASTNode> FoldExpr::fold_bool_bool(std::shared_ptr<BooleanConstNode> lhs, Tokens op, std::shared_ptr<BooleanConstNode> rhs)
@@ -165,6 +170,7 @@ std::shared_ptr<ASTNode> FoldExpr::fold_bool_bool(std::shared_ptr<BooleanConstNo
     case GTE:
         return std::make_shared<BooleanConstNode>(lhs->val >= rhs->val);
     }
+    return nullptr;
 }
 
 std::shared_ptr<ASTNode> FoldExpr::fold_bool_decimal(std::shared_ptr<DecimalNode> lhs, Tokens op, std::shared_ptr<DecimalNode> rhs)
@@ -184,6 +190,7 @@ std::shared_ptr<ASTNode> FoldExpr::fold_bool_decimal(std::shared_ptr<DecimalNode
     case GTE:
         return std::make_shared<BooleanConstNode>(lhs->number >= rhs->number);
     }
+    return nullptr;
 }
 std::shared_ptr<ASTNode> FoldExpr::fold_expr(std::shared_ptr<ASTNode> n)
 {

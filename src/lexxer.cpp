@@ -4,6 +4,12 @@
 #include <unordered_set>
 #include <Frontend/Token.h>
 
+// lexer uses a state machine.
+// state 0 takes care of indents
+// state 1 takes care of numbers
+// sttae 2 operators
+// state 3 equal operators (=,=\,=>, <=, >=)
+// state 4 dot operator
 struct Lexxer_Context
 {
     int line_num;
@@ -452,6 +458,7 @@ void print_tokens(std::vector<Tokens> tokens)
     token_map[TokenType::LTE] = "LTE";
     token_map[TokenType::EQ] = "EQ";
     token_map[TokenType::NE] = "NE";
+    token_map[TokenType::Module] = "module";
 
     token_map[TokenType::Right_Shift] = "right_shift";
     token_map[TokenType::Left_Shift] = "left_shift";
@@ -469,6 +476,6 @@ void print_tokens(std::vector<Tokens> tokens)
 
     for (int i = 0; i < tokens.size(); i++)
     {
-        std::cout << token_map[tokens[i].type] << ": " << tokens[i].value << std::endl;
+        std::cout << token_map[tokens[i].type] << ": \"" << tokens[i].value << "\": " << tokens[i].line_num << std::endl;
     }
 }

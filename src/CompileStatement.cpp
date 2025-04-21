@@ -7,10 +7,11 @@
 // compiles the lower level (so return statements and expressions)
 // this is the final stage
 CompileStatement::CompileStatement(llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context,
-                                   CompilerContext compiler_context) : module(module), builder(builder), context(context)
+                                   CompilerContext compiler_context, llvm::StructType *params) : module(module), builder(builder), context(context)
 {
     this->compiler_context = compiler_context;
     this->program_scope = compiler_context.getScope();
+    this->params = params;
 }
 
 void CompileStatement::Visit(ASTNode *node)
@@ -24,9 +25,9 @@ void CompileStatement::Visit(FunctionNode *node)
     // sees if its a global or local function
     // if local we put it in the local scope. if global we generate it
     auto c = this->program_scope.set_current_function();
-    if (this->program_scope.get_global_function(c.name).has_value())
+    if (this->program_scope.get_inmodule_global_function(c.name).has_value())
     {
-        auto func = program_scope.get_function(node->f->FunctionName);
+        auto func = program_scope.get_inmodule_global_function(node->f->FunctionName).value();
         llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, "entry", func.function);
         this->block = EntryBlock;
 
@@ -66,22 +67,27 @@ void CompileStatement::Visit(ModuleNode *node)
 void CompileStatement::Visit(ReturnNode *node)
 {
 
-    CompileExpr c(module, builder, context, compiler_context, this->program_scope, this->block);
+    CompileExpr c(module, builder, context, compiler_context, this->program_scope, this->block, this->params);
 
     auto ty = compiler_context.get_type(program_scope.get_current_function().ret_type);
     // auto value = builder.CreateLoad(ty.get_type(), c.Expression(node->Expr));
     // program_scope.get_current_function().function->viewCFGOnly();
-    // llvm::raw_ostream *output = &llvm::outs();
+    llvm::raw_ostream *output = &llvm::outs();
 
     auto value = c.Expression(node->Expr);
     this->block = value.block;
-    auto loaded_value = ValueOrLoad(builder, value.value, ty.type);
-    // if (value->getType()->isPointerTy())
-    // {
-    //     value = builder.CreateLoad(ty.type, value);
-    // }
-    builder.CreateRet(loaded_value);
-    // auto error = llvm::verifyFunction(*(program_scope.get_current_function().function), output);
+    auto f = program_scope.get_current_function().function;
+    llvm::Argument *ret_ptr = f->getArg(1);
+    if (program_scope.get_current_function().name.value != "main")
+    {
+        auto val = builder.CreateLoad(ty.inner, builder.CreateStructGEP(ty.get_type(), value.value, 0));
+        // auto retval = builder.CreateStructGEP(ty.get_type(), ret_ptr, 0);
+        // builder.CreateStore(val, retval);
+        builder.CreateStore(val, ret_ptr);
+    }
+
+    builder.CreateRetVoid();
+    auto error = llvm::verifyFunction(*(program_scope.get_current_function().function), output);
     // program_scope.get_current_function().function->viewCFG();
 }
 

@@ -6,8 +6,9 @@
                 "${workspaceFolder}/**",
                 "./src/include/",
                 "./build/CMakeFiles",
-                "/usr/include/llvm-14",
-                "/usr/include/llvm-c-14"
+                // "/usr/include/llvm-14",
+                "/usr/include/llvm-c-17",
+                "/usr/include/llvm-17"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/g++",

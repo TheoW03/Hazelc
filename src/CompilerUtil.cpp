@@ -5,6 +5,8 @@
 #include <memory>
 #include <backend/CompilerContext.h>
 
+// these get the type of the expression
+// used because the LLCM has seperation for floats and
 TypeOfExpr get_bool_expr_type(std::shared_ptr<ASTNode> n, ProgramScope ctx)
 {
     auto c = dynamic_cast<BooleanExprNode *>(n.get());
@@ -19,7 +21,7 @@ TypeOfExpr get_bool_expr_type(std::shared_ptr<ASTNode> n, ProgramScope ctx)
     else if (dynamic_cast<FunctionCallNode *>(c->lhs.get()))
     {
         auto d = dynamic_cast<FunctionCallNode *>(c->lhs.get());
-        auto f = ctx.get_function(d->name);
+        auto f = ctx.get_function_fast(d->ident);
         if (dynamic_cast<NativeType *>(f.ret_type.get()))
         {
             auto p = dynamic_cast<NativeType *>(f.ret_type.get());
@@ -63,7 +65,7 @@ TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n, ProgramScope ctx)
     else if (dynamic_cast<FunctionCallNode *>(c->lhs.get()))
     {
         auto d = dynamic_cast<FunctionCallNode *>(c->lhs.get());
-        auto f = ctx.get_function(d->name);
+        auto f = ctx.get_function_fast(d->ident);
         if (dynamic_cast<NativeType *>(f.ret_type.get()))
         {
             auto p = dynamic_cast<NativeType *>(f.ret_type.get());
@@ -106,7 +108,6 @@ TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n, ProgramScope ctx)
 // and a Boolean to represent if its none or some
 OptionalType::OptionalType()
 {
-    /* compiler stop bitching */
 }
 OptionalType::OptionalType(llvm::LLVMContext &context, llvm::IRBuilder<> &builder, llvm::Type *inner)
 
@@ -119,6 +120,7 @@ OptionalType::OptionalType(llvm::LLVMContext &context, llvm::IRBuilder<> &builde
 
 llvm::Value *OptionalType::set_loaded_value(llvm::Value *value, llvm::IRBuilder<> &builder)
 {
+
     llvm::Value *structPtr = builder.CreateAlloca(this->type);
     auto destField0ptr = builder.CreateStructGEP(this->type, structPtr, 0, "OptionalStructPtr0");
 
@@ -126,7 +128,6 @@ llvm::Value *OptionalType::set_loaded_value(llvm::Value *value, llvm::IRBuilder<
     auto destField1ptr = builder.CreateStructGEP(this->type, structPtr, 1, "OptionalStructPtr1");
     auto isNone = llvm::ConstantInt::get(builder.getInt1Ty(), 0);
     builder.CreateStore(isNone, destField1ptr);
-    // structPtr->dump();
     return structPtr;
 }
 

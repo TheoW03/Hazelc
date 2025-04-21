@@ -348,6 +348,23 @@ std::optional<std::shared_ptr<ModuleNode>> ProgramNode::getMainModule()
     }
     return {};
 }
+
+std::optional<std::shared_ptr<FunctionNode>> ProgramNode::getMainFunction()
+{
+    for (const auto &[key, current_module] : this->avail_modules)
+    {
+        for (int i = 0; i < current_module->functions.size(); i++)
+        {
+            auto c = dynamic_cast<FunctionNode *>(current_module->functions[i].get());
+            if (c->f->FunctionName.value == "main")
+            {
+                return std::shared_ptr<FunctionNode>(c);
+            }
+        }
+    }
+    return {};
+}
+
 std::string ProgramNode::to_string()
 {
     return std::string();
