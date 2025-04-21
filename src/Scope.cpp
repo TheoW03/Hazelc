@@ -16,18 +16,18 @@ void ProgramScope::set_current(Tokens name)
 {
     this->current_module = modules[name.value];
 }
-Function ProgramScope::get_function(Tokens name)
-{
-    auto global = this->get_global_function(name);
-    if (global.has_value())
-    {
-        return global.value();
-    }
-    else
-    {
-        return local_functions[name.value];
-    }
-}
+// Function ProgramScope::get_function(Tokens name)
+// {
+//     auto global = this->get_global_function(name);
+//     if (global.has_value())
+//     {
+//         return global.value();
+//     }
+//     else
+//     {
+//         return local_functions[name.value];
+//     }
+// }
 
 std::optional<Function> ProgramScope::get_global_function(Tokens name)
 {
@@ -45,6 +45,25 @@ std::optional<Function> ProgramScope::get_global_function(Tokens name)
     }
     return this->current_module.get_function(name);
 }
+
+std::optional<Function> ProgramScope::get_inmodule_global_function(Tokens name)
+{
+    return this->current_module.get_function(name);
+}
+
+Function ProgramScope::get_inmodule_function(Tokens name)
+{
+    auto global = this->get_inmodule_global_function(name);
+    if (global.has_value())
+    {
+        return global.value();
+    }
+    else
+    {
+        return local_functions[name.value];
+    }
+}
+
 Function ProgramScope::get_current_function()
 {
     return current_module.get_current_function();
@@ -55,6 +74,21 @@ Function ProgramScope::set_current_function()
     return current_module.set_current_function();
 }
 
+Function ProgramScope::get_function_fast(FastLookup lookup)
+{
+    if (lookup.module_name.has_value())
+    {
+        if (this->current_module.get_function(lookup.ident_name.value()).has_value())
+        {
+            return this->current_module.get_function(lookup.ident_name.value()).value();
+        }
+        return modules[lookup.module_name.value().value].get_exported_function(lookup.ident_name.value()).value();
+    }
+    else
+    {
+        return local_functions[lookup.ident_name.value().value];
+    }
+}
 std::optional<int> ProgramScope::addLocal(Tokens name, Function function)
 {
     if (this->local_functions.find(name.value) != this->local_functions.end())

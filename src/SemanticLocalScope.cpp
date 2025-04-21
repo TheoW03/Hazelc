@@ -7,12 +7,15 @@ SemanticLocalScopeVisitor::SemanticLocalScopeVisitor(std::map<std::string, Seman
 
 // these find functions, optional so we can do more stuff with them
 
-std::optional<int> SemanticLocalScopeVisitor::find_function_global(Tokens name)
+std::optional<FastLookup> SemanticLocalScopeVisitor::find_function_global(Tokens name)
 {
     auto global_functions = this->current_AST_module.functions;
     if (global_functions.find(name.value) != global_functions.end())
     {
-        return 1;
+        FastLookup f = {
+            current_AST_module.name,
+            name};
+        return f;
     }
     else
     {
@@ -21,26 +24,31 @@ std::optional<int> SemanticLocalScopeVisitor::find_function_global(Tokens name)
         {
             if (modules[imports[i].value].exported_functions.find(name.value) != modules[imports[i].value].exported_functions.end())
             {
-                return 1;
+
+                FastLookup f = {
+                    imports[i],
+                    name};
+                return f;
             }
         }
     }
     return {};
 }
 
-std::optional<int> SemanticLocalScopeVisitor::find_function_local(Tokens name)
+std::optional<FastLookup> SemanticLocalScopeVisitor::find_function_local(Tokens name)
 {
     for (int i = 0; i < scope.size(); i++)
     {
         if (scope[i].functions.find(name.value) != scope[i].functions.end())
         {
-            return 1;
+            FastLookup f = {{}, name};
+            return f;
         }
     }
     return {};
 }
 
-std::optional<int> SemanticLocalScopeVisitor::find_function(Tokens name)
+std::optional<FastLookup> SemanticLocalScopeVisitor::find_function(Tokens name)
 {
     auto function_global = find_function_global(name);
     if (function_global.has_value())
@@ -104,6 +112,8 @@ void SemanticLocalScopeVisitor::Visit(FunctionCallNode *node)
                   << " is not a defined function " << std::endl;
         exit(EXIT_FAILURE);
     }
+    node->ident = this->find_function(node->name).value();
+    std::cout << node->ident.ident_name.value().value << std::endl;
 }
 
 void SemanticLocalScopeVisitor::Visit(ProgramNode *node)

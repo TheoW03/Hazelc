@@ -46,6 +46,7 @@ add_llvm_executable(${EXECUTABLE_NAME}
    src/SemanticGlobalScope.cpp
    src/TreeShake.cpp
    src/SemanticLocalScope.cpp
+   src/DeadCodeElim.cpp
 
 )
 

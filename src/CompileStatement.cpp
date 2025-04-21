@@ -25,9 +25,9 @@ void CompileStatement::Visit(FunctionNode *node)
     // sees if its a global or local function
     // if local we put it in the local scope. if global we generate it
     auto c = this->program_scope.set_current_function();
-    if (this->program_scope.get_global_function(c.name).has_value())
+    if (this->program_scope.get_inmodule_global_function(c.name).has_value())
     {
-        auto func = program_scope.get_function(node->f->FunctionName);
+        auto func = program_scope.get_inmodule_global_function(node->f->FunctionName).value();
         llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, "entry", func.function);
         this->block = EntryBlock;
 

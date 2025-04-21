@@ -389,7 +389,10 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
     else if (dynamic_cast<FunctionCallNode *>(node.get()))
     {
         auto c = dynamic_cast<FunctionCallNode *>(node.get());
-        auto fu = program.get_function(c->name);
+
+        auto fu = program.get_function_fast(c->ident);
+        // std::cout << fu.name.value << std::endl;
+
         // auto v =
         llvm::Value *param_ptr = builder.CreateAlloca(this->params);
         OptionalType type_of_func = compiler_context.get_type(fu.ret_type);

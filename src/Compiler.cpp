@@ -13,7 +13,8 @@
 #include <Frontend/parser.h>
 #include <map>
 #include <backend/compiler_visitors.h>
-#include "llvm/Support/Host.h"
+// #include "llvm/Support/Host.h"
+#include "llvm/TargetParser/Host.h"
 #include <fstream>
 #include "llvm/IR/LLVMContext.h"
 #include <cli.h>

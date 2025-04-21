@@ -21,7 +21,7 @@ TypeOfExpr get_bool_expr_type(std::shared_ptr<ASTNode> n, ProgramScope ctx)
     else if (dynamic_cast<FunctionCallNode *>(c->lhs.get()))
     {
         auto d = dynamic_cast<FunctionCallNode *>(c->lhs.get());
-        auto f = ctx.get_function(d->name);
+        auto f = ctx.get_function_fast(d->ident);
         if (dynamic_cast<NativeType *>(f.ret_type.get()))
         {
             auto p = dynamic_cast<NativeType *>(f.ret_type.get());
@@ -65,7 +65,7 @@ TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n, ProgramScope ctx)
     else if (dynamic_cast<FunctionCallNode *>(c->lhs.get()))
     {
         auto d = dynamic_cast<FunctionCallNode *>(c->lhs.get());
-        auto f = ctx.get_function(d->name);
+        auto f = ctx.get_function_fast(d->ident);
         if (dynamic_cast<NativeType *>(f.ret_type.get()))
         {
             auto p = dynamic_cast<NativeType *>(f.ret_type.get());

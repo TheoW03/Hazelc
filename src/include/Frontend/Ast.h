@@ -3,6 +3,16 @@
 #include <memory>
 #include <map>
 #include <optional>
+
+#ifndef IDENT_H
+#define IDENT_H
+struct FastLookup
+{
+    std::optional<Tokens> module_name;
+    std::optional<Tokens> ident_name;
+};
+#endif
+
 #ifndef ASTNODE_H
 #define ASTNODE_H
 class Visitor;
@@ -22,6 +32,7 @@ class Visitor;
 class FunctionCallNode : public ASTNode
 {
 public:
+    FastLookup ident;
     Tokens name;
     std::vector<std::shared_ptr<ASTNode>> params;
     FunctionCallNode(Tokens name, std::vector<std::shared_ptr<ASTNode>> params);
@@ -165,6 +176,7 @@ class Visitor;
 class FunctionNode : public ASTNode
 {
 public:
+    FastLookup ident;
     std::shared_ptr<FunctionRefNode> f;
     std::vector<std::shared_ptr<ASTNode>> stmnts;
     bool can_export;
@@ -252,6 +264,7 @@ public:
     ProgramNode(std::map<std::string, std::shared_ptr<ModuleNode>> modules);
     void Accept(Visitor *v);
     std::optional<std::shared_ptr<ModuleNode>> getMainModule();
+    std::optional<std::shared_ptr<FunctionNode>> getMainFunction();
     std::string to_string();
 };
 #endif
