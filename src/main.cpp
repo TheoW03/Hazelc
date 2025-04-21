@@ -8,17 +8,7 @@
 #include <stdexcept>
 #include <filesystem>
 #include <InitHazel.h>
-enum Foo
-{
-    VariantFoo = 1,
-    Variant2 = 0
-};
 
-enum Bar
-{
-    Variant1 = Foo::VariantFoo,
-    Variants
-};
 int main(int argc, char *argv[])
 {
     std::vector<std::string> args;
