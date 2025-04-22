@@ -164,6 +164,10 @@ void SemanticLocalScopeVisitor::Visit(FunctionCallNode *node)
                   << " is not a defined function " << std::endl;
         exit(EXIT_FAILURE);
     }
+    for (int i = 0; i < node->params.size(); i++)
+    {
+        node->params[i]->Accept(this);
+    }
     node->ident = this->find_function(node->name).value();
     node->param_types = this->get_function(node->name).value()->f->params;
     // std::cout << node->ident.ident_name.value().value << std::endl;

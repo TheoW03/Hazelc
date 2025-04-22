@@ -1,6 +1,10 @@
 #include <optimization/DeadCodeElim.h>
 
 /*
+
+    Very expiremental as of right now
+
+
     the LLVM does DCE for you. however I want control over it so im doint it myself.
 
     how it works is that you first visit the main function, add it to a list structure
