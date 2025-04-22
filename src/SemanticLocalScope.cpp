@@ -48,6 +48,56 @@ std::optional<FastLookup> SemanticLocalScopeVisitor::find_function_local(Tokens 
     return {};
 }
 
+std::optional<FunctionNode *> SemanticLocalScopeVisitor::get_local_function(Tokens name)
+{
+    for (int i = 0; i < scope.size(); i++)
+    {
+        if (scope[i].functions.find(name.value) != scope[i].functions.end())
+        {
+            return scope[i].functions[name.value];
+            // return f;
+        }
+    }
+    return {};
+}
+std::optional<FunctionNode *> SemanticLocalScopeVisitor::get_global_function(Tokens name)
+{
+    auto global_functions = this->current_AST_module.functions;
+    if (global_functions.find(name.value) != global_functions.end())
+    {
+        // FastLookup f = {
+        // current_AST_module.name,
+        // name};
+        // return f;
+        return global_functions[name.value];
+    }
+    else
+    {
+        auto imports = current_AST_module.imports;
+        for (int i = 0; i < imports.size(); i++)
+        {
+            if (modules[imports[i].value].exported_functions.find(name.value) != modules[imports[i].value].exported_functions.end())
+            {
+                return modules[imports[i].value].exported_functions[name.value];
+            }
+        }
+    }
+    return {};
+}
+std::optional<FunctionNode *> SemanticLocalScopeVisitor::get_function(Tokens name)
+{
+    auto function_global = get_global_function(name);
+    if (function_global.has_value())
+    {
+        return function_global;
+    }
+    auto function_local = get_local_function(name);
+    if (function_local.has_value())
+    {
+        return function_local;
+    }
+    return {}; // return std::optional<int>();
+}
 std::optional<FastLookup> SemanticLocalScopeVisitor::find_function(Tokens name)
 {
     auto function_global = find_function_global(name);
@@ -77,13 +127,15 @@ void SemanticLocalScopeVisitor::Visit(FunctionNode *node)
     }
     if (scope.size() >= 1)
     {
-        scope[scope.size() - 1].functions.insert(node->f->FunctionName.value);
+        scope[scope.size() - 1].functions.insert(std::make_pair(node->f->FunctionName.value, (node)));
+        // scope[scope.size() - 1].functions.insert(node->f->FunctionName.value);
     }
     FunctionLocalScope f;
     scope.push_back(f);
     for (int i = 0; i < node->f->params.size(); i++)
     {
-        scope[scope.size() - 1].functions.insert(node->f->params[i]->FunctionName.value);
+        scope[scope.size() - 1].functions.insert(std::make_pair(node->f->params[i]->FunctionName.value,
+                                                                (node)));
     }
     for (int i = 0; i < node->stmnts.size(); i++)
     {
@@ -113,7 +165,8 @@ void SemanticLocalScopeVisitor::Visit(FunctionCallNode *node)
         exit(EXIT_FAILURE);
     }
     node->ident = this->find_function(node->name).value();
-    std::cout << node->ident.ident_name.value().value << std::endl;
+    node->param_types = this->get_function(node->name).value()->f->params;
+    // std::cout << node->ident.ident_name.value().value << std::endl;
 }
 
 void SemanticLocalScopeVisitor::Visit(ProgramNode *node)

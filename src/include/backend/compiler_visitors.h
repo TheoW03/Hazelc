@@ -35,6 +35,7 @@ public:
     void Visit(ReturnNode *node) override;
     void Visit(FunctionCallNode *node) override;
     void Visit(ProgramNode *node) override;
+    void Visit(ExprNode *node) override;
 
     Function CompileFunctionHeader(std::shared_ptr<FunctionRefNode> n);
     ProgramScope getProgramScope();

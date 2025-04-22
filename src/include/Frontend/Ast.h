@@ -26,20 +26,21 @@ public:
     virtual std::string to_string() = 0;
 };
 #endif
-#ifndef CALL_H
-#define CALL_H
-class Visitor;
-class FunctionCallNode : public ASTNode
-{
-public:
-    FastLookup ident;
-    Tokens name;
-    std::vector<std::shared_ptr<ASTNode>> params;
-    FunctionCallNode(Tokens name, std::vector<std::shared_ptr<ASTNode>> params);
-    void Accept(Visitor *v) override;
-    std::string to_string();
-};
-#endif
+// #ifndef CALL_H
+// #define CALL_H
+// class Visitor;
+// class FunctionCallNode : public ASTNode
+// {
+// public:
+//     FastLookup ident;
+//     Tokens name;
+//     std::vector<std::shared_ptr<FunctionRefNode>> param_types;
+//     std::vector<std::shared_ptr<ASTNode>> params;
+//     FunctionCallNode(Tokens name, std::vector<std::shared_ptr<ASTNode>> params);
+//     void Accept(Visitor *v) override;
+//     std::string to_string();
+// };
+// #endif
 
 #ifndef TYPE_H
 #define TYPE_H
@@ -184,6 +185,22 @@ public:
                  std::shared_ptr<FunctionRefNode> functionHeader,
                  std::vector<std::shared_ptr<ASTNode>> stmnts);
     void Accept(Visitor *v);
+    std::string to_string();
+};
+#endif
+
+#ifndef CALL_H
+#define CALL_H
+class Visitor;
+class FunctionCallNode : public ASTNode
+{
+public:
+    FastLookup ident;
+    Tokens name;
+    std::vector<std::shared_ptr<FunctionRefNode>> param_types;
+    std::vector<std::shared_ptr<ASTNode>> params;
+    FunctionCallNode(Tokens name, std::vector<std::shared_ptr<ASTNode>> params);
+    void Accept(Visitor *v) override;
     std::string to_string();
 };
 #endif

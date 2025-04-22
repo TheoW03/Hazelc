@@ -32,15 +32,26 @@ void DeadCode::Visit(ProgramNode *node)
 
 void DeadCode::Visit(FunctionNode *node)
 {
-    this->local.clear();
     node->stmnts[node->stmnts.size() - 1]->Accept(this);
-    while (!this->func_calls.empty())
+    for (int i = 0; i < this->func_calls.size(); i++)
     {
-        auto function_call_name = this->func_calls.front();
-        this->func_calls.pop();
+        auto function_call_name = this->func_calls[i];
         if (!isVisited(function_call_name))
         {
+            for (int i = 0; i < node->stmnts.size(); i++)
+            {
+                if (dynamic_cast<FunctionNode *>(node->stmnts[i].get()))
+                {
+                    auto function = dynamic_cast<FunctionNode *>(node->stmnts[i].get());
+                    if (function->f->FunctionName.value == function_call_name.value)
+                    {
+                        // this->func_calls.erase(this->func_calls.begin() + i);
+                        this->local.insert(function->f->FunctionName.value);
+                        function->Accept(this);
+                    }
                 }
+            }
+        }
     }
 }
 
@@ -52,7 +63,7 @@ void DeadCode::Visit(ExprNode *node)
 
 void DeadCode::Visit(FunctionCallNode *node)
 {
-    this->func_calls.push(node->name);
+    this->func_calls.push_back(node->name);
 }
 
 void DeadCode::Visit(ReturnNode *node)

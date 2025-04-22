@@ -13,7 +13,7 @@ private:
 
 public:
     std::vector<std::shared_ptr<FunctionNode>> f;
-    std::queue<Tokens> func_calls;
+    std::vector<Tokens> func_calls;
 
     std::set<std::string> global;
     std::set<std::string> local;
