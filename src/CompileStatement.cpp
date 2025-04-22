@@ -81,10 +81,10 @@ void CompileStatement::Visit(ReturnNode *node)
     llvm::Argument *ret_ptr = f->getArg(1);
     if (program_scope.get_current_function().name.value != "main")
     {
-        auto val = builder.CreateLoad(ty.inner, builder.CreateStructGEP(ty.get_type(), value.value, 0));
         // auto retval = builder.CreateStructGEP(ty.get_type(), ret_ptr, 0);
+        // auto val = builder.CreateLoad(ty.inner, builder.CreateStructGEP(ty.get_type(), value.value, 0));
         // builder.CreateStore(val, retval);
-        builder.CreateStore(val, ret_ptr);
+        builder.CreateStore(ValueOrLoad(builder, value.value, ty.get_type()), ret_ptr);
     }
 
     builder.CreateRetVoid();

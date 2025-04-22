@@ -30,10 +30,13 @@ llvm::Value *CompileExpr::CompileStr(llvm::Value *str, llvm::Value *length, llvm
 
     auto c = compiler_context.get_string_inner_type();
     auto destField0ptr = builder.CreateStructGEP(c, structure, 0, "destStructPtrF0");
+    // str = builder.CreateLoad(builder.getInt8PtrTy(), str);
     builder.CreateStore(str, destField0ptr);
     auto destField1ptr = builder.CreateStructGEP(c, structure, 1, "destStructPtrF1");
+    // length = builder.CreateLoad(builder.getInt64Ty(), length);
     builder.CreateStore(length, destField1ptr);
     return ValueOrLoad(builder, structure, c);
+    // return structure;
 }
 
 llvm::Value *CompileExpr::IntMathExpression(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
@@ -265,7 +268,7 @@ llvm::Value *CompileExpr::StringMathExpr(llvm::Value *lhs, Tokens op, llvm::Valu
 
                                      });
         // builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: %s \n"),
-        //                                                            dest});
+        //    dest});
 
         llvm::Value *destStructPtr = builder.CreateAlloca(c);
         return this->CompileStr(dest, added_lengths, destStructPtr);
