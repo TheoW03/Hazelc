@@ -176,7 +176,6 @@ std::optional<std::shared_ptr<ASTNode>> term(std::vector<Tokens> &tokens)
         TokenType::Modulas,
 
     };
-
     auto lhs = BoolExpr(tokens);
     auto op = match_and_remove(term_tokens,
                                tokens);
@@ -192,6 +191,7 @@ std::optional<std::shared_ptr<ASTNode>> term(std::vector<Tokens> &tokens)
 
 std::optional<std::shared_ptr<ASTNode>> expression(std::vector<Tokens> &tokens)
 {
+
     auto lhs = term(tokens);
     auto expression_tokens = {
         TokenType::Addition,

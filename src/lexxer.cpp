@@ -215,22 +215,22 @@ void is_token(Lexxer_Context &ctx)
         ctx.tokens.push_back({ctx.buffer.substr(2, ctx.buffer.size()), TokenType::BinaryDigit, ctx.line_num});
     else if (is_base_ten(ctx.buffer))
         ctx.tokens.push_back({ctx.buffer, TokenType::BaseTenDigit, ctx.line_num});
-    else if (is_indent(ctx) && ctx.state == 0)
-    {
-        ctx.indents_num = ctx.indents_idx;
-        ctx.indents_idx = 0;
-        ctx.tokens.push_back({"Indent", TokenType::Indents, ctx.line_num});
-    }
-    else if (is_dedent(ctx) && ctx.state == 0)
-    {
-        ctx.indents_num = ctx.indents_idx;
-        ctx.indents_idx = 0;
-        ctx.tokens.push_back({"dedent", TokenType::Dedents, ctx.line_num});
-    }
-    else if (ctx.indents_idx == ctx.indents_num && ctx.state == 0)
-    {
-        ctx.indents_idx = 0;
-    }
+    // else if (is_indent(ctx) && ctx.state == 0)
+    // {
+    //     ctx.indents_num = ctx.indents_idx;
+    //     ctx.indents_idx = 0;
+    //     ctx.tokens.push_back({"Indent", TokenType::Indents, ctx.line_num});
+    // }
+    // else if (is_dedent(ctx) && ctx.state == 0)
+    // {
+    //     ctx.indents_num = ctx.indents_idx;
+    //     ctx.indents_idx = 0;
+    //     ctx.tokens.push_back({"dedent", TokenType::Dedents, ctx.line_num});
+    // }
+    // else if (ctx.indents_idx == ctx.indents_num && ctx.state == 0)
+    // {
+    //     ctx.indents_idx = 0;
+    // }
     else
         ctx.tokens.push_back({ctx.buffer,
                               TokenType::Identifier,
@@ -271,8 +271,8 @@ void is_equal(Lexxer_Context &ctx, char value)
         is_token(ctx);
         ctx.buffer += value;
         // is_number(ctx, value);
+        ctx.state = 1;
     }
-    ctx.state = 1;
 }
 
 void is_number(Lexxer_Context &ctx, char value)
@@ -302,10 +302,8 @@ void is_number(Lexxer_Context &ctx, char value)
     }
     else if (value == '=' || value == '>' || value == '<')
     {
-        std::cout << ctx.buffer << std::endl;
 
         is_token(ctx);
-        std::cout << "is equal" << std::endl;
         ctx.buffer += value;
         ctx.state = 3;
     }
@@ -402,30 +400,57 @@ std::vector<Tokens> lexxer(std::vector<std::string> lines)
             {
                 if (is_str == 1 && current_char == '\"')
                 {
+                    std::cout << "str: " << ctx.buffer << " state: " << ctx.state << " indents: "
+                              << ctx.indents_idx
+                              << " indents num: "
+                              << ctx.indents_num
+                              << std::endl;
+
                     ctx.tokens.push_back({ctx.buffer, TokenType::String_Lit, ctx.line_num});
                     ctx.buffer = "";
                     is_str = 0;
                 }
                 else if (is_str == 1 && current_char == '\'')
                 {
+
                     ctx.tokens.push_back({ctx.buffer, TokenType::Char_Lit, ctx.line_num});
                     ctx.buffer = "";
                     is_str = 0;
                 }
                 else
                 {
-                    is_token(ctx);
+                    if (ctx.state == 0)
+                    {
+                        if (is_indent(ctx))
+                        {
+                            ctx.indents_num = ctx.indents_idx;
+                            ctx.tokens.push_back({"Indent", TokenType::Indents, ctx.line_num});
+                        }
+                        else if (is_dedent(ctx))
+                        {
+                            ctx.indents_num = ctx.indents_idx;
+                            ctx.tokens.push_back({"Dedent", TokenType::Dedents, ctx.line_num});
+                        }
+                        std::cout << ctx.indents_num << std::endl;
+                        ctx.indents_idx = 0;
+
+                        ctx.buffer = "";
+                    }
+                    else
+                    {
+                        is_token(ctx);
+                    }
+
                     is_str = 1;
                 }
-                // ctx.state = 1;
-                std::cout << ctx.state << std::endl;
-
+                ctx.state = 1;
                 continue;
             }
 
             if (is_str == 1)
             {
                 ctx.buffer += current_char;
+
                 continue;
             }
             if (current_char == ' ' && ctx.state != 0)

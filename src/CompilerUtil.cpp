@@ -157,6 +157,6 @@ llvm::Type *OptionalType::get_type()
 llvm::Value *ValueOrLoad(llvm::IRBuilder<> &builder, llvm::Value *value, llvm::Type *type)
 {
     if (value->getType()->isPointerTy())
-        value = builder.CreateLoad(type, value);
+        value = builder.CreateLoad(type, value, "ValueOrLoad");
     return value;
 }
