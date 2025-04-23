@@ -104,6 +104,27 @@ llvm::Value *CompileExpr::StringMath(llvm::Value *lhs, Tokens op, llvm::Value *r
     auto math = StringMathExpr(lhs_val, op, rhs_val);
     return string_type.set_loaded_value(math, builder);
 }
+
+llvm::Value *CompileExpr::StringBoolMath(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
+{
+    switch (op.type)
+    {
+    case EQ:
+    {
+        auto c = compiler_context.get_string_inner_type();
+        auto strRhsPtr = builder.CreateLoad(builder.getInt8PtrTy(), builder.CreateStructGEP(c, rhs, 0, "strlhsval"));
+        auto strLhsPtr = builder.CreateLoad(builder.getInt8PtrTy(), builder.CreateStructGEP(c, lhs, 0, "strrhsval"));
+        auto streq = compiler_context.CFunctions["strncmp"];
+
+        auto expr = builder.CreateCall(streq, {strRhsPtr, strLhsPtr});
+        return builder.CreateICmp(llvm::ICmpInst::ICMP_EQ, expr, llvm::ConstantInt::get(builder.getInt32Ty(), 0));
+    }
+    default:
+        break;
+    }
+    return nullptr;
+}
+
 llvm::Value *CompileExpr::IntegerBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
 {
     auto integer_type = compiler_context.get_integer_type();
@@ -284,6 +305,18 @@ llvm::Value *CompileExpr::StringMathExpr(llvm::Value *lhs, Tokens op, llvm::Valu
     // return destStructPtr;
 }
 
+llvm::Value *CompileExpr::StringBoolMathExpr(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
+{
+    auto string_type = compiler_context.get_string_type();
+    auto inner = compiler_context.get_string_inner_type();
+    auto BoolType = compiler_context.get_boolean_type();
+
+    auto lhs_val = builder.CreateStructGEP(string_type.type, lhs, 0, "str_lhs");
+    auto rhs_val = builder.CreateStructGEP(string_type.type, rhs, 0, "str_rhs");
+    auto math = StringBoolMath(lhs_val, op, rhs_val);
+    return BoolType.set_loaded_value(math, builder);
+}
+
 ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
 {
     if (dynamic_cast<IntegerNode *>(node.get()))
@@ -449,6 +482,7 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
             return {this->block, IntegerBool(lhs.value, c->op, rhs.value)};
         case Float_Type:
             return {this->block, FloatBool(lhs.value, c->op, rhs.value)};
+        case String_Type:
         // case None_Type:
         //     return {this->block, BoolBool(lhs.value, c->op, rhs.value)};
         case Boolean_Type:

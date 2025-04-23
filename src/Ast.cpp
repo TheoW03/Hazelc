@@ -321,6 +321,7 @@ std::string FunctionCallNode::to_string()
     return std::string();
 }
 
+// Program node is the root node
 ProgramNode::ProgramNode(std::map<std::string, std::shared_ptr<ModuleNode>> modules)
 {
 

@@ -81,15 +81,12 @@ void CompileStatement::Visit(ReturnNode *node)
     llvm::Argument *ret_ptr = f->getArg(1);
     if (program_scope.get_current_function().name.value != "main")
     {
-        // auto retval = builder.CreateStructGEP(ty.get_type(), ret_ptr, 0);
-        // auto val = builder.CreateLoad(ty.inner, builder.CreateStructGEP(ty.get_type(), value.value, 0));
-        // builder.CreateStore(val, retval);
+
         builder.CreateStore(ValueOrLoad(builder, value.value, ty.get_type()), ret_ptr);
     }
 
     builder.CreateRetVoid();
     auto error = llvm::verifyFunction(*(program_scope.get_current_function().function), output);
-    // program_scope.get_current_function().function->viewCFG();
 }
 
 void CompileStatement::Visit(ProgramNode *node)
@@ -97,13 +94,6 @@ void CompileStatement::Visit(ProgramNode *node)
     for (const auto &[key, current_module] : node->avail_modules)
     {
         program_scope.set_current(current_module->name);
-        // std::cout << "working in program node " << std::endl;
-        // std::cout << current_module->name.value << std::endl;
         current_module->Accept(this);
-        // std::cout << "Key: " << key << ", Value: " << value << std::endl;
     }
-    // for (int i = 0; i < node->modules.size(); i++)
-    // {
-    //     node->modules[i]->Accept(this);
-    // }
 }

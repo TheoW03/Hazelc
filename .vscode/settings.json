@@ -82,7 +82,8 @@
         "__verbose_abort": "cpp",
         "ios": "cpp",
         "locale": "cpp",
-        "stack": "cpp"
+        "stack": "cpp",
+        "__memory": "cpp"
     },
     "editor.fontFamily": "'Droid Sans Mono', 'monospace', monospace",
     "editor.fontLigatures": false

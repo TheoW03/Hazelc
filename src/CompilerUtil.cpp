@@ -16,6 +16,9 @@ TypeOfExpr get_bool_expr_type(std::shared_ptr<ASTNode> n, ProgramScope ctx)
         return TypeOfExpr::Float_Type;
     else if (dynamic_cast<BooleanConstNode *>(c->lhs.get()) && dynamic_cast<BooleanConstNode *>(c->rhs.get()))
         return TypeOfExpr::Boolean_Type;
+    else if (dynamic_cast<StringNode *>(c->lhs.get()) && dynamic_cast<StringNode *>(c->rhs.get()))
+        return TypeOfExpr::String_Type;
+
     else if (dynamic_cast<NoneNode *>(c->lhs.get()) && dynamic_cast<NoneNode *>(c->rhs.get()))
         return TypeOfExpr::None_Type;
     else if (dynamic_cast<FunctionCallNode *>(c->lhs.get()))

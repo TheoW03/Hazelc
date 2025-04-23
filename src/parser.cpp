@@ -11,7 +11,6 @@ std::optional<Tokens> current;
 std::optional<std::shared_ptr<ASTNode>> expr_parse(std::vector<Tokens> &tokens);
 std::optional<std::shared_ptr<FunctionRefNode>> parse_function_ref(std::vector<Tokens> &tokens);
 using parser = std::optional<std::shared_ptr<ASTNode>> (*)(std::vector<Tokens> &);
-std::optional<std::shared_ptr<ASTNode>> parse_bitshift(std::vector<Tokens> &tokens);
 
 // This is a typical recursive decent parser
 // how it works is program node is the root node
@@ -178,10 +177,6 @@ std::optional<std::shared_ptr<ASTNode>> term(std::vector<Tokens> &tokens)
 
     };
 
-    // TokenType::And,
-    // TokenType::Or,
-    // TokenType::Left_Shift,
-    // TokenType::Right_Shift};
     auto lhs = BoolExpr(tokens);
     auto op = match_and_remove(term_tokens,
                                tokens);
@@ -217,21 +212,7 @@ std::optional<std::shared_ptr<ASTNode>> expression(std::vector<Tokens> &tokens)
     }
     return lhs;
 }
-// std::optional<std::shared_ptr<ASTNode>> parse_bitshift(std::vector<Tokens> &tokens)
-// {
-//     auto lhs = expression(tokens);
-//     auto expression_tokens = {
-//         TokenType::Left_Shift,
-//         TokenType::Right_Shift};
-//     auto op = match_and_remove(expression_tokens, tokens);
-//     while (op.has_value())
-//     {
-//         auto rhs = expression(tokens);
-//         lhs = std::make_shared<ExprNode>(lhs.value(), op.value(), rhs.value());
-//         op = match_and_remove(expression_tokens, tokens);
-//     }
-//     return lhs;
-// }
+
 std::optional<std::shared_ptr<BranchNode>> parse_branch(std::vector<Tokens> &tokens)
 {
     std::vector<std::shared_ptr<ASTNode>> parse_scope(std::vector<Tokens> & tokens);
@@ -407,7 +388,6 @@ std::optional<std::shared_ptr<ASTNode>> parse_stmnts(std::vector<Tokens> &tokens
     std::map<TokenType, parser> parse_map;
     parse_map.insert(make_pair(TokenType::Let, (parser)parse_function)); //
     parse_map.insert(make_pair(TokenType::Return, (parser)parse_return));
-    parse_map.insert(make_pair(TokenType::Identifier, (parser)parse_function_call));
 
     if (parse_map.count(get_next_token(tokens).type))
     {
@@ -422,9 +402,7 @@ std::optional<std::shared_ptr<ASTNode>> parse_stmnts(std::vector<Tokens> &tokens
 std::shared_ptr<ModuleNode> parse_module(std::vector<Tokens> &tokens)
 {
     auto module_name = match_and_remove(TokenType::Identifier, tokens);
-    // print_tokens(tokens);
 
-    // while()
     std::vector<Tokens> imports;
     if (match_and_remove(TokenType::Open_Parenthesis, tokens).has_value())
     {

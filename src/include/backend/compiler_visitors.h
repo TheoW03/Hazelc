@@ -89,6 +89,7 @@ private:
     llvm::Value *IntegerMath(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
     llvm::Value *FloatMath(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
     llvm::Value *StringMath(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
+    llvm::Value *StringBoolMath(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
 
     llvm::Value *IntegerBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
     llvm::Value *FloatBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
@@ -118,6 +119,8 @@ public:
     llvm::Value *BoolFloatMathExpr(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
     llvm::Value *BoolBoolExpr(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
     llvm::Value *StringMathExpr(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
+    llvm::Value *StringBoolMathExpr(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
+
     ValueStruct Expression(std::shared_ptr<ASTNode> node);
 };
 #endif
