@@ -134,10 +134,12 @@ void CompileHighLevel::Visit(FunctionCallNode *node)
     {
         std::vector<std::shared_ptr<ASTNode>> stmnts;
         auto compiled_function = CompileFunctionHeader(node->param_types[i]);
+        compiled_function.isAnonymous = true;
         this->compiled_functions.push(compiled_function);
         auto ret = std::make_shared<ReturnNode>(node->params[i]);
         stmnts.push_back(ret);
         auto param_func = std::make_shared<FunctionNode>(false, node->param_types[i], stmnts);
+
         this->functions.push_back(param_func);
     }
 }
@@ -192,7 +194,7 @@ Function CompileHighLevel::CompileFunctionHeader(std::shared_ptr<FunctionRefNode
     function->getArg(1)->addAttr(llvm::Attribute::getWithStructRetType(context, retty));
     function->getArg(1)->setName("ret");
 
-    return {function, f, n->RetType, n->FunctionName, std::get<1>(functype)};
+    return {function, f, n->RetType, n->FunctionName, std::get<1>(functype), false};
 }
 
 ProgramScope CompileHighLevel::getProgramScope()

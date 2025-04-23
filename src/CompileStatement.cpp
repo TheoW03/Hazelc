@@ -26,7 +26,14 @@ void CompileStatement::Visit(FunctionNode *node)
     // if local we put it in the local scope. if global we generate it
     auto c = this->program_scope.set_current_function();
 
-    if (this->program_scope.get_inmodule_global_function(c.name).has_value())
+    // the anonmoous prevents collisons
+    if (c.isAnonymous)
+    {
+        llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, "entry", c.function);
+        this->block = EntryBlock;
+        builder.SetInsertPoint(EntryBlock);
+    }
+    else if (this->program_scope.get_inmodule_global_function(c.name).has_value())
     {
         auto func = program_scope.get_inmodule_global_function(node->f->FunctionName).value();
         llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, "entry", func.function);
@@ -45,13 +52,6 @@ void CompileStatement::Visit(FunctionNode *node)
     {
         node->stmnts[i]->Accept(this);
     }
-    // Function c = compiler_context.get_current_module().functions.front();
-    // compiler_context.get_current_module().functions.pop();
-    // std::cout << compiler_context.get_current_module().functions.size() << std::endl;
-    // compiler_context.get_current_module().functions.erase(compiler_context.get_current_module().functions.begin());
-    // std::cout << "from data structure: " << c.name.value << std::endl;
-    // std::cout << "from AST: " << node->f->FunctionName.value << std::endl;
-    // std::cout << "from AST: " << node->f->FunctionName.value << std::endl;
 }
 
 void CompileStatement::Visit(ModuleNode *node)

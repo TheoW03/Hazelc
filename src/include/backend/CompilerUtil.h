@@ -53,6 +53,7 @@ struct Function
     std::shared_ptr<Type> ret_type;
     Tokens name;
     std::vector<Thunks> thunks;
+    bool isAnonymous;
 };
 #endif
 
