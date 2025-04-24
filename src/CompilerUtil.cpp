@@ -16,6 +16,9 @@ TypeOfExpr get_bool_expr_type(std::shared_ptr<ASTNode> n, ProgramScope ctx)
         return TypeOfExpr::Float_Type;
     else if (dynamic_cast<BooleanConstNode *>(c->lhs.get()) && dynamic_cast<BooleanConstNode *>(c->rhs.get()))
         return TypeOfExpr::Boolean_Type;
+    else if (dynamic_cast<StringNode *>(c->lhs.get()) && dynamic_cast<StringNode *>(c->rhs.get()))
+        return TypeOfExpr::String_Type;
+
     else if (dynamic_cast<NoneNode *>(c->lhs.get()) && dynamic_cast<NoneNode *>(c->rhs.get()))
         return TypeOfExpr::None_Type;
     else if (dynamic_cast<FunctionCallNode *>(c->lhs.get()))
@@ -151,9 +154,22 @@ llvm::Type *OptionalType::get_type()
     return this->type;
 }
 
+size_t OptionalType::get_type_size(llvm::Module &module)
+{
+    llvm::DataLayout datalayout(&module);
+    return datalayout.getTypeAllocSize(this->type);
+}
+
+size_t OptionalType::get_inner_size(llvm::Module &module)
+{
+    llvm::DataLayout datalayout(&module);
+
+    return datalayout.getTypeAllocSize(this->inner);
+}
+
 llvm::Value *ValueOrLoad(llvm::IRBuilder<> &builder, llvm::Value *value, llvm::Type *type)
 {
     if (value->getType()->isPointerTy())
-        value = builder.CreateLoad(type, value);
+        value = builder.CreateLoad(type, value, "ValueOrLoad");
     return value;
 }

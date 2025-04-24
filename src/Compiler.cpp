@@ -27,7 +27,10 @@ void InitCompiler(Output output, std::shared_ptr<ProgramNode> node)
     llvm::IRBuilder<> builder(context);
 
     std::map<std::string, llvm::Function *> func_map;
+    llvm::DataLayout datalayout(&module);
 
+    size_t size_test = datalayout.getTypeAllocSize(builder.getInt32Ty());
+    std::cout << size_test << std::endl;
     // CompileHighLevel c(module, builder, context);
     // compiles function body
     CompileHighLevel *compile_top = new CompileHighLevel(module, builder, context);
@@ -68,7 +71,6 @@ void InitCompiler(Output output, std::shared_ptr<ProgramNode> node)
     llvm::TargetOptions opt;
     auto TargetMachine = Target->createTargetMachine(TargetTriple, CPU, Features, opt, llvm::Reloc::PIC_);
     module.setDataLayout(TargetMachine->createDataLayout());
-
     std::error_code EC;
     for (int i = 0; i < output.output_files.size(); i++)
     {

@@ -19,7 +19,11 @@ CompileHighLevel::CompileHighLevel(llvm::Module &module, llvm::IRBuilder<> &buil
     auto strncpy_type = llvm::FunctionType::get(builder.getInt32Ty(), {builder.getInt8PtrTy(), builder.getInt8PtrTy(), builder.getInt64Ty()}, false);
     auto strncpy_func = llvm::Function::Create(
         strncpy_type, llvm::Function::ExternalLinkage, "strncpy", module);
-    CFunctions.insert(std::make_pair("strncpy", strncpy_func));
+
+    auto streq_type = llvm::FunctionType::get(builder.getInt32Ty(), {builder.getInt8PtrTy(), builder.getInt8PtrTy()}, false);
+    auto streq_func = llvm::Function::Create(
+        streq_type, llvm::Function::ExternalLinkage, "strcmp", module);
+    CFunctions.insert(std::make_pair("strcmp", streq_func));
     std::map<TokenType, OptionalType> types;
     // types.insert(std::make_pair(TokenType::Integer, OptionalType()));
     std::map<TokenType, OptionalType> NativeTypes;
