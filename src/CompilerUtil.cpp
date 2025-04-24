@@ -4,6 +4,7 @@
 #include "llvm/IR/LLVMContext.h"
 #include <memory>
 #include <backend/CompilerContext.h>
+#include "llvm/IR/Intrinsics.h"
 
 // these get the type of the expression
 // used because the LLCM has seperation for floats and
@@ -130,6 +131,23 @@ llvm::Value *OptionalType::set_loaded_value(llvm::Value *value, llvm::IRBuilder<
     builder.CreateStore(value, destField0ptr);
     auto destField1ptr = builder.CreateStructGEP(this->type, structPtr, 1, "OptionalStructPtr1");
     auto isNone = llvm::ConstantInt::get(builder.getInt1Ty(), 0);
+    builder.CreateStore(isNone, destField1ptr);
+    return structPtr;
+}
+
+llvm::Value *OptionalType::set_loaded_struct_value(llvm::Function *memcpy, llvm::Value *value, llvm::IRBuilder<> &builder, size_t size)
+{
+    llvm::Value *structPtr = builder.CreateAlloca(this->type);
+    auto destField0ptr = builder.CreateStructGEP(this->type, structPtr, 0, "OptionalStructPtr0");
+    builder.CreateCall(memcpy, {
+                                   destField0ptr,
+                                   value,
+                                   llvm::ConstantInt::get(builder.getInt64Ty(), size),
+                                   llvm::ConstantInt::get(builder.getInt1Ty(), 0),
+
+                               });
+    auto isNone = llvm::ConstantInt::get(builder.getInt1Ty(), 0);
+    auto destField1ptr = builder.CreateStructGEP(this->type, structPtr, 1, "OptionalStructPtr1");
     builder.CreateStore(isNone, destField1ptr);
     return structPtr;
 }

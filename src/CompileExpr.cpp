@@ -107,23 +107,35 @@ llvm::Value *CompileExpr::StringMath(llvm::Value *lhs, Tokens op, llvm::Value *r
     auto lhs_val = builder.CreateStructGEP(string_type.type, lhs, 0, "str_lhs");
     auto rhs_val = builder.CreateStructGEP(string_type.type, rhs, 0, "str_rhs");
     auto math = StringMathExpr(lhs_val, op, rhs_val);
-    return string_type.set_loaded_value(math, builder);
+
+    llvm::Function *MemcpyFunc = llvm::Intrinsic::getDeclaration(
+        &module,
+        llvm::Intrinsic::memcpy,
+        {
+            builder.getPtrTy(),
+            builder.getPtrTy(),
+            builder.getInt64Ty(),
+        });
+
+    // return string_type.set_loaded_struct_value(math, builder);
+    // return string_type.set_loaded_value(math, builder);
+    return string_type.set_loaded_struct_value(MemcpyFunc, math, builder, string_type.get_inner_size(module));
 }
 
 llvm::Value *CompileExpr::StringBoolMath(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
 {
     auto c = compiler_context.get_string_inner_type();
-    auto strRhsPtr = builder.CreateLoad(builder.getInt8PtrTy(), builder.CreateStructGEP(c, rhs, 0, "strlhsval"));
-    auto strLhsPtr = builder.CreateLoad(builder.getInt8PtrTy(), builder.CreateStructGEP(c, lhs, 0, "strrhsval"));
+    auto strRhsPtr = builder.CreateLoad(builder.getInt8PtrTy(), builder.CreateStructGEP(c, rhs, 0, "strrhsval"));
+    auto strLhsPtr = builder.CreateLoad(builder.getInt8PtrTy(), builder.CreateStructGEP(c, lhs, 0, "strlhsval"));
     auto streq = compiler_context.CFunctions["strcmp"];
 
     auto expr = builder.CreateCall(streq, {strLhsPtr, strRhsPtr});
-    builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: %s\n"),
+    builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: foos str %s\n"),
                                                                strLhsPtr});
     auto strLhsLen = builder.CreateLoad(builder.getInt64Ty(), builder.CreateStructGEP(c, lhs, 1, "strrhsval"));
 
-    builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: %s \n"),
-                                                               strRhsPtr});
+    builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: foo length %d \n"),
+                                                               strLhsLen});
 
     builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: %d \n"),
                                                                expr});
@@ -155,7 +167,6 @@ llvm::Value *CompileExpr::IntegerBool(llvm::Value *lhs, Tokens op, llvm::Value *
 
 llvm::Value *CompileExpr::FloatBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
 {
-
     auto float_type = compiler_context.get_float_type();
     auto BoolType = compiler_context.get_boolean_type();
     auto lhs_val = builder.CreateLoad(builder.getDoubleTy(), builder.CreateStructGEP(float_type.type, lhs, 0, "int_lhs"));
@@ -239,7 +250,6 @@ llvm::Value *CompileExpr::BoolIntMathExpr(llvm::Value *lhs, Tokens op, llvm::Val
 
 llvm::Value *CompileExpr::BoolFloatMathExpr(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
 {
-
     switch (op.type)
     {
     case EQ:
@@ -267,7 +277,6 @@ llvm::Value *CompileExpr::BoolBoolExpr(llvm::Value *lhs, Tokens op, llvm::Value 
 
 llvm::Value *CompileExpr::StringMathExpr(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
 {
-
     switch (op.type)
     {
     case Concation:
@@ -287,30 +296,30 @@ llvm::Value *CompileExpr::StringMathExpr(llvm::Value *lhs, Tokens op, llvm::Valu
         auto lenthlhs = builder.CreateLoad(builder.getInt64Ty(), builder.CreateStructGEP(c, lhs, 1, "strlenlhs"));
         auto lenthrhs = builder.CreateLoad(builder.getInt64Ty(), builder.CreateStructGEP(c, rhs, 1, "strlnrhs"));
         auto added_lengths = builder.CreateAdd(lenthlhs, lenthrhs);
-
+        added_lengths = builder.CreateAdd(added_lengths, llvm::ConstantInt::get(builder.getInt64Ty(), 1));
         //    builder.CreateStructGEP(c, rhs, 1, "str1")
         auto dest = builder.CreateAlloca(builder.getInt8Ty(), added_lengths);
-
+        auto f = builder.CreateInBoundsGEP(builder.getInt8Ty(), dest, {llvm::ConstantInt::get(builder.getInt64Ty(), 0)});
         builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: %s \n"),
                                                                    strLhsPtr});
 
-        builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: %s \n"),
-                                                                   strLhsPtr});
+        builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: %d \n"),
+                                                                   lenthrhs});
 
         builder.CreateCall(snprinft, {
-                                         dest,
+                                         f,
                                          added_lengths,
                                          fmt,
                                          strLhsPtr,
                                          strRhsPtr,
 
                                      });
-        // builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: %s \n"),
-        //    dest});
+        builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: %s \n"),
+                                                                   f});
 
         llvm::Value *destStructPtr = builder.CreateAlloca(c);
 
-        return this->CompileStr(dest, added_lengths, destStructPtr);
+        return this->CompileStr(f, added_lengths, destStructPtr);
     }
     default:
     {
@@ -436,7 +445,16 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         llvm::Value *structPtr = builder.CreateAlloca(a);
         auto value = this->CompileStr(str, length, structPtr);
         auto str_optional_type = compiler_context.get_string_type();
-        return {this->block, str_optional_type.set_loaded_value(value, builder)};
+        // return {this->block, str_optional_type.set_loaded_value(value, builder)};
+        llvm::Function *MemcpyFunc = llvm::Intrinsic::getDeclaration(
+            &module,
+            llvm::Intrinsic::memcpy,
+            {
+                builder.getPtrTy(),
+                builder.getPtrTy(),
+                builder.getInt64Ty(),
+            });
+        return {this->block, str_optional_type.set_loaded_struct_value(MemcpyFunc, value, builder, str_optional_type.get_inner_size(module))};
     }
     else if (dynamic_cast<FunctionCallNode *>(node.get()))
     {

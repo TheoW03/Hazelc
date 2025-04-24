@@ -30,7 +30,6 @@ void InitCompiler(Output output, std::shared_ptr<ProgramNode> node)
     llvm::DataLayout datalayout(&module);
 
     size_t size_test = datalayout.getTypeAllocSize(builder.getInt32Ty());
-    std::cout << size_test << std::endl;
     // CompileHighLevel c(module, builder, context);
     // compiles function body
     CompileHighLevel *compile_top = new CompileHighLevel(module, builder, context);

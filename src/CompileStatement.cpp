@@ -81,7 +81,42 @@ void CompileStatement::Visit(ReturnNode *node)
     llvm::Argument *ret_ptr = f->getArg(1);
     if (program_scope.get_current_function().name.value != "main")
     {
-        builder.CreateStore(value.value, ret_ptr);
+
+        llvm::Function *MemcpyFunc = llvm::Intrinsic::getDeclaration(
+            &module,
+            llvm::Intrinsic::memcpy,
+            {
+                builder.getPtrTy(),
+                builder.getPtrTy(),
+                builder.getInt64Ty(),
+            });
+
+        builder.CreateCall(MemcpyFunc, {
+                                           ret_ptr,
+                                           value.value,
+                                           llvm::ConstantInt::get(builder.getInt64Ty(), ty.get_type_size(module)),
+                                           llvm::ConstantInt::get(builder.getInt1Ty(), 0),
+
+                                       });
+
+        // llvm::Value *optionalStructField0 = builder.CreateStructGEP(ty.get_type(), ret_ptr, 0, "OptionalStructPtr0");
+        // llvm::Value *optionalStructField1 = builder.CreateStructGEP(ty.get_type(), ret_ptr, 1, "OptionalStructPtr1");
+
+        // Copy the value (i.e., the %string) into the OptionalType.6's first field
+        // builder.CreateStore(value.value, optionalStructField0);
+
+        // Set the "isNone" boolean to false
+        // auto isNone = llvm::ConstantInt::get(builder.getInt1Ty(), 0);
+        // builder.CreateStore(isNone, optionalStructField1);
+        // llvm::Value *structPtr = builder.CreateAlloca(ty.get_type());
+        // auto destField0ptr = builder.CreateStructGEP(ty.get_type(), structPtr, 0, "OptionalStructPtr0");
+
+        // builder.CreateStore(value.value, destField0ptr);
+        // auto destField1ptr = builder.CreateStructGEP(ty.get_type(), structPtr, 1, "OptionalStructPtr1");
+        // auto isNone = llvm::ConstantInt::get(builder.getInt1Ty(), 0);
+        // builder.CreateStore(isNone, destField1ptr);
+
+        // builder.CreateStore(value.value, ret_ptr);
     }
 
     builder.CreateRetVoid();

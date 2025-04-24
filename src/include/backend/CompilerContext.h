@@ -19,6 +19,7 @@ public:
     OptionalType();
     OptionalType(llvm::LLVMContext &context, llvm::IRBuilder<> &builder, llvm::Type *inner);
     llvm::Value *set_loaded_value(llvm::Value *value, llvm::IRBuilder<> &builder);
+    llvm::Value *set_loaded_struct_value(llvm::Function *memcpy, llvm::Value *value, llvm::IRBuilder<> &builder, size_t size);
     llvm::Value *get_value(llvm::IRBuilder<> &builder);
     llvm::Value *get_none(llvm::IRBuilder<> &builder);
     llvm::Type *get_type();
