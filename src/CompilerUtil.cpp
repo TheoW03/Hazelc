@@ -154,6 +154,19 @@ llvm::Type *OptionalType::get_type()
     return this->type;
 }
 
+size_t OptionalType::get_type_size(llvm::Module &module)
+{
+    llvm::DataLayout datalayout(&module);
+    return datalayout.getTypeAllocSize(this->type);
+}
+
+size_t OptionalType::get_inner_size(llvm::Module &module)
+{
+    llvm::DataLayout datalayout(&module);
+
+    return datalayout.getTypeAllocSize(this->inner);
+}
+
 llvm::Value *ValueOrLoad(llvm::IRBuilder<> &builder, llvm::Value *value, llvm::Type *type)
 {
     if (value->getType()->isPointerTy())

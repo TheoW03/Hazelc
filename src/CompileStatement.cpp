@@ -81,7 +81,6 @@ void CompileStatement::Visit(ReturnNode *node)
     llvm::Argument *ret_ptr = f->getArg(1);
     if (program_scope.get_current_function().name.value != "main")
     {
-        value.value = ValueOrLoad(builder, value.value, ty.get_type());
         builder.CreateStore(value.value, ret_ptr);
     }
 

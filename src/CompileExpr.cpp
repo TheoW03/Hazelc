@@ -288,11 +288,11 @@ llvm::Value *CompileExpr::StringMathExpr(llvm::Value *lhs, Tokens op, llvm::Valu
         //    builder.CreateStructGEP(c, rhs, 1, "str1")
         auto dest = builder.CreateAlloca(builder.getInt8Ty(), added_lengths);
 
-        // builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: %s \n"),
-        //    strLhsPtr});
+        builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: %s \n"),
+                                                                   strLhsPtr});
 
-        // builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: %s \n"),
-        //    strLhsPtr});
+        builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: %s \n"),
+                                                                   strLhsPtr});
 
         builder.CreateCall(snprinft, {
                                          dest,
