@@ -112,27 +112,30 @@ llvm::Value *CompileExpr::StringMath(llvm::Value *lhs, Tokens op, llvm::Value *r
 
 llvm::Value *CompileExpr::StringBoolMath(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
 {
+    auto c = compiler_context.get_string_inner_type();
+    auto strRhsPtr = builder.CreateLoad(builder.getInt8PtrTy(), builder.CreateStructGEP(c, rhs, 0, "strlhsval"));
+    auto strLhsPtr = builder.CreateLoad(builder.getInt8PtrTy(), builder.CreateStructGEP(c, lhs, 0, "strrhsval"));
+    auto streq = compiler_context.CFunctions["strcmp"];
+
+    auto expr = builder.CreateCall(streq, {strLhsPtr, strRhsPtr});
+    builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: %s\n"),
+                                                               strLhsPtr});
+    auto strLhsLen = builder.CreateLoad(builder.getInt64Ty(), builder.CreateStructGEP(c, lhs, 1, "strrhsval"));
+
+    builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: %s \n"),
+                                                               strRhsPtr});
+
+    builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: %d \n"),
+                                                               expr});
     switch (op.type)
     {
     case EQ:
     {
-        auto c = compiler_context.get_string_inner_type();
-        auto strRhsPtr = builder.CreateLoad(builder.getInt8PtrTy(), builder.CreateStructGEP(c, rhs, 0, "strlhsval"));
-        auto strLhsPtr = builder.CreateLoad(builder.getInt8PtrTy(), builder.CreateStructGEP(c, lhs, 0, "strrhsval"));
-        auto streq = compiler_context.CFunctions["strcmp"];
-
-        auto expr = builder.CreateCall(streq, {strLhsPtr, strRhsPtr});
-        builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: %s\n"),
-                                                                   strLhsPtr});
-        auto strLhsLen = builder.CreateLoad(builder.getInt64Ty(), builder.CreateStructGEP(c, lhs, 1, "strrhsval"));
-
-        builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: %s \n"),
-                                                                   strRhsPtr});
-
-        builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: %d \n"),
-                                                                   expr});
-
         return builder.CreateICmp(llvm::ICmpInst::ICMP_EQ, expr, llvm::ConstantInt::get(builder.getInt32Ty(), 0));
+    }
+    case NE:
+    {
+        return builder.CreateICmp(llvm::ICmpInst::ICMP_NE, expr, llvm::ConstantInt::get(builder.getInt32Ty(), 0));
     }
     default:
         break;
