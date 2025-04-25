@@ -94,6 +94,34 @@ TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n, ProgramScope ctx)
         // if (f.)
         // auto c =
     }
+    else if (dynamic_cast<FunctionCallNode *>(c->rhs.get()))
+    {
+        auto d = dynamic_cast<FunctionCallNode *>(c->rhs.get());
+        auto f = ctx.get_function_fast(d->ident);
+        if (dynamic_cast<NativeType *>(f.ret_type.get()))
+        {
+            auto p = dynamic_cast<NativeType *>(f.ret_type.get());
+            if (p->type.type == TokenType::Integer)
+            {
+                return TypeOfExpr::Integer_Type;
+            }
+            else if (p->type.type == TokenType::Decimal)
+            {
+                return TypeOfExpr::Float_Type;
+            }
+            else if (p->type.type == TokenType::string)
+            {
+                return TypeOfExpr::String_Type;
+            }
+            else if (p->type.type == TokenType::boolean)
+            {
+                return TypeOfExpr::Boolean_Type;
+            }
+        }
+        return TypeOfExpr::Void_Type;
+        // if (f.)
+        // auto c =
+    }
 
     if (dynamic_cast<ExprNode *>(c->lhs.get()))
         return get_expr_type(c->lhs, ctx);

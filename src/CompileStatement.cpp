@@ -79,24 +79,6 @@ void CompileStatement::Visit(ReturnNode *node)
     this->block = value.block;
     auto f = program_scope.get_current_function().function;
     llvm::Argument *ret_ptr = f->getArg(1);
-
-    if (program_scope.get_current_function().name.value == "main")
-    {
-        auto string_type = compiler_context.get_string_type();
-        auto string_inner_type = compiler_context.get_string_inner_type();
-
-        auto lhs_val = builder.CreateStructGEP(string_type.type, value.value, 0, "str_res");
-        auto str_lhs_test = builder.CreateLoad(builder.getInt8PtrTy(), builder.CreateStructGEP(string_inner_type, lhs_val, 0));
-
-        // builder.CreateCall(compiler_context.CFunctions["printf"], {builder
-        //    .CreateGlobalString("[HAZELC DEBUG]: the result after calling g from the main function, you are in main: %s \n"),
-        //    str_lhs_test});
-        // auto str_lhs_len = builder.CreateLoad(builder.getInt64Ty(), builder.CreateStructGEP(string_inner_type, lhs_val, 1));
-
-        // builder.CreateCall(compiler_context.CFunctions["printf"], {builder
-        //    .CreateGlobalString("[HAZELC DEBUG]: the resultant length from g: %ld \n"),
-        //    str_lhs_len});
-    }
     if (program_scope.get_current_function().name.value != "main")
     {
 
