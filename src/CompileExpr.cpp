@@ -187,10 +187,10 @@ llvm::Value *CompileExpr::FloatBool(llvm::Value *lhs, Tokens op, llvm::Value *rh
 
 llvm::Value *CompileExpr::BoolBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
 {
-    auto integer_type = compiler_context.get_boolean_type();
+
     auto BoolType = compiler_context.get_boolean_type();
-    auto lhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(integer_type.type, lhs, 0, "int_lhs"));
-    auto rhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(integer_type.type, rhs, 0, "int_rhs"));
+    auto lhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(BoolType.type, lhs, 0, "int_lhs"));
+    auto rhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(BoolType.type, rhs, 0, "int_rhs"));
     auto math = BoolIntMathExpr(lhs_val, op, rhs_val);
     return BoolType.set_loaded_value(math, builder);
 }
@@ -237,6 +237,7 @@ llvm::Value *CompileExpr::FloatMathExpression(llvm::Value *lhs, Tokens op, llvm:
 
 llvm::Value *CompileExpr::BoolIntMathExpr(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
 {
+
     switch (op.type)
     {
     case EQ:
@@ -251,6 +252,10 @@ llvm::Value *CompileExpr::BoolIntMathExpr(llvm::Value *lhs, Tokens op, llvm::Val
         return builder.CreateICmp(llvm::CmpInst::ICMP_SGE, lhs, rhs, "GE");
     case NE:
         return builder.CreateICmp(llvm::CmpInst::ICMP_NE, lhs, rhs, "NE");
+    case And:
+        return builder.CreateAnd(lhs, rhs);
+    case Or:
+        return builder.CreateOr(lhs, rhs);
     default:
         std::cout << "semantic anaylsis bug perhaps in boolean \"" << op.value << "\"" << std::endl;
         exit(EXIT_FAILURE);
@@ -386,11 +391,8 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         {
             auto condition = Expression(condition_stmnt->branches[i]->condition).value;
             llvm::BasicBlock *ifTrue = llvm::BasicBlock::Create(context, "if.true", program.get_current_function().function);
-
-            //
             condition = builder.CreateLoad(builder.getInt1Ty(),
                                            builder.CreateStructGEP(compiler_context.get_boolean_type().type, condition, 0, "str2"));
-
             if (i < condition_stmnt->branches.size() - 1)
             {
                 llvm::BasicBlock *ElsTrue = llvm::BasicBlock::Create(context, "else.true", program.get_current_function().function);
@@ -499,12 +501,14 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
     }
     else if (dynamic_cast<ExprNode *>(node.get()))
     {
+
         auto c = dynamic_cast<ExprNode *>(node.get());
 
         auto lhs = Expression(c->lhs);
 
         auto rhs = Expression(c->rhs);
         auto get_type = get_expr_type(node, this->program);
+
         switch (get_type)
         {
         case Integer_Type:
@@ -513,6 +517,9 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
             return {this->block, FloatMath(lhs.value, c->operation, rhs.value)};
         case String_Type:
             return {this->block, StringMath(lhs.value, c->operation, rhs.value)};
+        case Boolean_Type:
+            return {this->block, BoolBool(lhs.value, c->operation, rhs.value)};
+
         default:
             break;
         }
@@ -532,9 +539,6 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
             return {this->block, FloatBool(lhs.value, c->op, rhs.value)};
         case String_Type:
             return {this->block, StringBoolMathExpr(lhs.value, c->op, rhs.value)};
-
-        // case None_Type:
-        //     return {this->block, BoolBool(lhs.value, c->op, rhs.value)};
         case Boolean_Type:
             return {this->block, BoolBool(lhs.value, c->op, rhs.value)};
         default:
