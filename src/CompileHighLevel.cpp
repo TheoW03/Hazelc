@@ -24,6 +24,11 @@ CompileHighLevel::CompileHighLevel(llvm::Module &module, llvm::IRBuilder<> &buil
     auto streq_func = llvm::Function::Create(
         streq_type, llvm::Function::ExternalLinkage, "strcmp", module);
     CFunctions.insert(std::make_pair("strcmp", streq_func));
+
+    auto maloc_type = llvm::FunctionType::get(builder.getInt8PtrTy(), {builder.getInt64Ty()}, false);
+    auto maloc_func = llvm::Function::Create(
+        maloc_type, llvm::Function::ExternalLinkage, "malloc", module);
+    CFunctions.insert(std::make_pair("malloc", maloc_func));
     std::map<TokenType, OptionalType> types;
     // types.insert(std::make_pair(TokenType::Integer, OptionalType()));
     std::map<TokenType, OptionalType> NativeTypes;

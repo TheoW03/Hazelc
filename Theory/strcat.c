@@ -23,9 +23,8 @@ int main(int argc, char const *argv[])
     char *str2 = " World";
     struct String a = {"hello", 6};
     struct String b = {" world", 7};
-    char buffer[a.size + b.size]; // Allocate space for 20 chars
+    char *buffer = (char *)malloc(b.size + a.size);
     snprintf(buffer, b.size + a.size, "%s%s", a.str, b.str);
-
     struct String c = {buffer, a.size + b.size};
     printf("%s \n", c.str);
     return 0;
