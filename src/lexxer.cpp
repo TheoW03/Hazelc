@@ -287,6 +287,12 @@ void is_number(Lexxer_Context &ctx, char value)
         // ctx.buffer += value;
         ctx.state = 4;
     }
+    else if (value == '/')
+    {
+        is_token(ctx);
+        ctx.state = 3;
+        ctx.buffer += value;
+    }
     else if (value == '+' || value == '*' || value == '-' || value == '/' || value == '%' || value == '(' || value == ')' || value == '!')
     {
 
