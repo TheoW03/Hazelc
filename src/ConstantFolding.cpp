@@ -30,12 +30,23 @@ void ConstantFoldingVisitor::Visit(ReturnNode *node)
 {
     FoldExpr expr;
     node->Expr = expr.fold_expr(node->Expr);
+    node->Expr->Accept(this);
 }
 
 void ConstantFoldingVisitor::Visit(FunctionCallNode *node)
 {
+    for (int i = 0; i < node->params.size(); i++)
+    {
+        FoldExpr expr;
+        node->params[i] = expr.fold_expr(node->params[i]);
+    }
 }
 
+void ConstantFoldingVisitor::Visit(ExprNode *node)
+{
+    node->lhs->Accept(this);
+    node->rhs->Accept(this);
+}
 void ConstantFoldingVisitor::Visit(ProgramNode *node)
 {
     for (const auto &[key, current_module] : node->avail_modules)
