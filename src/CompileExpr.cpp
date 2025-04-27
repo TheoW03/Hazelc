@@ -302,14 +302,15 @@ llvm::Value *CompileExpr::StringMathExpr(llvm::Value *lhs, Tokens op, llvm::Valu
         // builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: str-right-hand: %s \n"),
         //    strRhsPtr});
 
-        // rn to do concat we use memcpy from the C stdlib
+        // rn to do concat we use llvm.memcpy
         // defined as
         // void* memcpy(void* dest, void* src, size_t size);
-        // we malloc a buffer
-        // then we memcpy the first string into that buffer
-        // and the 2nd string into the buffer
-        // stole this from my other compiler project and the structure :P Very hacky efficient way tbh
-
+        // malloc defined as
+        // void *malloc(size_t bytes)
+        // we use malloc to allocate a buffer
+        // we then use the llvm.memcpy the first half to the buffer
+        // increment buffer
+        // and llvm.memcpy the 2nd half to the buffer
         auto memcpy = compiler_context.CFunctions["memcpy"];
 
         auto c = compiler_context.get_string_inner_type();
@@ -319,12 +320,9 @@ llvm::Value *CompileExpr::StringMathExpr(llvm::Value *lhs, Tokens op, llvm::Valu
         auto lenthlhs = builder.CreateLoad(builder.getInt64Ty(), builder.CreateStructGEP(c, lhs, 1, "strlenlhs"));
         auto lenthrhs = builder.CreateLoad(builder.getInt64Ty(), builder.CreateStructGEP(c, rhs, 1, "strlnrhs"));
         auto added_lengths = builder.CreateAdd(lenthlhs, lenthrhs);
-
-        // auto f = builder.CreateInBoundsGEP(dest->getType(), dest, builder.getInt32(0));
-
         auto dest = builder.CreateCall(compiler_context.CFunctions["malloc"], {added_lengths});
-        // auto memcpy = compiler_context.CFunctions["memcpy"];
-        builder.CreateCall(memcpy, {dest, strLhsPtr, lenthlhs, builder.getInt1(false)});
+        builder.CreateCall(memcpy, {dest, strLhsPtr,
+                                    lenthlhs, builder.getInt1(false)});
         auto second_dest = builder.CreateInBoundsGEP(builder.getInt8Ty(), dest, {lenthlhs});
 
         builder.CreateCall(memcpy, {second_dest, strRhsPtr,
@@ -343,8 +341,6 @@ llvm::Value *CompileExpr::StringMathExpr(llvm::Value *lhs, Tokens op, llvm::Valu
     }
     }
     // DEBUG STRCAT:
-
-    // return destStructPtr;
 }
 
 llvm::Value *CompileExpr::StringBoolMathExpr(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
