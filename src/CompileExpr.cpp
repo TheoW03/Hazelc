@@ -295,13 +295,21 @@ llvm::Value *CompileExpr::StringMathExpr(llvm::Value *lhs, Tokens op, llvm::Valu
     {
     case Concation:
     {
+        // DEBUG PRINTS
+        //  builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: str-left-hand: %s \n"),
+        //     strLhsPtr});
+
+        // builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: str-right-hand: %s \n"),
+        //    strRhsPtr});
 
         // rn to do concat we use memcpy from the C stdlib
         // defined as
         // void* memcpy(void* dest, void* src, size_t size);
-        // stole this from my other compiler project and the structure :P very handy trik :P
+        // we malloc a buffer
+        // then we memcpy the first string into that buffer
+        // and the 2nd string into the buffer
+        // stole this from my other compiler project and the structure :P Very hacky efficient way tbh
 
-        auto fmt = builder.CreateGlobalString("%s%s");
         auto memcpy = compiler_context.CFunctions["memcpy"];
         auto c = compiler_context.get_string_inner_type();
 
@@ -310,31 +318,20 @@ llvm::Value *CompileExpr::StringMathExpr(llvm::Value *lhs, Tokens op, llvm::Valu
         auto lenthlhs = builder.CreateLoad(builder.getInt64Ty(), builder.CreateStructGEP(c, lhs, 1, "strlenlhs"));
         auto lenthrhs = builder.CreateLoad(builder.getInt64Ty(), builder.CreateStructGEP(c, rhs, 1, "strlnrhs"));
         auto added_lengths = builder.CreateAdd(lenthlhs, lenthrhs);
-        // added_lengths = builder.CreateAdd(added_lengths, llvm::ConstantInt::get(builder.getInt64Ty(), 1));
-        //    builder.CreateStructGEP(c, rhs, 1, "str1")
-        // auto dest = builder.CreateAlloca(builder.getInt8Ty(), added_lengths);
-
-        auto dest = builder.CreateCall(compiler_context.CFunctions["malloc"], {added_lengths});
 
         // auto f = builder.CreateInBoundsGEP(dest->getType(), dest, builder.getInt32(0));
 
-        // auto buffer = builder.CreateAlloca(builder.getInt8Ty(), added_lengths);
-        // builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: str-left-hand: %s \n"),
-        //    strLhsPtr});
+        auto dest = builder.CreateCall(compiler_context.CFunctions["malloc"], {added_lengths});
 
-        // builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: str-right-hand: %s \n"),
-        //    strRhsPtr});
         dest = builder.CreateCall(memcpy, {dest, strLhsPtr, lenthlhs});
-        auto d = builder.CreateInBoundsGEP(builder.getInt8Ty(), dest, {lenthlhs});
+        auto second_dest = builder.CreateInBoundsGEP(builder.getInt8Ty(), dest, {lenthlhs});
 
-        builder.CreateCall(memcpy, {d, strRhsPtr,
+        builder.CreateCall(memcpy, {second_dest, strRhsPtr,
                                     lenthrhs});
         // builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: concat result: %s \n"),
         //    dest});
 
-        llvm::Value *destStructPtr = builder.CreateAlloca(c);
-
-        return this->CompileStr(dest, added_lengths, destStructPtr);
+        return this->CompileStr(dest, added_lengths, builder.CreateAlloca(c));
     }
     default:
     {
