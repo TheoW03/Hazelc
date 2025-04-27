@@ -328,9 +328,9 @@ llvm::Value *CompileExpr::StringMathExpr(llvm::Value *lhs, Tokens op, llvm::Valu
         auto d = builder.CreateInBoundsGEP(builder.getInt8Ty(), dest, {lenthlhs});
 
         builder.CreateCall(memcpy, {d, strRhsPtr,
-                                    added_lengths});
+                                    lenthrhs});
         // builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: concat result: %s \n"),
-        //                                                            dest});
+        //    dest});
 
         llvm::Value *destStructPtr = builder.CreateAlloca(c);
 
@@ -452,7 +452,7 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         auto c = dynamic_cast<StringNode *>(node.get());
 
         auto a = compiler_context.get_string_inner_type();
-        auto str = builder.CreateGlobalString(c->value);
+        auto str = builder.CreateGlobalString(c->value, c->value + " contents");
         auto length = llvm::ConstantInt::get(builder.getInt64Ty(), c->value.size());
         llvm::Value *structPtr = builder.CreateAlloca(a);
         auto value = this->CompileStr(str, length, structPtr);

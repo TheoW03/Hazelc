@@ -33,7 +33,7 @@ CompileHighLevel::CompileHighLevel(llvm::Module &module, llvm::IRBuilder<> &buil
                                                    llvm::FunctionType::get(builder.getInt8PtrTy(),
                                                                            {builder.getInt8PtrTy(),
                                                                             builder.getInt8PtrTy(),
-                                                                            builder.getInt32Ty()},
+                                                                            builder.getInt64Ty()},
                                                                            false),
                                                    llvm::Function::ExternalLinkage, "memcpy", module)));
     std::map<TokenType, OptionalType> types;
