@@ -82,22 +82,22 @@ void CompileStatement::Visit(ReturnNode *node)
     if (program_scope.get_current_function().name.value != "main")
     {
 
-        llvm::Function *MemcpyFunc = llvm::Intrinsic::getDeclaration(
-            &module,
-            llvm::Intrinsic::memcpy,
-            {
-                builder.getPtrTy(),
-                builder.getPtrTy(),
-                builder.getInt64Ty(),
-            });
+        // llvm::Function *MemcpyFunc = llvm::Intrinsic::getDeclaration(
+        //     &module,
+        //     llvm::Intrinsic::memcpy,
+        //     {
+        //         builder.getPtrTy(),
+        //         builder.getPtrTy(),
+        //         builder.getInt64Ty(),
+        //     });
 
-        builder.CreateCall(MemcpyFunc, {
-                                           ret_ptr,
-                                           value.value,
-                                           llvm::ConstantInt::get(builder.getInt64Ty(), ty.get_type_size(module)),
-                                           llvm::ConstantInt::get(builder.getInt1Ty(), 0),
+        builder.CreateCall(compiler_context.CFunctions["memcpy"], {
+                                                                      ret_ptr,
+                                                                      value.value,
+                                                                      llvm::ConstantInt::get(builder.getInt64Ty(), ty.get_type_size(module)),
+                                                                      llvm::ConstantInt::get(builder.getInt1Ty(), 0),
 
-                                       });
+                                                                  });
 
         // llvm::Value *optionalStructField0 = builder.CreateStructGEP(ty.get_type(), ret_ptr, 0, "OptionalStructPtr0");
         // llvm::Value *optionalStructField1 = builder.CreateStructGEP(ty.get_type(), ret_ptr, 1, "OptionalStructPtr1");

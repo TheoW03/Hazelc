@@ -109,21 +109,21 @@ llvm::Value *CompileExpr::StringMath(llvm::Value *lhs, Tokens op, llvm::Value *r
     // builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: concat result after we put it in my string {ptr, i64} struct, you are in the g function: %s \n"),
     // str_lhs_test
     // });
-    llvm::Function *MemcpyFunc = llvm::Intrinsic::getDeclaration(
-        &module,
-        llvm::Intrinsic::memcpy,
-        {
-            builder.getPtrTy(),
-            builder.getPtrTy(),
-            builder.getInt64Ty(),
-        });
+    // llvm::Function *MemcpyFunc = llvm::Intrinsic::getDeclaration(
+    //     &module,
+    //     llvm::Intrinsic::memcpy,
+    //     {
+    //         builder.getPtrTy(),
+    //         builder.getPtrTy(),
+    //         builder.getInt64Ty(),
+    //     });
 
     // return string_type.set_loaded_struct_value(math, builder);
     // return string_type.set_loaded_value(math, builder);
     // auto string
-    auto ret = string_type.set_loaded_struct_value(MemcpyFunc, math, builder, string_type.get_inner_size(module));
+    auto ret = string_type.set_loaded_struct_value(compiler_context.CFunctions["memcpy"], math, builder, string_type.get_inner_size(module));
     lhs_val = builder.CreateStructGEP(string_type.type, ret, 0, "str_res");
-    str_lhs_test = builder.CreateLoad(builder.getInt8PtrTy(), builder.CreateStructGEP(string_inner_type, lhs_val, 0));
+    // str_lhs_test = builder.CreateLoad(builder.getInt8PtrTy(), builder.CreateStructGEP(string_inner_type, lhs_val, 0));
     // builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: concat result after we put it in a different struct, you are in the g function: %s \n"),
     //    str_lhs_test});
     // builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: concat resultant len: %d \n"),
@@ -311,6 +311,7 @@ llvm::Value *CompileExpr::StringMathExpr(llvm::Value *lhs, Tokens op, llvm::Valu
         // stole this from my other compiler project and the structure :P Very hacky efficient way tbh
 
         auto memcpy = compiler_context.CFunctions["memcpy"];
+
         auto c = compiler_context.get_string_inner_type();
 
         auto strRhsPtr = builder.CreateLoad(builder.getInt8PtrTy(), builder.CreateStructGEP(c, rhs, 0, "strlhsval"));
@@ -322,12 +323,14 @@ llvm::Value *CompileExpr::StringMathExpr(llvm::Value *lhs, Tokens op, llvm::Valu
         // auto f = builder.CreateInBoundsGEP(dest->getType(), dest, builder.getInt32(0));
 
         auto dest = builder.CreateCall(compiler_context.CFunctions["malloc"], {added_lengths});
-
-        dest = builder.CreateCall(memcpy, {dest, strLhsPtr, lenthlhs});
+        // auto memcpy = compiler_context.CFunctions["memcpy"];
+        builder.CreateCall(memcpy, {dest, strLhsPtr, lenthlhs, builder.getInt1(false)});
         auto second_dest = builder.CreateInBoundsGEP(builder.getInt8Ty(), dest, {lenthlhs});
 
         builder.CreateCall(memcpy, {second_dest, strRhsPtr,
-                                    lenthrhs});
+                                    lenthrhs, builder.getInt1(false)});
+
+        // DEBUG PRINTS
         // builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: concat result: %s \n"),
         //    dest});
 
@@ -455,15 +458,15 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         auto value = this->CompileStr(str, length, structPtr);
         auto str_optional_type = compiler_context.get_string_type();
         // return {this->block, str_optional_type.set_loaded_value(value, builder)};
-        llvm::Function *MemcpyFunc = llvm::Intrinsic::getDeclaration(
-            &module,
-            llvm::Intrinsic::memcpy,
-            {
-                builder.getPtrTy(),
-                builder.getPtrTy(),
-                builder.getInt64Ty(),
-            });
-        return {this->block, str_optional_type.set_loaded_struct_value(MemcpyFunc, value, builder, str_optional_type.get_inner_size(module))};
+        // llvm::Function *MemcpyFunc = llvm::Intrinsic::getDeclaration(
+        //     &module,
+        //     llvm::Intrinsic::memcpy,
+        //     {
+        //         builder.getPtrTy(),
+        //         builder.getPtrTy(),
+        //         builder.getInt64Ty(),
+        //     });
+        return {this->block, str_optional_type.set_loaded_struct_value(compiler_context.CFunctions["memcpy"], value, builder, str_optional_type.get_inner_size(module))};
     }
     else if (dynamic_cast<FunctionCallNode *>(node.get()))
     {

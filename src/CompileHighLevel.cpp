@@ -29,14 +29,25 @@ CompileHighLevel::CompileHighLevel(llvm::Module &module, llvm::IRBuilder<> &buil
     auto maloc_func = llvm::Function::Create(
         maloc_type, llvm::Function::ExternalLinkage, "malloc", module);
     CFunctions.insert(std::make_pair("malloc", maloc_func));
-    CFunctions.insert(std::make_pair("memcpy", llvm::Function::Create(
-                                                   llvm::FunctionType::get(builder.getInt8PtrTy(),
-                                                                           {builder.getInt8PtrTy(),
-                                                                            builder.getInt8PtrTy(),
-                                                                            builder.getInt64Ty()},
-                                                                           false),
-                                                   llvm::Function::ExternalLinkage, "memcpy", module)));
-    std::map<TokenType, OptionalType> types;
+
+    CFunctions.insert(std::make_pair("memcpy",
+                                     llvm::Intrinsic::getDeclaration(
+                                         &module,
+                                         llvm::Intrinsic::memcpy,
+                                         {
+                                             builder.getPtrTy(),
+                                             builder.getPtrTy(),
+                                             builder.getInt64Ty(),
+                                         })));
+    // CFunctions.insert(std::make_pair("memcpy", llvm::Function::Create(
+    //                                                llvm::FunctionType::get(builder.getInt8PtrTy(),
+    //                                                                        {builder.getInt8PtrTy(),
+    //                                                                         builder.getInt8PtrTy(),
+    //                                                                         builder.getInt64Ty()},
+    //                                                                        false),
+    //                                                llvm::Function::ExternalLinkage, "memcpy", module)));
+    std::map<TokenType, OptionalType>
+        types;
     // types.insert(std::make_pair(TokenType::Integer, OptionalType()));
     std::map<TokenType, OptionalType> NativeTypes;
 
@@ -145,7 +156,6 @@ void CompileHighLevel::Visit(ReturnNode *node)
 
 void CompileHighLevel::Visit(FunctionCallNode *node)
 {
-
     for (int i = 0; i < node->param_types.size(); i++)
     {
         std::vector<std::shared_ptr<ASTNode>> stmnts;
@@ -162,7 +172,6 @@ void CompileHighLevel::Visit(FunctionCallNode *node)
 
 void CompileHighLevel::Visit(ProgramNode *node)
 {
-
     for (const auto &[key, current_module] : node->avail_modules)
     {
         current_module->Accept(this);
@@ -243,7 +252,6 @@ std::tuple<llvm::FunctionType *, std::vector<Thunks>> CompileHighLevel::compile_
 }
 Thunks CompileHighLevel::get_thunk_types(std::shared_ptr<FunctionRefNode> n)
 {
-
     // std::vector<Thunks> thunks;
     // this->string_type = llvm::StructType::create(context, "Thunk");
     auto thunk = llvm::StructType::create(context, "Thunk");
