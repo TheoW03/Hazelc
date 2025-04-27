@@ -29,6 +29,13 @@ CompileHighLevel::CompileHighLevel(llvm::Module &module, llvm::IRBuilder<> &buil
     auto maloc_func = llvm::Function::Create(
         maloc_type, llvm::Function::ExternalLinkage, "malloc", module);
     CFunctions.insert(std::make_pair("malloc", maloc_func));
+    CFunctions.insert(std::make_pair("memcpy", llvm::Function::Create(
+                                                   llvm::FunctionType::get(builder.getInt8PtrTy(),
+                                                                           {builder.getInt8PtrTy(),
+                                                                            builder.getInt8PtrTy(),
+                                                                            builder.getInt32Ty()},
+                                                                           false),
+                                                   llvm::Function::ExternalLinkage, "memcpy", module)));
     std::map<TokenType, OptionalType> types;
     // types.insert(std::make_pair(TokenType::Integer, OptionalType()));
     std::map<TokenType, OptionalType> NativeTypes;
