@@ -90,8 +90,8 @@ llvm::Value *CompileExpr::FloatMath(llvm::Value *lhs, Tokens op, llvm::Value *rh
 {
 
     auto float_type = compiler_context.get_float_type();
-    auto lhs_val = builder.CreateLoad(builder.getDoubleTy(), builder.CreateStructGEP(float_type.type, lhs, 0, "int_lhs"));
-    auto rhs_val = builder.CreateLoad(builder.getDoubleTy(), builder.CreateStructGEP(float_type.type, rhs, 0, "int_rhs"));
+    auto lhs_val = builder.CreateLoad(builder.getDoubleTy(), builder.CreateStructGEP(float_type.type, lhs, 0, "float_lhs"));
+    auto rhs_val = builder.CreateLoad(builder.getDoubleTy(), builder.CreateStructGEP(float_type.type, rhs, 0, "float_rhs"));
     auto math = FloatMathExpression(lhs_val, op, rhs_val);
     return float_type.set_loaded_value(math, builder);
 }
@@ -178,8 +178,8 @@ llvm::Value *CompileExpr::FloatBool(llvm::Value *lhs, Tokens op, llvm::Value *rh
 {
     auto float_type = compiler_context.get_float_type();
     auto BoolType = compiler_context.get_boolean_type();
-    auto lhs_val = builder.CreateLoad(builder.getDoubleTy(), builder.CreateStructGEP(float_type.type, lhs, 0, "int_lhs"));
-    auto rhs_val = builder.CreateLoad(builder.getDoubleTy(), builder.CreateStructGEP(float_type.type, rhs, 0, "int_rhs"));
+    auto lhs_val = builder.CreateLoad(builder.getDoubleTy(), builder.CreateStructGEP(float_type.type, lhs, 0, "float_lhs"));
+    auto rhs_val = builder.CreateLoad(builder.getDoubleTy(), builder.CreateStructGEP(float_type.type, rhs, 0, "float_rhs"));
     auto math = BoolFloatMathExpr(lhs_val, op, rhs_val);
 
     return BoolType.set_loaded_value(math, builder);
@@ -189,8 +189,8 @@ llvm::Value *CompileExpr::BoolBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs
 {
 
     auto BoolType = compiler_context.get_boolean_type();
-    auto lhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(BoolType.type, lhs, 0, "int_lhs"));
-    auto rhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(BoolType.type, rhs, 0, "int_rhs"));
+    auto lhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(BoolType.type, lhs, 0, "bool_lhs"));
+    auto rhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(BoolType.type, rhs, 0, "bool_rhs"));
     auto math = BoolIntMathExpr(lhs_val, op, rhs_val);
     return BoolType.set_loaded_value(math, builder);
 }
@@ -198,8 +198,8 @@ llvm::Value *CompileExpr::NoneBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs
 {
     auto BoolType = compiler_context.get_boolean_type();
 
-    auto lhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(lhs->getType(), lhs, 1, "int_lhs"));
-    auto rhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(rhs->getType(), rhs, 1, "int_rhs"));
+    auto lhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(lhs->getType(), lhs, 1, "lhs"));
+    auto rhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(rhs->getType(), rhs, 1, "rhs"));
     auto math = BoolIntMathExpr(lhs_val, op, rhs_val);
     return BoolType.set_loaded_value(math, builder);
 }
@@ -223,11 +223,11 @@ llvm::Value *CompileExpr::FloatMathExpression(llvm::Value *lhs, Tokens op, llvm:
     case Addition:
         return builder.CreateFAdd(lhs, rhs, "addition");
     case Multiplication:
-        return builder.CreateFMul(lhs, rhs, "addition");
+        return builder.CreateFMul(lhs, rhs, "multiply");
     case Division:
-        return builder.CreateFDiv(lhs, rhs, "addition");
+        return builder.CreateFDiv(lhs, rhs, "division");
     case Subtraction:
-        return builder.CreateFSub(lhs, rhs, "addition");
+        return builder.CreateFSub(lhs, rhs, "subtract");
     default:
         std::cout << "semantic anaylsis bug perhaps" << std::endl;
         exit(EXIT_FAILURE);
@@ -453,16 +453,11 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         llvm::Value *structPtr = builder.CreateAlloca(a);
         auto value = this->CompileStr(str, length, structPtr);
         auto str_optional_type = compiler_context.get_string_type();
-        // return {this->block, str_optional_type.set_loaded_value(value, builder)};
-        // llvm::Function *MemcpyFunc = llvm::Intrinsic::getDeclaration(
-        //     &module,
-        //     llvm::Intrinsic::memcpy,
-        //     {
-        //         builder.getPtrTy(),
-        //         builder.getPtrTy(),
-        //         builder.getInt64Ty(),
-        //     });
-        return {this->block, str_optional_type.set_loaded_struct_value(compiler_context.CFunctions["memcpy"], value, builder, str_optional_type.get_inner_size(module))};
+        return {this->block,
+                str_optional_type
+                    .set_loaded_struct_value(
+                        compiler_context.CFunctions["memcpy"],
+                        value, builder, str_optional_type.get_inner_size(module))};
     }
     else if (dynamic_cast<FunctionCallNode *>(node.get()))
     {

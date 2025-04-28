@@ -181,10 +181,10 @@ llvm::Value *OptionalType::set_loaded_value(llvm::Value *value, llvm::IRBuilder<
 {
 
     llvm::Value *structPtr = builder.CreateAlloca(this->type);
-    auto destField0ptr = builder.CreateStructGEP(this->type, structPtr, 0, "OptionalStructPtr0");
+    auto destField0ptr = builder.CreateStructGEP(this->type, structPtr, 0, "OptionalStructPtr0.Value");
 
     builder.CreateStore(value, destField0ptr);
-    auto destField1ptr = builder.CreateStructGEP(this->type, structPtr, 1, "OptionalStructPtr1");
+    auto destField1ptr = builder.CreateStructGEP(this->type, structPtr, 1, "OptionalStructPtr1.isNone");
     auto isNone = llvm::ConstantInt::get(builder.getInt1Ty(), 0);
     builder.CreateStore(isNone, destField1ptr);
     return structPtr;
@@ -193,7 +193,7 @@ llvm::Value *OptionalType::set_loaded_value(llvm::Value *value, llvm::IRBuilder<
 llvm::Value *OptionalType::set_loaded_struct_value(llvm::Function *memcpy, llvm::Value *value, llvm::IRBuilder<> &builder, size_t size)
 {
     llvm::Value *structPtr = builder.CreateAlloca(this->type);
-    auto destField0ptr = builder.CreateStructGEP(this->type, structPtr, 0, "OptionalStructPtr0");
+    auto destField0ptr = builder.CreateStructGEP(this->type, structPtr, 0, "OptionalStructPtr0.Value");
     builder.CreateCall(memcpy, {
                                    destField0ptr,
                                    value,
@@ -202,7 +202,7 @@ llvm::Value *OptionalType::set_loaded_struct_value(llvm::Function *memcpy, llvm:
 
                                });
     auto isNone = llvm::ConstantInt::get(builder.getInt1Ty(), 0);
-    auto destField1ptr = builder.CreateStructGEP(this->type, structPtr, 1, "OptionalStructPtr1");
+    auto destField1ptr = builder.CreateStructGEP(this->type, structPtr, 1, "OptionalStructPtr1.isNone");
     builder.CreateStore(isNone, destField1ptr);
     return structPtr;
 }
