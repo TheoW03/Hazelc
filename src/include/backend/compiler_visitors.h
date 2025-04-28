@@ -98,6 +98,7 @@ private:
     llvm::Value *NoneBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
     ValueStruct CompileBranch(std::vector<std::shared_ptr<ASTNode>> stmnts);
 
+    ValueStruct CompileConditional(ConditionalNode *codnition_stmnt);
     // PhiNodeStruct HandleConditional(std::shared_ptr<ASTNode> node);
 
 public:

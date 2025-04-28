@@ -23,6 +23,8 @@ public:
     llvm::Value *get_value(llvm::IRBuilder<> &builder);
     llvm::Value *get_none(llvm::IRBuilder<> &builder);
     llvm::Type *get_type();
+
+    llvm::Value *get_inner_value(llvm::IRBuilder<> &builder, llvm::Value *value, bool load);
     size_t get_type_size(llvm::Module &module);
     size_t get_inner_size(llvm::Module &module);
 };
