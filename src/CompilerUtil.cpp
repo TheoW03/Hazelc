@@ -226,6 +226,15 @@ llvm::Type *OptionalType::get_type()
 {
     return this->type;
 }
+llvm::Value *OptionalType::get_inner_value(llvm::IRBuilder<> &builder, llvm::Value *value, bool load)
+{
+    auto v = builder.CreateStructGEP(this->type, value, 0, "getting_inner_value");
+    if (load)
+    {
+        return builder.CreateLoad(inner, v, "get inner and load");
+    }
+    return v;
+}
 
 size_t OptionalType::get_type_size(llvm::Module &module)
 {
