@@ -68,6 +68,7 @@ CompileHighLevel::CompileHighLevel(llvm::Module &module, llvm::IRBuilder<> &buil
 
     this->params = llvm::StructType::create(context, "params");
     this->compiler_context = CompilerContext(CFunctions, NativeTypes, string_type);
+    // builder.CreateMemCpy()
 }
 
 void CompileHighLevel::Visit(ASTNode *node)
@@ -243,7 +244,7 @@ std::tuple<llvm::FunctionType *, std::vector<Thunks>> CompileHighLevel::compile_
     llvm::FunctionType *functype = llvm::FunctionType::get(
         builder.getVoidTy(),
         {
-            params,
+            llvm::PointerType::get(params, 0),
             llvm::PointerType::get(retty, 0),
         },
         false);

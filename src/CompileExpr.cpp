@@ -74,8 +74,11 @@ llvm::Value *CompileExpr::IntMathExpression(llvm::Value *lhs, Tokens op, llvm::V
 llvm::Value *CompileExpr::IntegerMath(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
 {
     auto integer_type = compiler_context.get_integer_type();
-    auto lhs_val = builder.CreateLoad(builder.getInt64Ty(), builder.CreateStructGEP(integer_type.type, lhs, 0, "int_lhs"));
-    auto rhs_val = builder.CreateLoad(builder.getInt64Ty(), builder.CreateStructGEP(integer_type.type, rhs, 0, "int_rhs"));
+    // auto lhs_val = builder.CreateLoad(builder.getInt64Ty(), builder.CreateStructGEP(integer_type.type, lhs, 0, "int_lhs"));
+    // auto rhs_val = builder.CreateLoad(builder.getInt64Ty(), builder.CreateStructGEP(integer_type.type, rhs, 0, "int_rhs"));
+    auto lhs_val = integer_type.get_inner_value(builder, lhs, true);
+    auto rhs_val = integer_type.get_inner_value(builder, rhs, true);
+
     // builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: %d \n"),
     //    rhs_val});
 
@@ -90,8 +93,11 @@ llvm::Value *CompileExpr::FloatMath(llvm::Value *lhs, Tokens op, llvm::Value *rh
 {
 
     auto float_type = compiler_context.get_float_type();
-    auto lhs_val = builder.CreateLoad(builder.getDoubleTy(), builder.CreateStructGEP(float_type.type, lhs, 0, "float_lhs"));
-    auto rhs_val = builder.CreateLoad(builder.getDoubleTy(), builder.CreateStructGEP(float_type.type, rhs, 0, "float_rhs"));
+
+    auto lhs_val = float_type.get_inner_value(builder, lhs, true);
+    auto rhs_val = float_type.get_inner_value(builder, rhs, true);
+    // auto lhs_val = builder.CreateLoad(builder.getDoubleTy(), builder.CreateStructGEP(float_type.type, lhs, 0, "float_lhs"));
+    // auto rhs_val = builder.CreateLoad(builder.getDoubleTy(), builder.CreateStructGEP(float_type.type, rhs, 0, "float_rhs"));
     auto math = FloatMathExpression(lhs_val, op, rhs_val);
     return float_type.set_loaded_value(math, builder);
 }
@@ -101,39 +107,32 @@ llvm::Value *CompileExpr::StringMath(llvm::Value *lhs, Tokens op, llvm::Value *r
     auto string_type = compiler_context.get_string_type();
     auto string_inner_type = compiler_context.get_string_inner_type();
 
-    auto lhs_val = builder.CreateStructGEP(string_type.type, lhs, 0, "str_lhs");
-    auto rhs_val = builder.CreateStructGEP(string_type.type, rhs, 0, "str_rhs");
+    auto lhs_val = string_type.get_inner_value(builder, lhs, false);
+    auto rhs_val = string_type.get_inner_value(builder, rhs, false);
+    // auto lhs_val = builder.CreateStructGEP(string_type.type, lhs, 0, "str_lhs");
+    // auto rhs_val = builder.CreateStructGEP(string_type.type, rhs, 0, "str_rhs");
     auto math = StringMathExpr(lhs_val, op, rhs_val);
-
-    auto str_lhs_test = builder.CreateLoad(builder.getInt8PtrTy(), builder.CreateStructGEP(string_inner_type, math, 0));
-    // builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: concat result after we put it in my string {ptr, i64} struct, you are in the g function: %s \n"),
-    // str_lhs_test
-    // });
-    // llvm::Function *MemcpyFunc = llvm::Intrinsic::getDeclaration(
-    //     &module,
-    //     llvm::Intrinsic::memcpy,
-    //     {
-    //         builder.getPtrTy(),
-    //         builder.getPtrTy(),
-    //         builder.getInt64Ty(),
-    //     });
-
-    // return string_type.set_loaded_struct_value(math, builder);
-    // return string_type.set_loaded_value(math, builder);
-    // auto string
     auto ret = string_type.set_loaded_struct_value(compiler_context.CFunctions["memcpy"], math, builder, string_type.get_inner_size(module));
-    lhs_val = builder.CreateStructGEP(string_type.type, ret, 0, "str_res");
+    return ret;
+
+    // debug print
+    //  auto str_lhs_test = builder.CreateLoad(builder.getInt8PtrTy(), builder.CreateStructGEP(string_inner_type, math, 0));
+    //  return string_type.set_loaded_struct_value(math, builder);
+    //  return string_type.set_loaded_value(math, builder);
+    //  auto string
+
+    // lhs_val = builder.CreateStructGEP(string_type.type, ret, 0, "str_res");
     // str_lhs_test = builder.CreateLoad(builder.getInt8PtrTy(), builder.CreateStructGEP(string_inner_type, lhs_val, 0));
     // builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: concat result after we put it in a different struct, you are in the g function: %s \n"),
     //    str_lhs_test});
     // builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: concat resultant len: %d \n"),
     //    builder.CreateLoad(builder.getInt64Ty(), builder.CreateStructGEP(string_inner_type, lhs_val, 1))});
-    return ret;
 }
 
 llvm::Value *CompileExpr::StringBoolMath(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
 {
     auto c = compiler_context.get_string_inner_type();
+
     auto strRhsPtr = builder.CreateLoad(builder.getInt8PtrTy(), builder.CreateStructGEP(c, rhs, 0, "strrhsval"));
     auto strLhsPtr = builder.CreateLoad(builder.getInt8PtrTy(), builder.CreateStructGEP(c, lhs, 0, "strlhsval"));
     auto streq = compiler_context.CFunctions["strcmp"];
@@ -168,8 +167,10 @@ llvm::Value *CompileExpr::IntegerBool(llvm::Value *lhs, Tokens op, llvm::Value *
 {
     auto integer_type = compiler_context.get_integer_type();
     auto BoolType = compiler_context.get_boolean_type();
-    auto lhs_val = builder.CreateLoad(builder.getInt64Ty(), builder.CreateStructGEP(integer_type.type, lhs, 0, "int_lhs"));
-    auto rhs_val = builder.CreateLoad(builder.getInt64Ty(), builder.CreateStructGEP(integer_type.type, rhs, 0, "int_rhs"));
+    auto lhs_val = integer_type.get_inner_value(builder, lhs, true);
+    auto rhs_val = integer_type.get_inner_value(builder, rhs, true);
+    // auto lhs_val = builder.CreateLoad(builder.getInt64Ty(), builder.CreateStructGEP(integer_type.type, lhs, 0, "int_lhs"));
+    // auto rhs_val = builder.CreateLoad(builder.getInt64Ty(), builder.CreateStructGEP(integer_type.type, rhs, 0, "int_rhs"));
     auto math = BoolIntMathExpr(lhs_val, op, rhs_val);
     return BoolType.set_loaded_value(math, builder);
 }
@@ -178,8 +179,12 @@ llvm::Value *CompileExpr::FloatBool(llvm::Value *lhs, Tokens op, llvm::Value *rh
 {
     auto float_type = compiler_context.get_float_type();
     auto BoolType = compiler_context.get_boolean_type();
-    auto lhs_val = builder.CreateLoad(builder.getDoubleTy(), builder.CreateStructGEP(float_type.type, lhs, 0, "float_lhs"));
-    auto rhs_val = builder.CreateLoad(builder.getDoubleTy(), builder.CreateStructGEP(float_type.type, rhs, 0, "float_rhs"));
+
+    auto lhs_val = float_type.get_inner_value(builder, lhs, true);
+    auto rhs_val = float_type.get_inner_value(builder, rhs, true);
+
+    // auto lhs_val = builder.CreateLoad(builder.getDoubleTy(), builder.CreateStructGEP(float_type.type, lhs, 0, "float_lhs"));
+    // auto rhs_val = builder.CreateLoad(builder.getDoubleTy(), builder.CreateStructGEP(float_type.type, rhs, 0, "float_rhs"));
     auto math = BoolFloatMathExpr(lhs_val, op, rhs_val);
 
     return BoolType.set_loaded_value(math, builder);
@@ -189,8 +194,11 @@ llvm::Value *CompileExpr::BoolBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs
 {
 
     auto BoolType = compiler_context.get_boolean_type();
-    auto lhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(BoolType.type, lhs, 0, "bool_lhs"));
-    auto rhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(BoolType.type, rhs, 0, "bool_rhs"));
+    // auto lhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(BoolType.type, lhs, 0, "bool_lhs"));
+    // auto rhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(BoolType.type, rhs, 0, "bool_rhs"));
+    auto lhs_val = BoolType.get_inner_value(builder, lhs, true);
+    auto rhs_val = BoolType.get_inner_value(builder, rhs, true);
+
     auto math = BoolIntMathExpr(lhs_val, op, rhs_val);
     return BoolType.set_loaded_value(math, builder);
 }
@@ -214,6 +222,54 @@ ValueStruct CompileExpr::CompileBranch(std::vector<std::shared_ptr<ASTNode>> stm
         }
     }
     return {this->block, nullptr};
+}
+
+ValueStruct CompileExpr::CompileConditional(ConditionalNode *condition_stmnt)
+{
+
+    auto type = compiler_context.get_type(condition_stmnt->type);
+    std::vector<std::tuple<llvm::BasicBlock *, llvm::Value *>> phi_nodes;
+    llvm::BasicBlock *endTrue = llvm::BasicBlock::Create(context, "end.true", program.get_current_function().function);
+    for (int i = 0; i < condition_stmnt->branches.size(); i++)
+    {
+        auto condition = Expression(condition_stmnt->branches[i]->condition).value;
+        llvm::BasicBlock *ifTrue = llvm::BasicBlock::Create(context, "if.true", program.get_current_function().function);
+        condition = builder.CreateLoad(builder.getInt1Ty(),
+                                       builder.CreateStructGEP(compiler_context.get_boolean_type().type, condition, 0, "str2"));
+        if (i < condition_stmnt->branches.size() - 1)
+        {
+            llvm::BasicBlock *ElsTrue = llvm::BasicBlock::Create(context, "else.true", program.get_current_function().function);
+            builder.CreateCondBr(condition, ifTrue, ElsTrue);
+            builder.SetInsertPoint(ifTrue);
+            this->block = ifTrue;
+            auto value = CompileBranch(condition_stmnt->branches[i]->stmnts);
+            // auto loaded_val = ValueOrLoad(builder, value.value, type.get_type());
+
+            phi_nodes.push_back({value.block, value.value});
+            builder.CreateBr(endTrue);
+            builder.SetInsertPoint(ElsTrue);
+        }
+        else
+        {
+            // builder.CreateCondBr(condition, ifTrue, endTrue);
+            builder.CreateBr(ifTrue);
+            builder.SetInsertPoint(ifTrue);
+            this->block = ifTrue;
+            auto value = CompileBranch(condition_stmnt->branches[i]->stmnts);
+            // auto loaded_val = ValueOrLoad(builder, value.value, type.get_type());
+            phi_nodes.push_back({value.block, value.value});
+            builder.CreateBr(endTrue);
+        }
+    }
+    builder.SetInsertPoint(endTrue);
+    this->block = endTrue;
+    llvm::PHINode *phi = builder.CreatePHI(llvm::PointerType::get(type.type, 0), phi_nodes.size(), "iftmp");
+    for (int i = 0; i < phi_nodes.size(); i++)
+    {
+        phi->addIncoming(std::get<1>(phi_nodes[i]), std::get<0>(phi_nodes[i]));
+    }
+    return {endTrue, phi};
+    // return ;
 }
 
 llvm::Value *CompileExpr::FloatMathExpression(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
@@ -311,7 +367,7 @@ llvm::Value *CompileExpr::StringMathExpr(llvm::Value *lhs, Tokens op, llvm::Valu
         // we then use the llvm.memcpy the first half to the buffer
         // increment buffer
         // and llvm.memcpy the 2nd half to the buffer
-        auto memcpy = compiler_context.CFunctions["memcpy"];
+        // auto memcpy = compiler_context.CFunctions["memcpy"];
 
         auto c = compiler_context.get_string_inner_type();
 
@@ -320,13 +376,21 @@ llvm::Value *CompileExpr::StringMathExpr(llvm::Value *lhs, Tokens op, llvm::Valu
         auto lenthlhs = builder.CreateLoad(builder.getInt64Ty(), builder.CreateStructGEP(c, lhs, 1, "strlenlhs"));
         auto lenthrhs = builder.CreateLoad(builder.getInt64Ty(), builder.CreateStructGEP(c, rhs, 1, "strlnrhs"));
         auto added_lengths = builder.CreateAdd(lenthlhs, lenthrhs);
-        auto dest = builder.CreateCall(compiler_context.CFunctions["malloc"], {added_lengths});
-        builder.CreateCall(memcpy, {dest, strLhsPtr,
-                                    lenthlhs, builder.getInt1(false)});
-        auto second_dest = builder.CreateInBoundsGEP(builder.getInt8Ty(), dest, {lenthlhs});
+        // auto dest = builder.BuildArrayMalloc()
+        auto dest = builder
+                        .CreateCall(compiler_context.CFunctions["malloc"], {added_lengths});
 
-        builder.CreateCall(memcpy, {second_dest, strRhsPtr,
-                                    lenthrhs, builder.getInt1(false)});
+        builder.CreateMemCpy(dest,
+                             strLhsPtr->getAlign(),
+                             strLhsPtr,
+                             strLhsPtr->getAlign(),
+                             lenthlhs);
+        auto second_dest = builder.CreateInBoundsGEP(builder.getInt8Ty(), dest, {lenthlhs});
+        builder.CreateMemCpy(second_dest,
+                             strRhsPtr->getAlign(),
+                             strRhsPtr,
+                             strRhsPtr->getAlign(),
+                             lenthrhs);
 
         // DEBUG PRINTS
         // builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: concat result: %s \n"),
@@ -362,8 +426,7 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
 
         auto c = dynamic_cast<IntegerNode *>(node.get());
         auto get_int_type = compiler_context.get_integer_type();
-        auto number = llvm::ConstantInt::get(builder.getInt64Ty(), c->number);
-
+        auto number = builder.getInt64(c->number);
         return {this->block, get_int_type.set_loaded_value(number, builder)};
     }
     else if (dynamic_cast<NoneNode *>(node.get()))
@@ -374,57 +437,14 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
     else if (dynamic_cast<ConditionalNode *>(node.get()))
     {
         auto condition_stmnt = dynamic_cast<ConditionalNode *>(node.get());
-        // program.get_current_function().function.
-        // llvm::BasicBlock *ifTrue = llvm::BasicBlock::Create(context, "if.true", program.get_current_function().function);
-        auto type = compiler_context.get_type(condition_stmnt->type);
-        std::vector<std::tuple<llvm::BasicBlock *, llvm::Value *>> phi_nodes;
-        llvm::BasicBlock *endTrue = llvm::BasicBlock::Create(context, "end.true", program.get_current_function().function);
-        for (int i = 0; i < condition_stmnt->branches.size(); i++)
-        {
-            auto condition = Expression(condition_stmnt->branches[i]->condition).value;
-            llvm::BasicBlock *ifTrue = llvm::BasicBlock::Create(context, "if.true", program.get_current_function().function);
-            condition = builder.CreateLoad(builder.getInt1Ty(),
-                                           builder.CreateStructGEP(compiler_context.get_boolean_type().type, condition, 0, "str2"));
-            if (i < condition_stmnt->branches.size() - 1)
-            {
-                llvm::BasicBlock *ElsTrue = llvm::BasicBlock::Create(context, "else.true", program.get_current_function().function);
-                builder.CreateCondBr(condition, ifTrue, ElsTrue);
-                builder.SetInsertPoint(ifTrue);
-                this->block = ifTrue;
-                auto value = CompileBranch(condition_stmnt->branches[i]->stmnts);
-                // auto loaded_val = ValueOrLoad(builder, value.value, type.get_type());
-
-                phi_nodes.push_back({value.block, value.value});
-                builder.CreateBr(endTrue);
-                builder.SetInsertPoint(ElsTrue);
-            }
-            else
-            {
-                // builder.CreateCondBr(condition, ifTrue, endTrue);
-                builder.CreateBr(ifTrue);
-                builder.SetInsertPoint(ifTrue);
-                this->block = ifTrue;
-                auto value = CompileBranch(condition_stmnt->branches[i]->stmnts);
-                // auto loaded_val = ValueOrLoad(builder, value.value, type.get_type());
-                phi_nodes.push_back({value.block, value.value});
-                builder.CreateBr(endTrue);
-            }
-        }
-        builder.SetInsertPoint(endTrue);
-        this->block = endTrue;
-        llvm::PHINode *phi = builder.CreatePHI(llvm::PointerType::get(type.type, 0), phi_nodes.size(), "iftmp");
-        for (int i = 0; i < phi_nodes.size(); i++)
-        {
-            phi->addIncoming(std::get<1>(phi_nodes[i]), std::get<0>(phi_nodes[i]));
-        }
-        return {endTrue, phi};
+        return CompileConditional(condition_stmnt);
     }
     else if (dynamic_cast<CharNode *>(node.get()))
     {
 
         auto c = dynamic_cast<CharNode *>(node.get());
         auto char_type = compiler_context.get_byte_type();
-        auto value = llvm::ConstantInt::get(llvm::Type::getInt8Ty(context), c->value.value[0]);
+        auto value = builder.getInt8(c->value.value[0]);
 
         return {this->block, char_type.set_loaded_value(value, builder)};
     }
@@ -449,7 +469,8 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
 
         auto a = compiler_context.get_string_inner_type();
         auto str = builder.CreateGlobalString(c->value, c->value + " contents");
-        auto length = llvm::ConstantInt::get(builder.getInt64Ty(), c->value.size());
+        // auto length = llvm::ConstantInt::get(builder.getInt64Ty(), c->value.size());
+        auto length = builder.getInt64(c->value.size());
         llvm::Value *structPtr = builder.CreateAlloca(a);
         auto value = this->CompileStr(str, length, structPtr);
         auto str_optional_type = compiler_context.get_string_type();
@@ -470,8 +491,7 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         llvm::Value *param_ptr = builder.CreateAlloca(this->params);
         OptionalType type_of_func = compiler_context.get_type(fu.ret_type);
         auto retTy = builder.CreateAlloca(type_of_func.get_type());
-        // auto func =
-        auto function_call = builder.CreateCall(fu.function, {ValueOrLoad(builder, param_ptr, this->params), retTy});
+        auto function_call = builder.CreateCall(fu.function, {param_ptr, retTy});
         function_call->addParamAttr(1, llvm::Attribute::getWithStructRetType(context, type_of_func.get_type()));
         // auto val = builder.CreateStructGEP(type_of_func.type, function_call, 0);
         // val = ValueOrLoad(builder, val, type_of_func.inner);
