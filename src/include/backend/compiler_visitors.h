@@ -15,7 +15,7 @@ private:
 public:
     llvm::Module &module;
     std::vector<llvm::Type *> params_struct;
-    std::vector<std::shared_ptr<ASTNode>> functions;
+    std::vector<std::shared_ptr<FunctionNode>> functions;
     // llvm::StructType *paramType;
     CompilerContext compiler_context;
     std::map<std::string, Function> func_map;

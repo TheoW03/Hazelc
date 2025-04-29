@@ -258,10 +258,10 @@ class Visitor;
 class ModuleNode : public ASTNode
 {
 public:
-    std::vector<std::shared_ptr<ASTNode>> functions;
+    std::vector<std::shared_ptr<FunctionNode>> functions;
     Tokens name;
     std::vector<Tokens> imports;
-    ModuleNode(std::vector<std::shared_ptr<ASTNode>> functions, Tokens name, std::vector<Tokens> imports);
+    ModuleNode(std::vector<std::shared_ptr<FunctionNode>> functions, Tokens name, std::vector<Tokens> imports);
     void Accept(Visitor *v);
     std::string to_string();
 };
@@ -357,6 +357,22 @@ public:
     ConditionalNode();
     ConditionalNode(std::vector<std::shared_ptr<BranchNode>> branches,
                     std::shared_ptr<Type> type);
+    void Accept(Visitor *v) override;
+    std::string to_string();
+};
+#endif
+
+#ifndef BLOCK_NODE_H
+#define BLOCK_NODE_H
+
+class Visitor;
+class BlockNode : public ASTNode
+{
+public:
+    std::vector<std::shared_ptr<FunctionNode>> functions;
+    std::shared_ptr<ASTNode> exit;
+    BlockNode(std::vector<std::shared_ptr<FunctionNode>> functions,
+              std::shared_ptr<ASTNode> exit);
     void Accept(Visitor *v) override;
     std::string to_string();
 };
