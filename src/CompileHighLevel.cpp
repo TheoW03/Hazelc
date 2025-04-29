@@ -96,20 +96,20 @@ void CompileHighLevel::Visit(FunctionNode *node)
     }
     is_global = false;
     this->compiled_functions.push(compiled_function);
-    for (int i = 0; i < node->stmnts.size(); i++)
-    {
-
-        node->stmnts[i]->Accept(this);
-        if (dynamic_cast<FunctionNode *>(node->stmnts[i].get()))
-        {
-            this->functions.push_back(node->stmnts[i]);
-        }
-        else
-        {
-            filter_functions.push_back(node->stmnts[i]);
-        }
-    }
-    node->stmnts = filter_functions;
+    // for (int i = 0; i < node->stmnts.size(); i++)
+    // {
+    node->stmnts->Accept(this);
+    // node->stmnts[i]->Accept(this);
+    // if (dynamic_cast<FunctionNode *>(node->stmnts[i].get()))
+    // {
+    //     this->functions.push_back(node->stmnts[i]);
+    // }
+    // else
+    // {
+    //     filter_functions.push_back(node->stmnts[i]);
+    // }
+    // }
+    // node->stmnts = filter_functions;
 }
 
 void CompileHighLevel::Visit(ModuleNode *node)
@@ -127,20 +127,20 @@ void CompileHighLevel::Visit(ModuleNode *node)
 void CompileHighLevel::Visit(BranchNode *node)
 {
     std::vector<std::shared_ptr<ASTNode>> filter_functions;
-
-    for (int i = 0; i < node->stmnts.size(); i++)
-    {
-        node->stmnts[i]->Accept(this);
-        if (dynamic_cast<FunctionNode *>(node->stmnts[i].get()))
-        {
-            this->functions.push_back(node->stmnts[i]);
-        }
-        else
-        {
-            filter_functions.push_back(node->stmnts[i]);
-        }
-    }
-    node->stmnts = filter_functions;
+    node->stmnts->Accept(this);
+    // for (int i = 0; i < node->stmnts.size(); i++)
+    // {
+    // node->stmnts[i]->Accept(this);
+    // if (dynamic_cast<FunctionNode *>(node->stmnts[i].get()))
+    // {
+    //     this->functions.push_back(node->stmnts[i]);
+    // }
+    // else
+    // {
+    //     filter_functions.push_back(node->stmnts[i]);
+    // }
+    // }
+    // node->stmnts = filter_functions;
 }
 
 void CompileHighLevel::Visit(ConditionalNode *node)
@@ -157,16 +157,15 @@ void CompileHighLevel::Visit(ReturnNode *node)
 
 void CompileHighLevel::Visit(FunctionCallNode *node)
 {
+
     for (int i = 0; i < node->param_types.size(); i++)
     {
-        std::vector<std::shared_ptr<ASTNode>> stmnts;
+        std::vector<std::shared_ptr<FunctionNode>> stmnts;
         auto compiled_function = CompileFunctionHeader(node->param_types[i]);
         compiled_function.isAnonymous = true;
         this->compiled_functions.push(compiled_function);
         auto ret = std::make_shared<ReturnNode>(node->params[i]);
-        stmnts.push_back(ret);
-        auto param_func = std::make_shared<FunctionNode>(false, node->param_types[i], stmnts);
-
+        auto param_func = std::make_shared<FunctionNode>(false, node->param_types[i], std::make_shared<BlockNode>(stmnts, ret));
         this->functions.push_back(param_func);
     }
 }
@@ -196,6 +195,15 @@ void CompileHighLevel::Visit(ExprNode *node)
 {
     node->lhs->Accept(this);
     node->rhs->Accept(this);
+}
+void CompileHighLevel::Visit(BlockNode *node)
+{
+    for (int i = 0; i < node->functions.size(); i++)
+    {
+        node->functions[i]->Accept(this);
+        this->functions.push_back(node->functions[i]);
+    }
+    node->exit->Accept(this);
 }
 
 Function CompileHighLevel::CompileFunctionHeader(std::shared_ptr<FunctionRefNode> n)

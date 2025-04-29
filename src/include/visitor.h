@@ -29,6 +29,7 @@ public:
     virtual void Visit(ExprNode *node);
     virtual void Visit(ConditionalNode *node);
     virtual void Visit(BranchNode *node);
+    virtual void Visit(BlockNode *node);
 
     virtual void Visit(ListNode *node);
 };

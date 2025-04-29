@@ -47,6 +47,7 @@ add_llvm_executable(${EXECUTABLE_NAME}
    src/TreeShake.cpp
    src/SemanticLocalScope.cpp
    src/DeadCodeElim.cpp
+   src/TypeChecker.cpp
 
 )
 

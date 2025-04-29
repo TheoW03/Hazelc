@@ -88,7 +88,7 @@ std::string FunctionRefNode::to_string()
     return std::string();
 }
 
-FunctionNode::FunctionNode(bool can_export, std::shared_ptr<FunctionRefNode> functionHeader, std::vector<std::shared_ptr<ASTNode>> stmnts)
+FunctionNode::FunctionNode(bool can_export, std::shared_ptr<FunctionRefNode> functionHeader, std::shared_ptr<BlockNode> stmnts)
 {
 
     this->can_export = can_export;
@@ -184,7 +184,7 @@ std::string ListType::to_string()
     return std::string();
 }
 
-ModuleNode::ModuleNode(std::vector<std::shared_ptr<ASTNode>> functions, Tokens name, std::vector<Tokens> imports)
+ModuleNode::ModuleNode(std::vector<std::shared_ptr<FunctionNode>> functions, Tokens name, std::vector<Tokens> imports)
 {
     this->functions = functions;
     this->name = name;
@@ -390,11 +390,13 @@ std::string ConditionalNode::to_string()
 {
     return std::string();
 }
+
 BranchNode::BranchNode()
 {
 }
 
-BranchNode::BranchNode(std::shared_ptr<ASTNode> condition, std::vector<std::shared_ptr<ASTNode>> stmnts)
+BranchNode::BranchNode(std::shared_ptr<ASTNode> condition,
+                       std::shared_ptr<BlockNode> stmnts)
 {
     this->stmnts = stmnts;
     this->condition = condition;
@@ -406,6 +408,23 @@ void BranchNode::Accept(Visitor *v)
 }
 
 std::string BranchNode::to_string()
+{
+    return std::string();
+}
+BlockNode::BlockNode()
+{
+}
+BlockNode::BlockNode(std::vector<std::shared_ptr<FunctionNode>> functions, std::shared_ptr<ReturnNode> exit)
+
+{
+    this->functions = functions;
+    this->exit = exit;
+}
+void BlockNode::Accept(Visitor *v)
+{
+    v->Visit(this);
+}
+std::string BlockNode::to_string()
 {
     return std::string();
 }

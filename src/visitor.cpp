@@ -65,6 +65,10 @@ void Visitor::Visit(BranchNode *node)
 {
 }
 
+void Visitor::Visit(BlockNode *node)
+{
+}
+
 void Visitor::Visit(ListNode *node)
 {
 }

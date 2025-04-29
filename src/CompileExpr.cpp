@@ -211,17 +211,9 @@ llvm::Value *CompileExpr::NoneBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs
     auto math = BoolIntMathExpr(lhs_val, op, rhs_val);
     return BoolType.set_loaded_value(math, builder);
 }
-ValueStruct CompileExpr::CompileBranch(std::vector<std::shared_ptr<ASTNode>> stmnts)
+ValueStruct CompileExpr::CompileBranch(std::shared_ptr<BlockNode> b)
 {
-    for (int i = 0; i < stmnts.size(); i++)
-    {
-        if (dynamic_cast<ReturnNode *>(stmnts[i].get()))
-        {
-            auto c = dynamic_cast<ReturnNode *>(stmnts[i].get());
-            return Expression(c->Expr);
-        }
-    }
-    return {this->block, nullptr};
+    return Expression(b->exit->Expr);
 }
 
 ValueStruct CompileExpr::CompileConditional(ConditionalNode *condition_stmnt)
@@ -243,6 +235,7 @@ ValueStruct CompileExpr::CompileConditional(ConditionalNode *condition_stmnt)
             builder.SetInsertPoint(ifTrue);
             this->block = ifTrue;
             auto value = CompileBranch(condition_stmnt->branches[i]->stmnts);
+            // auto value =
             // auto loaded_val = ValueOrLoad(builder, value.value, type.get_type());
 
             phi_nodes.push_back({value.block, value.value});

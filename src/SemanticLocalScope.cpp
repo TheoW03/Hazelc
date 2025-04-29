@@ -137,10 +137,12 @@ void SemanticLocalScopeVisitor::Visit(FunctionNode *node)
         scope[scope.size() - 1].functions.insert(std::make_pair(node->f->params[i]->FunctionName.value,
                                                                 (node)));
     }
-    for (int i = 0; i < node->stmnts.size(); i++)
-    {
-        node->stmnts[i]->Accept(this);
-    }
+
+    // for (int i = 0; i < node->stmnts.size(); i++)
+    // {
+    //     node->stmnts[i]->Accept(this);
+    // }
+    node->stmnts->Accept(this);
     scope.erase(scope.end() - 1);
 }
 void SemanticLocalScopeVisitor::Visit(ModuleNode *node)
@@ -207,9 +209,19 @@ void SemanticLocalScopeVisitor::Visit(BranchNode *node)
     FunctionLocalScope f;
     node->condition->Accept(this);
     scope.push_back(f); // allocates and deallocates scope
-    for (int i = 0; i < node->stmnts.size(); i++)
-    {
-        node->stmnts[i]->Accept(this);
-    }
+    // for (int i = 0; i < node->stmnts.size(); i++)
+    // {
+    //     node->stmnts[i]->Accept(this);
+    // }
+    node->stmnts->Accept(this);
     scope.erase(scope.end() - 1);
+}
+
+void SemanticLocalScopeVisitor::Visit(BlockNode *node)
+{
+    for (int i = 0; i < node->functions.size(); i++)
+    {
+        node->functions[i]->Accept(this);
+    }
+    node->exit->Accept(this);
 }
