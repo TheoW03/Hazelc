@@ -1,4 +1,4 @@
-mould streq
+module streq
 
 let hello : string => "hello "
 
@@ -11,4 +11,4 @@ let recursive_function : integer => recursive_function
 let main : integer =>
 conditional : integer 
     hello_world = "hello world" => recursive_function
-    $defualt => 1
+    $defualt => bar
