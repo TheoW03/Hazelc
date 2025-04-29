@@ -215,9 +215,9 @@ std::optional<std::shared_ptr<ASTNode>> expression(std::vector<Tokens> &tokens)
 
 std::optional<std::shared_ptr<BranchNode>> parse_branch(std::vector<Tokens> &tokens)
 {
-    std::vector<std::shared_ptr<ASTNode>> parse_scope(std::vector<Tokens> & tokens);
+    std::shared_ptr<BlockNode> parse_block(std::vector<Tokens> & tokens);
     auto condition = expr_parse(tokens);
-    auto stmnts = parse_scope(tokens);
+    auto stmnts = parse_block(tokens);
     return std::make_shared<BranchNode>(condition.value(), stmnts);
 }
 std::optional<std::shared_ptr<ConditionalNode>> parse_conditional(std::vector<Tokens> &tokens)
@@ -236,12 +236,10 @@ std::optional<std::shared_ptr<ConditionalNode>> parse_conditional(std::vector<To
     }
     if (match_and_remove(TokenType::Default, tokens).has_value())
     {
-
-        std::vector<std::shared_ptr<ASTNode>> parse_scope(std::vector<Tokens> & tokens);
-
+        std::shared_ptr<BlockNode> parse_block(std::vector<Tokens> & tokens);
         Tokens fake_bool = {"true", TokenType::True, get_next_token(tokens).line_num};
 
-        auto s = parse_scope(tokens);
+        auto s = parse_block(tokens);
         auto condutio = std::make_shared<BooleanConstNode>(fake_bool);
         c.push_back(std::make_shared<BranchNode>(condutio, s));
     }
@@ -367,13 +365,13 @@ std::vector<std::shared_ptr<ASTNode>> parse_scope(std::vector<Tokens> &tokens)
 std::optional<std::shared_ptr<FunctionNode>> parse_function(std::vector<Tokens> &tokens)
 {
     bool is_export = current.value().type == TokenType::Export;
-
+    std::shared_ptr<BlockNode> parse_block(std::vector<Tokens> & tokens);
     match_and_remove(TokenType::Let, tokens);
     auto func = parse_function_ref(tokens);
     std::vector<std::shared_ptr<ASTNode>> ast;
 
     return std::make_shared<FunctionNode>(is_export, func.value(),
-                                          parse_scope(tokens));
+                                          parse_block(tokens));
 }
 std::optional<std::shared_ptr<ASTNode>> parse_return(std::vector<Tokens> &tokens)
 {
@@ -434,7 +432,7 @@ std::shared_ptr<BlockNode> parse_block(std::vector<Tokens> &tokens)
     std::vector<std::shared_ptr<FunctionNode>> ast;
     // std::vector<std::shared_ptr<ASTNode>>
     std::shared_ptr<ASTNode> exit_ret;
-    if (match_and_remove(TokenType::Indents, tokens))
+    if (match_and_remove(TokenType::Indents, tokens).has_value())
     {
 
         while (!match_and_remove(TokenType::Dedents, tokens).has_value() && get_next_token(tokens).type != TokenType::EndOfFile)
@@ -451,7 +449,7 @@ std::shared_ptr<BlockNode> parse_block(std::vector<Tokens> &tokens)
             {
                 ast.push_back(parse_function(tokens).value());
             }
-            else
+            else if (get_next_token(tokens).type == TokenType::Return)
             {
                 exit_ret = parse_return(tokens).value();
             }

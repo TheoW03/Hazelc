@@ -35,5 +35,6 @@ public:
     void Visit(ExprNode *node) override;
 
     void Visit(ProgramNode *node) override;
+    void Visit(BlockNode *node) override;
 };
 #endif

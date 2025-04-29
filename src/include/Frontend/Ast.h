@@ -165,7 +165,26 @@ public:
         Tokens name,
         std::vector<std::shared_ptr<FunctionRefNode>> params,
         std::shared_ptr<Type> returnType);
-    void Accept(Visitor *v);
+    void Accept(Visitor *v) override;
+    std::string to_string();
+};
+#endif
+
+#ifndef BLOCK_NODE_H
+#define BLOCK_NODE_H
+
+class Visitor;
+class FunctionNode;
+
+class BlockNode : public ASTNode
+{
+public:
+    std::vector<std::shared_ptr<FunctionNode>> functions;
+    std::shared_ptr<ASTNode> exit;
+    BlockNode();
+    BlockNode(std::vector<std::shared_ptr<FunctionNode>> functions,
+              std::shared_ptr<ASTNode> exit);
+    void Accept(Visitor *v) override;
     std::string to_string();
 };
 #endif
@@ -179,12 +198,12 @@ class FunctionNode : public ASTNode
 public:
     FastLookup ident;
     std::shared_ptr<FunctionRefNode> f;
-    std::vector<std::shared_ptr<ASTNode>> stmnts;
+    std::shared_ptr<BlockNode> stmnts;
     bool can_export;
     FunctionNode(bool can_export,
                  std::shared_ptr<FunctionRefNode> functionHeader,
-                 std::vector<std::shared_ptr<ASTNode>> stmnts);
-    void Accept(Visitor *v);
+                 std::shared_ptr<BlockNode>);
+    void Accept(Visitor *v) override;
     std::string to_string();
 };
 #endif
@@ -219,7 +238,7 @@ public:
     Tokens operation;
     ExprNode(std::shared_ptr<ASTNode> lhs, Tokens operation, std::shared_ptr<ASTNode> rhs);
     std::shared_ptr<ASTNode> fold();
-    void Accept(Visitor *v);
+    void Accept(Visitor *v) override;
     std::string to_string();
 };
 #endif
@@ -232,7 +251,7 @@ class NoneNode : public ASTNode
 {
 public:
     NoneNode();
-    void Accept(Visitor *v);
+    void Accept(Visitor *v) override;
     std::string to_string();
 };
 #endif
@@ -262,7 +281,7 @@ public:
     Tokens name;
     std::vector<Tokens> imports;
     ModuleNode(std::vector<std::shared_ptr<FunctionNode>> functions, Tokens name, std::vector<Tokens> imports);
-    void Accept(Visitor *v);
+    void Accept(Visitor *v) override;
     std::string to_string();
 };
 #endif
@@ -279,7 +298,7 @@ public:
     std::map<std::string, std::shared_ptr<ModuleNode>> used_modules;
 
     ProgramNode(std::map<std::string, std::shared_ptr<ModuleNode>> modules);
-    void Accept(Visitor *v);
+    void Accept(Visitor *v) override;
     std::optional<std::shared_ptr<ModuleNode>> getMainModule();
     std::optional<std::shared_ptr<FunctionNode>> getMainFunction();
     std::string to_string();
@@ -295,7 +314,7 @@ class ListNode : public ASTNode
 public:
     std::vector<std::shared_ptr<ASTNode>> values;
     ListNode(std::vector<std::shared_ptr<ASTNode>> values);
-    void Accept(Visitor *v);
+    void Accept(Visitor *v) override;
     std::string to_string();
 };
 #endif
@@ -311,7 +330,7 @@ public:
     StringNode(Tokens value);
     StringNode(std::string value);
 
-    void Accept(Visitor *v);
+    void Accept(Visitor *v) override;
     std::string to_string();
 };
 #endif
@@ -325,7 +344,7 @@ class CharNode : public ASTNode
 public:
     Tokens value;
     CharNode(Tokens value);
-    void Accept(Visitor *v);
+    void Accept(Visitor *v) override;
     std::string to_string();
 };
 #endif
@@ -336,10 +355,10 @@ class Visitor;
 class BranchNode : public ASTNode
 {
 public:
-    BranchNode();
     std::shared_ptr<ASTNode> condition;
-    std::vector<std::shared_ptr<ASTNode>> stmnts;
-    BranchNode(std::shared_ptr<ASTNode> condition, std::vector<std::shared_ptr<ASTNode>> stmnts);
+    std::shared_ptr<BlockNode> stmnts;
+    BranchNode();
+    BranchNode(std::shared_ptr<ASTNode> condition, std::shared_ptr<BlockNode> stmnts);
     void Accept(Visitor *v) override;
     std::string to_string();
 };
@@ -357,22 +376,6 @@ public:
     ConditionalNode();
     ConditionalNode(std::vector<std::shared_ptr<BranchNode>> branches,
                     std::shared_ptr<Type> type);
-    void Accept(Visitor *v) override;
-    std::string to_string();
-};
-#endif
-
-#ifndef BLOCK_NODE_H
-#define BLOCK_NODE_H
-
-class Visitor;
-class BlockNode : public ASTNode
-{
-public:
-    std::vector<std::shared_ptr<FunctionNode>> functions;
-    std::shared_ptr<ASTNode> exit;
-    BlockNode(std::vector<std::shared_ptr<FunctionNode>> functions,
-              std::shared_ptr<ASTNode> exit);
     void Accept(Visitor *v) override;
     std::string to_string();
 };

@@ -14,10 +14,22 @@ void ConstantFoldingVisitor::Visit(ASTNode *node)
 }
 void ConstantFoldingVisitor::Visit(FunctionNode *node)
 {
-    for (int i = 0; i < node->stmnts.size(); i++)
+    node->stmnts->Accept(this);
+    // node->stmnts->exit->Accept(this);
+    // node->stmnts->exit->Accept(this);
+
+    // for (int i = 0; i < node->stmnts.size(); i++)
+    // {
+    //     node->stmnts[i]->Accept(this);
+    // }
+}
+void ConstantFoldingVisitor::Visit(BlockNode *node)
+{
+    for (int i = 0; i < node->functions.size(); i++)
     {
-        node->stmnts[i]->Accept(this);
+        node->functions[i]->Accept(this);
     }
+    node->exit->Accept(this);
 }
 void ConstantFoldingVisitor::Visit(ModuleNode *node)
 {

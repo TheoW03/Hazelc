@@ -85,5 +85,6 @@ public:
 
     void Visit(ConditionalNode *node) override;
     void Visit(BranchNode *node) override;
+    void Visit(BlockNode *node) override;
 };
 #endif

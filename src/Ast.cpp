@@ -88,7 +88,7 @@ std::string FunctionRefNode::to_string()
     return std::string();
 }
 
-FunctionNode::FunctionNode(bool can_export, std::shared_ptr<FunctionRefNode> functionHeader, std::vector<std::shared_ptr<ASTNode>> stmnts)
+FunctionNode::FunctionNode(bool can_export, std::shared_ptr<FunctionRefNode> functionHeader, std::shared_ptr<BlockNode> stmnts)
 {
 
     this->can_export = can_export;
@@ -390,11 +390,13 @@ std::string ConditionalNode::to_string()
 {
     return std::string();
 }
+
 BranchNode::BranchNode()
 {
 }
 
-BranchNode::BranchNode(std::shared_ptr<ASTNode> condition, std::vector<std::shared_ptr<ASTNode>> stmnts)
+BranchNode::BranchNode(std::shared_ptr<ASTNode> condition,
+                       std::shared_ptr<BlockNode> stmnts)
 {
     this->stmnts = stmnts;
     this->condition = condition;
@@ -409,8 +411,11 @@ std::string BranchNode::to_string()
 {
     return std::string();
 }
-
+BlockNode::BlockNode()
+{
+}
 BlockNode::BlockNode(std::vector<std::shared_ptr<FunctionNode>> functions, std::shared_ptr<ASTNode> exit)
+
 {
     this->functions = functions;
     this->exit = exit;

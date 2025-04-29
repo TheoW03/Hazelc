@@ -36,6 +36,7 @@ public:
     void Visit(FunctionCallNode *node) override;
     void Visit(ProgramNode *node) override;
     void Visit(ExprNode *node) override;
+    void Visit(BlockNode *node) override;
 
     Function CompileFunctionHeader(std::shared_ptr<FunctionRefNode> n);
     ProgramScope getProgramScope();
@@ -96,7 +97,7 @@ private:
     llvm::Value *BoolBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
 
     llvm::Value *NoneBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
-    ValueStruct CompileBranch(std::vector<std::shared_ptr<ASTNode>> stmnts);
+    ValueStruct CompileBranch(std::shared_ptr<BlockNode> stmnts);
 
     ValueStruct CompileConditional(ConditionalNode *codnition_stmnt);
     // PhiNodeStruct HandleConditional(std::shared_ptr<ASTNode> node);

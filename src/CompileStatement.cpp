@@ -48,10 +48,11 @@ void CompileStatement::Visit(FunctionNode *node)
         this->block = EntryBlock;
         builder.SetInsertPoint(EntryBlock);
     }
-    for (int i = 0; i < node->stmnts.size(); i++)
-    {
-        node->stmnts[i]->Accept(this);
-    }
+    node->stmnts->exit->Accept(this);
+    // for (int i = 0; i < node->stmnts.size(); i++)
+    // {
+    //     node->stmnts[i]->Accept(this);
+    // }
 }
 
 void CompileStatement::Visit(ModuleNode *node)
