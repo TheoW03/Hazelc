@@ -213,22 +213,7 @@ llvm::Value *CompileExpr::NoneBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs
 }
 ValueStruct CompileExpr::CompileBranch(std::shared_ptr<BlockNode> b)
 {
-    // b->exit->Accept()
-    if (dynamic_cast<ReturnNode *>(b->exit.get()))
-    {
-        auto c = dynamic_cast<ReturnNode *>(b->exit.get());
-        return Expression(c->Expr);
-    }
-
-    // for (int i = 0; i < stmnts.size(); i++)
-    // {
-    //     if (dynamic_cast<ReturnNode *>(stmnts[i].get()))
-    //     {
-    //         auto c = dynamic_cast<ReturnNode *>(stmnts[i].get());
-    //         return Expression(c->Expr);
-    //     }
-    // }
-    return {this->block, nullptr};
+    return Expression(b->exit->Expr);
 }
 
 ValueStruct CompileExpr::CompileConditional(ConditionalNode *condition_stmnt)

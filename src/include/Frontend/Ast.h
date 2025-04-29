@@ -170,6 +170,20 @@ public:
 };
 #endif
 
+#ifndef RETURN_H
+#define RETURN_H
+class Visitor;
+
+class ReturnNode : public ASTNode
+{
+public:
+    std::shared_ptr<ASTNode> Expr;
+    ReturnNode(std::shared_ptr<ASTNode> expr);
+    void Accept(Visitor *v) override;
+    std::string to_string();
+};
+#endif
+
 #ifndef BLOCK_NODE_H
 #define BLOCK_NODE_H
 
@@ -180,10 +194,10 @@ class BlockNode : public ASTNode
 {
 public:
     std::vector<std::shared_ptr<FunctionNode>> functions;
-    std::shared_ptr<ASTNode> exit;
+    std::shared_ptr<ReturnNode> exit;
     BlockNode();
     BlockNode(std::vector<std::shared_ptr<FunctionNode>> functions,
-              std::shared_ptr<ASTNode> exit);
+              std::shared_ptr<ReturnNode> exit);
     void Accept(Visitor *v) override;
     std::string to_string();
 };
@@ -251,20 +265,6 @@ class NoneNode : public ASTNode
 {
 public:
     NoneNode();
-    void Accept(Visitor *v) override;
-    std::string to_string();
-};
-#endif
-
-#ifndef RETURN_H
-#define RETURN_H
-class Visitor;
-
-class ReturnNode : public ASTNode
-{
-public:
-    std::shared_ptr<ASTNode> Expr;
-    ReturnNode(std::shared_ptr<ASTNode> expr);
     void Accept(Visitor *v) override;
     std::string to_string();
 };

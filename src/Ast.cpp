@@ -414,7 +414,7 @@ std::string BranchNode::to_string()
 BlockNode::BlockNode()
 {
 }
-BlockNode::BlockNode(std::vector<std::shared_ptr<FunctionNode>> functions, std::shared_ptr<ASTNode> exit)
+BlockNode::BlockNode(std::vector<std::shared_ptr<FunctionNode>> functions, std::shared_ptr<ReturnNode> exit)
 
 {
     this->functions = functions;
