@@ -184,7 +184,7 @@ std::string ListType::to_string()
     return std::string();
 }
 
-ModuleNode::ModuleNode(std::vector<std::shared_ptr<ASTNode>> functions, Tokens name, std::vector<Tokens> imports)
+ModuleNode::ModuleNode(std::vector<std::shared_ptr<FunctionNode>> functions, Tokens name, std::vector<Tokens> imports)
 {
     this->functions = functions;
     this->name = name;
@@ -406,6 +406,20 @@ void BranchNode::Accept(Visitor *v)
 }
 
 std::string BranchNode::to_string()
+{
+    return std::string();
+}
+
+BlockNode::BlockNode(std::vector<std::shared_ptr<FunctionNode>> functions, std::shared_ptr<ASTNode> exit)
+{
+    this->functions = functions;
+    this->exit = exit;
+}
+void BlockNode::Accept(Visitor *v)
+{
+    v->Visit(this);
+}
+std::string BlockNode::to_string()
 {
     return std::string();
 }

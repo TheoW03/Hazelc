@@ -364,7 +364,7 @@ std::vector<std::shared_ptr<ASTNode>> parse_scope(std::vector<Tokens> &tokens)
     }
     return ast;
 }
-std::optional<std::shared_ptr<ASTNode>> parse_function(std::vector<Tokens> &tokens)
+std::optional<std::shared_ptr<FunctionNode>> parse_function(std::vector<Tokens> &tokens)
 {
     bool is_export = current.value().type == TokenType::Export;
 
@@ -399,6 +399,7 @@ std::optional<std::shared_ptr<ASTNode>> parse_stmnts(std::vector<Tokens> &tokens
         exit(EXIT_FAILURE);
     }
 }
+
 std::shared_ptr<ModuleNode> parse_module(std::vector<Tokens> &tokens)
 {
     auto module_name = match_and_remove(TokenType::Identifier, tokens);
@@ -414,7 +415,7 @@ std::shared_ptr<ModuleNode> parse_module(std::vector<Tokens> &tokens)
         }
     }
 
-    std::vector<std::shared_ptr<ASTNode>> functions;
+    std::vector<std::shared_ptr<FunctionNode>> functions;
 
     while (!look_ahead(TokenType::EndOfFile, tokens) && !look_ahead(TokenType::Module, tokens))
     {
@@ -426,6 +427,54 @@ std::shared_ptr<ModuleNode> parse_module(std::vector<Tokens> &tokens)
         }
     }
     return std::make_shared<ModuleNode>(functions, module_name.value(), imports);
+}
+std::shared_ptr<BlockNode> parse_block(std::vector<Tokens> &tokens)
+{
+
+    std::vector<std::shared_ptr<FunctionNode>> ast;
+    // std::vector<std::shared_ptr<ASTNode>>
+    std::shared_ptr<ASTNode> exit_ret;
+    if (match_and_remove(TokenType::Indents, tokens))
+    {
+
+        while (!match_and_remove(TokenType::Dedents, tokens).has_value() && get_next_token(tokens).type != TokenType::EndOfFile)
+        {
+            // print_tokens(tokens);
+            //
+            // std::optional<std::shared_ptr<ASTNode>>
+            // parse_stmnts(std::vector<Tokens> & tokens);
+
+            std::map<TokenType, parser> parse_map;
+            // parse_map.insert(make_pair(TokenType::Let, (parser)parse_function)); //
+            // parse_map.insert(make_pair(TokenType::Return, (parser)parse_return));
+            if (get_next_token(tokens).type == TokenType::Let)
+            {
+                ast.push_back(parse_function(tokens).value());
+            }
+            else
+            {
+                exit_ret = parse_return(tokens).value();
+            }
+            // auto v = parse_stmnts(tokens);
+
+            // ast.push_back(v.value());
+        }
+    }
+    else if (match_and_remove(TokenType::Arrow, tokens).has_value())
+    {
+
+        exit_ret = parse_return(tokens).value();
+        return std::make_shared<BlockNode>(ast, exit_ret);
+        // ast.push_back(std::make_shared<ReturnNode>(expr_parse(tokens).value()));
+    }
+    else
+    {
+        std::cout << "missing dedent or arrow on line or indent " << tokens[0].line_num << std::endl;
+        // exit(EXIT_FAILURE);
+        exit(EXIT_FAILURE);
+    }
+    return std::make_shared<BlockNode>(ast, exit_ret);
+    // return ast;
 }
 std::shared_ptr<ProgramNode> parse_node(std::vector<Tokens> &tokens)
 {

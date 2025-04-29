@@ -100,14 +100,14 @@ void CompileHighLevel::Visit(FunctionNode *node)
     {
 
         node->stmnts[i]->Accept(this);
-        if (dynamic_cast<FunctionNode *>(node->stmnts[i].get()))
-        {
-            this->functions.push_back(node->stmnts[i]);
-        }
-        else
-        {
-            filter_functions.push_back(node->stmnts[i]);
-        }
+        // if (dynamic_cast<FunctionNode *>(node->stmnts[i].get()))
+        // {
+        //     this->functions.push_back(node->stmnts[i]);
+        // }
+        // else
+        // {
+        //     filter_functions.push_back(node->stmnts[i]);
+        // }
     }
     node->stmnts = filter_functions;
 }
@@ -131,14 +131,14 @@ void CompileHighLevel::Visit(BranchNode *node)
     for (int i = 0; i < node->stmnts.size(); i++)
     {
         node->stmnts[i]->Accept(this);
-        if (dynamic_cast<FunctionNode *>(node->stmnts[i].get()))
-        {
-            this->functions.push_back(node->stmnts[i]);
-        }
-        else
-        {
-            filter_functions.push_back(node->stmnts[i]);
-        }
+        // if (dynamic_cast<FunctionNode *>(node->stmnts[i].get()))
+        // {
+        //     this->functions.push_back(node->stmnts[i]);
+        // }
+        // else
+        // {
+        //     filter_functions.push_back(node->stmnts[i]);
+        // }
     }
     node->stmnts = filter_functions;
 }
