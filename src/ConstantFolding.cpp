@@ -53,7 +53,20 @@ void ConstantFoldingVisitor::Visit(FunctionCallNode *node)
         node->params[i] = expr.fold_expr(node->params[i]);
     }
 }
+void ConstantFoldingVisitor::Visit(ConditionalNode *node)
+{
+    for (int i = 0; i < node->branches.size(); i++)
+    {
+        node->branches[i]->Accept(this);
+    }
+}
 
+void ConstantFoldingVisitor::Visit(BranchNode *node)
+{
+    FoldExpr expr;
+    node->condition = expr.fold_expr(node->condition);
+    node->stmnts->Accept(this);
+}
 void ConstantFoldingVisitor::Visit(ExprNode *node)
 {
     node->lhs->Accept(this);

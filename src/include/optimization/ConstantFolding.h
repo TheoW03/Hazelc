@@ -32,6 +32,9 @@ public:
     void Visit(ModuleNode *node) override;
     void Visit(ReturnNode *node) override;
     void Visit(FunctionCallNode *node) override;
+    void Visit(ConditionalNode *node) override;
+    void Visit(BranchNode *node) override;
+
     void Visit(ExprNode *node) override;
 
     void Visit(ProgramNode *node) override;
