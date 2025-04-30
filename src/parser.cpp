@@ -432,6 +432,7 @@ std::shared_ptr<BlockNode> parse_block(std::vector<Tokens> &tokens)
     std::vector<std::shared_ptr<FunctionNode>> ast;
     // std::vector<std::shared_ptr<ASTNode>>
     std::shared_ptr<ReturnNode> exit_ret;
+
     if (match_and_remove(TokenType::Indents, tokens).has_value())
     {
 
@@ -448,6 +449,8 @@ std::shared_ptr<BlockNode> parse_block(std::vector<Tokens> &tokens)
             if (get_next_token(tokens).type == TokenType::Let)
             {
                 ast.push_back(parse_function(tokens).value());
+                // print(tokens);
+                std::cout << " " << std::endl;
             }
             else if (get_next_token(tokens).type == TokenType::Return)
             {
@@ -461,8 +464,7 @@ std::shared_ptr<BlockNode> parse_block(std::vector<Tokens> &tokens)
     }
     else if (match_and_remove(TokenType::Arrow, tokens).has_value())
     {
-
-        exit_ret = std::make_shared<ReturnNode>(expression(tokens).value());
+        exit_ret = std::make_shared<ReturnNode>(expr_parse(tokens).value());
         return std::make_shared<BlockNode>(ast, exit_ret);
         // ast.push_back(std::make_shared<ReturnNode>(expr_parse(tokens).value()));
     }
