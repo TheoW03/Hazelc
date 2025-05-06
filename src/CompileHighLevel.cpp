@@ -6,46 +6,6 @@
 // it creates a data strcuture, in ProgramScope
 CompileHighLevel::CompileHighLevel(llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context) : module(module), builder(builder), context(context)
 {
-    std::map<std::string, llvm::Function *> CFunctions;
-    auto snprintftype = llvm::FunctionType::get(builder.getInt32Ty(), {builder.getInt8PtrTy(), builder.getInt64Ty(), builder.getInt8PtrTy()}, true);
-    auto snprintffunc = llvm::Function::Create(
-        snprintftype, llvm::Function::ExternalLinkage, "snprintf", module);
-    CFunctions.insert(std::make_pair("snprintf", snprintffunc));
-    auto printftype = llvm::FunctionType::get(builder.getInt32Ty(), {builder.getInt8PtrTy()}, true);
-    auto printf_func = llvm::Function::Create(
-        printftype, llvm::Function::ExternalLinkage, "printf", module);
-    CFunctions.insert(std::make_pair("printf", printf_func));
-
-    auto strncpy_type = llvm::FunctionType::get(builder.getInt32Ty(), {builder.getInt8PtrTy(), builder.getInt8PtrTy(), builder.getInt64Ty()}, false);
-    auto strncpy_func = llvm::Function::Create(
-        strncpy_type, llvm::Function::ExternalLinkage, "strncpy", module);
-
-    auto streq_type = llvm::FunctionType::get(builder.getInt32Ty(), {builder.getInt8PtrTy(), builder.getInt8PtrTy()}, false);
-    auto streq_func = llvm::Function::Create(
-        streq_type, llvm::Function::ExternalLinkage, "strcmp", module);
-    CFunctions.insert(std::make_pair("strcmp", streq_func));
-
-    auto maloc_type = llvm::FunctionType::get(builder.getInt8PtrTy(), {builder.getInt64Ty()}, false);
-    auto maloc_func = llvm::Function::Create(
-        maloc_type, llvm::Function::ExternalLinkage, "malloc", module);
-    CFunctions.insert(std::make_pair("malloc", maloc_func));
-
-    CFunctions.insert(std::make_pair("memcpy",
-                                     llvm::Intrinsic::getDeclaration(
-                                         &module,
-                                         llvm::Intrinsic::memcpy,
-                                         {
-                                             builder.getPtrTy(),
-                                             builder.getPtrTy(),
-                                             builder.getInt64Ty(),
-                                         })));
-    // CFunctions.insert(std::make_pair("memcpy", llvm::Function::Create(
-    //                                                llvm::FunctionType::get(builder.getInt8PtrTy(),
-    //                                                                        {builder.getInt8PtrTy(),
-    //                                                                         builder.getInt8PtrTy(),
-    //                                                                         builder.getInt64Ty()},
-    //                                                                        false),
-    //                                                llvm::Function::ExternalLinkage, "memcpy", module)));
     std::map<TokenType, OptionalType>
         types;
     // types.insert(std::make_pair(TokenType::Integer, OptionalType()));
@@ -67,7 +27,8 @@ CompileHighLevel::CompileHighLevel(llvm::Module &module, llvm::IRBuilder<> &buil
     NativeTypes.insert(std::make_pair(TokenType::string, OptionalType(context, builder, string_type)));
 
     this->params = llvm::StructType::create(context, "params");
-    this->compiler_context = CompilerContext(CFunctions, NativeTypes, string_type);
+    CRunTimeFunctions c(builder, module);
+    this->compiler_context = CompilerContext(c, NativeTypes, string_type);
     // builder.CreateMemCpy()
 }
 

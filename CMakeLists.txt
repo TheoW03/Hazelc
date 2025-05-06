@@ -48,6 +48,7 @@ add_llvm_executable(${EXECUTABLE_NAME}
    src/SemanticLocalScope.cpp
    src/DeadCodeElim.cpp
    src/TypeChecker.cpp
+   src/CRuntimeProcudures.cpp
 
 )
 

@@ -40,18 +40,19 @@ class CompilerContext
 public:
     std::map<std::string, Function> func_map;
     std::map<std::string, CompiledModuleClass> modules;
-    std::map<std::string, llvm::Function *> CFunctions;
+    // std::map<std::string, llvm::Function *> CFunctions;
     std::map<TokenType, OptionalType> NativeTypes;
     Tokens current_module;
+    CRunTimeFunctions CProcedures;
     // std::map<std::string, llvm::Type *> types;
     // std::map<TokenType, OptionalType> types;
     std::vector<llvm::StructType *> lists;
-    // std::map<std::string, Function> local_functions;
     llvm::StructType *string_type;
     CompilerContext();
-    CompilerContext(std::map<std::string, llvm::Function *> CFunctions,
-                    std::map<TokenType, OptionalType> NativeTypes,
-                    llvm::StructType *str_type);
+    CompilerContext(
+        CRunTimeFunctions CProcedures,
+        std::map<TokenType, OptionalType> NativeTypes,
+        llvm::StructType *str_type);
     // Function get_function(Tokens name);
     // Function get_local_function(Tokens name);
     // void add_local_function(Tokens name, Function function);

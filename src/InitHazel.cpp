@@ -22,7 +22,7 @@ void get_files(std::ifstream &file, std::vector<std::string> &lines)
 std::vector<std::string> get_lines(Output cli)
 {
     std::vector<std::string> lines;
-
+    size_t in = 0;
     for (int i = 0; i < cli.files.size(); i++)
     {
         if (std::filesystem::is_directory(cli.files[i]))
@@ -35,6 +35,7 @@ std::vector<std::string> get_lines(Output cli)
                     get_files(file, lines);
                     std::cout << "hazelc input file: " << entry.path() << std::endl;
                     file.close();
+                    in++;
                 }
             }
         }
@@ -49,8 +50,13 @@ std::vector<std::string> get_lines(Output cli)
             std::cout << "hazelc input file: " << cli.files[i] << std::endl;
             get_files(file, lines);
             file.close();
+            in++;
         }
     }
+    std::cout << "" << std::endl;
+    std::cout << "hazelc total input files/directories: " << (cli.files.size()) << std::endl;
+    std::cout << "hazelc total number of files: " << in << std::endl;
+
     return lines;
 }
 
@@ -97,7 +103,6 @@ int Init(std::vector<std::string> args)
         return EXIT_FAILURE;
     }
     auto lines = get_lines(cli);
-    std::cout << "hazelc total input files: " << (cli.files.size() + 1) << std::endl;
     std::cout << "" << std::endl;
 
     auto tokens = lexxer(lines);

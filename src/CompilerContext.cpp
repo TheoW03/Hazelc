@@ -9,13 +9,16 @@ CompilerContext::CompilerContext()
 {
 }
 
-CompilerContext::CompilerContext(std::map<std::string, llvm::Function *> CFunctions,
-                                 std::map<TokenType, OptionalType> NativeTypes, llvm::StructType *str_type)
+CompilerContext::CompilerContext(
+    CRunTimeFunctions CProcedures,
+    std::map<TokenType, OptionalType>
+        NativeTypes,
+    llvm::StructType *str_type)
 {
 
-    this->CFunctions = CFunctions;
     this->NativeTypes = NativeTypes;
     this->string_type = str_type;
+    this->CProcedures = CProcedures;
 }
 
 llvm::StructType *CompilerContext::get_string_inner_type()

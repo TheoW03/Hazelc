@@ -112,7 +112,7 @@ llvm::Value *CompileExpr::StringMath(llvm::Value *lhs, Tokens op, llvm::Value *r
     // auto lhs_val = builder.CreateStructGEP(string_type.type, lhs, 0, "str_lhs");
     // auto rhs_val = builder.CreateStructGEP(string_type.type, rhs, 0, "str_rhs");
     auto math = StringMathExpr(lhs_val, op, rhs_val);
-    auto ret = string_type.set_loaded_struct_value(compiler_context.CFunctions["memcpy"], math, builder, string_type.get_inner_size(module));
+    auto ret = string_type.set_loaded_struct_value(compiler_context.CProcedures.memcpy, math, builder, string_type.get_inner_size(module));
     return ret;
 
     // debug print
@@ -135,7 +135,7 @@ llvm::Value *CompileExpr::StringBoolMath(llvm::Value *lhs, Tokens op, llvm::Valu
 
     auto strRhsPtr = builder.CreateLoad(builder.getInt8PtrTy(), builder.CreateStructGEP(c, rhs, 0, "strrhsval"));
     auto strLhsPtr = builder.CreateLoad(builder.getInt8PtrTy(), builder.CreateStructGEP(c, lhs, 0, "strlhsval"));
-    auto streq = compiler_context.CFunctions["strcmp"];
+    auto streq = compiler_context.CProcedures.strcmp;
 
     auto expr = builder.CreateCall(streq, {strLhsPtr, strRhsPtr});
     // builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: foos str %s\n"),
@@ -371,7 +371,7 @@ llvm::Value *CompileExpr::StringMathExpr(llvm::Value *lhs, Tokens op, llvm::Valu
         auto added_lengths = builder.CreateAdd(lenthlhs, lenthrhs);
         // auto dest = builder.BuildArrayMalloc()
         auto dest = builder
-                        .CreateCall(compiler_context.CFunctions["malloc"], {added_lengths});
+                        .CreateCall(compiler_context.CProcedures.malloc, {added_lengths});
 
         builder.CreateMemCpy(dest,
                              strLhsPtr->getAlign(),
@@ -470,7 +470,7 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         return {this->block,
                 str_optional_type
                     .set_loaded_struct_value(
-                        compiler_context.CFunctions["memcpy"],
+                        compiler_context.CProcedures.memcpy,
                         value, builder, str_optional_type.get_inner_size(module))};
     }
     else if (dynamic_cast<FunctionCallNode *>(node.get()))
@@ -519,7 +519,9 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
             return {this->block, StringMath(lhs.value, c->operation, rhs.value)};
         case Boolean_Type:
             return {this->block, BoolBool(lhs.value, c->operation, rhs.value)};
-
+        case None_Type:
+            std::cout << "none" << std::endl;
+            break;
         default:
             break;
         }
@@ -531,6 +533,7 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         auto lhs = Expression(c->lhs);
         auto rhs = Expression(c->rhs);
         auto get_type = get_bool_expr_type(node, this->program);
+        std::cout << get_type << std::endl;
         switch (get_type)
         {
         case Integer_Type:
@@ -539,6 +542,9 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
             return {this->block, FloatBool(lhs.value, c->op, rhs.value)};
         case String_Type:
             return {this->block, StringBoolMathExpr(lhs.value, c->op, rhs.value)};
+        case None_Type:
+            // return {this->block, NoneBool(lhs.value, c->op, rhs.value)};
+            break;
         case Boolean_Type:
             return {this->block, BoolBool(lhs.value, c->op, rhs.value)};
         default:

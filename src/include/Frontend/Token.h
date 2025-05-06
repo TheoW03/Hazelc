@@ -69,5 +69,13 @@ struct Tokens
     std::string value;
     TokenType type;
     int line_num;
+    bool operator==(const Tokens &other) const
+    {
+        return other.value == value && other.type == type;
+    }
+    bool operator!=(const Tokens &other) const
+    {
+        return other.value != value && other.type != type;
+    }
 };
 #endif

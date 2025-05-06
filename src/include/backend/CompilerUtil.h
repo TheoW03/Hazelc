@@ -69,6 +69,22 @@ struct CompiledModule
 #endif
 
 llvm::Value *ValueOrLoad(llvm::IRBuilder<> &builder, llvm::Value *value, llvm::Type *type);
+
+#ifndef CFUNC_H
+#define CFUNC_H
+
+class CRunTimeFunctions
+{
+public:
+    llvm::Function *memcpy;
+    llvm::Function *malloc;
+    llvm::Function *printf;
+    llvm::Function *strcmp;
+    CRunTimeFunctions();
+    CRunTimeFunctions(llvm::IRBuilder<> &builder, llvm::Module &module);
+};
+
+#endif
 // #ifndef CONTEXT_H
 // #define CONTEXT_H
 
