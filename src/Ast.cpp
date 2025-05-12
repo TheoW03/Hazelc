@@ -76,6 +76,16 @@ FunctionRefNode::FunctionRefNode(Tokens name,
     this->params = params;
 }
 
+std::shared_ptr<Type> FunctionRefNode::get_func_type()
+{
+    std::vector<std::shared_ptr<Type>> param_types;
+    for (int i = 0; i < params.size(); i++)
+    {
+        param_types.push_back(params[i]->get_func_type());
+    }
+    return std::make_shared<FunctionType>(param_types, RetType);
+}
+
 void FunctionRefNode::Accept(Visitor *v)
 {
     // std::shared_ptr<FunctionNode> sharedPtr(this);
@@ -113,23 +123,56 @@ std::string NativeType::to_string()
 }
 Type::Type() {}
 Type::~Type() {}
-FunctionType::FunctionType(std::vector<std::shared_ptr<Type>> params,
-                           std::shared_ptr<Type> returnType)
-{
-}
-std::string FunctionType::get_type_value()
-{
-    return std::string();
-}
+
 NativeType::NativeType(Tokens type)
 {
     this->type = type;
+}
+
+NativeType::NativeType(TokenType t)
+{
+    this->type = {"", t, 0};
 }
 
 std::string NativeType::get_type_value()
 {
     return type.value;
 }
+bool NativeType::can_accept(Type *type)
+{
+    if (dynamic_cast<NativeType *>(type))
+    {
+        auto c = dynamic_cast<NativeType *>(type);
+        return c->type.type == this->type.type;
+    }
+    return false;
+}
+FunctionType::FunctionType(std::vector<std::shared_ptr<Type>> params,
+                           std::shared_ptr<Type> returnType)
+{
+    this->params = params;
+    this->returnType = returnType;
+}
+std::string FunctionType::get_type_value()
+{
+    return std::string();
+}
+bool FunctionType::can_accept(Type *type)
+{
+    if (type->can_accept(returnType.get()))
+    {
+        for (int i = 0; i < params.size(); i++)
+        {
+            if (!params[i]->can_accept(type))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    return false;
+}
+
 std::string FunctionType::to_string()
 {
     return std::string();
@@ -178,7 +221,10 @@ std::string ListType::get_type_value()
 {
     return inner_type->get_type_value();
 }
-
+bool ListType::can_accept(Type *type)
+{
+    return false;
+}
 std::string ListType::to_string()
 {
     return std::string();

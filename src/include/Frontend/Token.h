@@ -71,7 +71,8 @@ struct Tokens
     int line_num;
     bool operator==(const Tokens &other) const
     {
-        return other.value == value && other.type == type;
+        std::cout << value << std::endl;
+        return other.type == type;
     }
     bool operator!=(const Tokens &other) const
     {

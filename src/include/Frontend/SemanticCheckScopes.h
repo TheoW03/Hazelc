@@ -88,3 +88,31 @@ public:
     void Visit(BlockNode *node) override;
 };
 #endif
+
+#ifndef TYPE_CHECKER_VISITOR_H
+#define TYPE_CHECKER_VISITOR_H
+
+class TypeCheckerVistor : public Visitor
+{
+public:
+    std::map<std::string, SemanticModule> modules;
+
+    TypeCheckerVistor(std::map<std::string, SemanticModule> modules);
+
+    void Visit(ProgramNode *node) override;
+    void Visit(ModuleNode *node) override;
+    void Visit(FunctionNode *node) override;
+};
+#endif
+
+#ifndef CHECK_EXPR_TYPE_H
+#define CHECK_EXPR_TYPE_H
+
+class CheckExpressionType : public Visitor
+{
+public:
+    std::shared_ptr<Type> match_type;
+    CheckExpressionType(std::shared_ptr<Type> match_type);
+    std::shared_ptr<Type> traverse_type(std::shared_ptr<ASTNode> expr);
+};
+#endif

@@ -52,6 +52,7 @@ public:
     ~Type();
     virtual std::string get_type_value() = 0;
     virtual std::string to_string() = 0;
+    virtual bool can_accept(Type *type) = 0;
 };
 
 #endif
@@ -63,8 +64,9 @@ class NativeType : public Type
 public:
     Tokens type;
     NativeType(Tokens type);
+    NativeType(TokenType t);
     std::string get_type_value() override;
-
+    bool can_accept(Type *type) override;
     std::string to_string();
 };
 #endif
@@ -75,8 +77,12 @@ public:
 class FunctionType : public Type
 {
 public:
+    std::vector<std::shared_ptr<Type>> params;
+    std::shared_ptr<Type> returnType;
     FunctionType(std::vector<std::shared_ptr<Type>> params, std::shared_ptr<Type> returnType);
     std::string get_type_value() override;
+    bool can_accept(Type *type) override;
+
     std::string to_string();
 };
 #endif
@@ -90,6 +96,7 @@ public:
     std::shared_ptr<Type> inner_type;
     ListType(std::shared_ptr<Type> inner);
     std::string get_type_value() override;
+    bool can_accept(Type *type) override;
 
     std::string to_string();
 };
@@ -165,6 +172,8 @@ public:
         Tokens name,
         std::vector<std::shared_ptr<FunctionRefNode>> params,
         std::shared_ptr<Type> returnType);
+
+    std::shared_ptr<Type> get_func_type();
     void Accept(Visitor *v) override;
     std::string to_string();
 };

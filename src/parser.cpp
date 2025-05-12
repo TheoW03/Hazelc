@@ -46,7 +46,7 @@ std::optional<Tokens> match_and_remove(std::vector<TokenType> token, std::vector
     }
     return {};
 }
-Tokens get_next_token(std::vector<Tokens> &tokens)
+Tokens peek(std::vector<Tokens> &tokens)
 {
     return tokens[0];
 }
@@ -237,7 +237,7 @@ std::optional<std::shared_ptr<ConditionalNode>> parse_conditional(std::vector<To
     if (match_and_remove(TokenType::Default, tokens).has_value())
     {
         std::shared_ptr<BlockNode> parse_block(std::vector<Tokens> & tokens);
-        Tokens fake_bool = {"true", TokenType::True, get_next_token(tokens).line_num};
+        Tokens fake_bool = {"true", TokenType::True, peek(tokens).line_num};
 
         auto s = parse_block(tokens);
         auto condutio = std::make_shared<BooleanConstNode>(fake_bool);
@@ -387,13 +387,13 @@ std::optional<std::shared_ptr<ASTNode>> parse_stmnts(std::vector<Tokens> &tokens
     parse_map.insert(make_pair(TokenType::Let, (parser)parse_function)); //
     parse_map.insert(make_pair(TokenType::Return, (parser)parse_return));
 
-    if (parse_map.count(get_next_token(tokens).type))
+    if (parse_map.count(peek(tokens).type))
     {
-        return parse_map.at(get_next_token(tokens).type)(tokens); // meow :3
+        return parse_map.at(peek(tokens).type)(tokens); // meow :3
     }
     else
     {
-        std::cout << "unexpected identifier \"" << get_next_token(tokens).value << "\" on line " << tokens[0].line_num << std::endl;
+        std::cout << "unexpected identifier \"" << peek(tokens).value << "\" on line " << tokens[0].line_num << std::endl;
         exit(EXIT_FAILURE);
     }
 }
@@ -436,7 +436,7 @@ std::shared_ptr<BlockNode> parse_block(std::vector<Tokens> &tokens)
     if (match_and_remove(TokenType::Indents, tokens).has_value())
     {
 
-        while (!match_and_remove(TokenType::Dedents, tokens).has_value() && get_next_token(tokens).type != TokenType::EndOfFile)
+        while (!match_and_remove(TokenType::Dedents, tokens).has_value() && peek(tokens).type != TokenType::EndOfFile)
         {
             // print_tokens(tokens);
             //
@@ -446,13 +446,13 @@ std::shared_ptr<BlockNode> parse_block(std::vector<Tokens> &tokens)
             std::map<TokenType, parser> parse_map;
             // parse_map.insert(make_pair(TokenType::Let, (parser)parse_function)); //
             // parse_map.insert(make_pair(TokenType::Return, (parser)parse_return));
-            if (get_next_token(tokens).type == TokenType::Let)
+            if (peek(tokens).type == TokenType::Let)
             {
                 ast.push_back(parse_function(tokens).value());
                 // print(tokens);
                 std::cout << " " << std::endl;
             }
-            else if (get_next_token(tokens).type == TokenType::Return)
+            else if (peek(tokens).type == TokenType::Return)
             {
                 match_and_remove(TokenType::Return, tokens);
                 exit_ret = std::make_shared<ReturnNode>(expression(tokens).value());
