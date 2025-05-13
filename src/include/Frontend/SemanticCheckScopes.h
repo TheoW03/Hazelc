@@ -24,6 +24,21 @@ struct SemanticModule
 };
 
 #endif
+#ifndef INTERMEDIATE_SCOPE_H
+#define INTERMEDIATE_SCOPE_H
+
+class IntermediateScope
+{
+public:
+    std::map<std::string, SemanticModule> modules;
+    SemanticModule current;
+    IntermediateScope();
+
+    IntermediateScope(std::map<std::string, SemanticModule> modules);
+    void set_current_module(std::string s);
+    std::optional<FunctionNode *> get_global_function(Tokens name);
+};
+#endif
 
 #ifndef SEMANTIC_TOP_H
 #define SEMANTIC_TOP_H
@@ -95,9 +110,10 @@ public:
 class TypeCheckerVistor : public Visitor
 {
 public:
-    std::map<std::string, SemanticModule> modules;
+    IntermediateScope modules;
+    SemanticModule current_AST_module;
 
-    TypeCheckerVistor(std::map<std::string, SemanticModule> modules);
+    TypeCheckerVistor(IntermediateScope modules);
 
     void Visit(ProgramNode *node) override;
     void Visit(ModuleNode *node) override;
@@ -112,7 +128,9 @@ class CheckExpressionType : public Visitor
 {
 public:
     std::shared_ptr<Type> match_type;
-    CheckExpressionType(std::shared_ptr<Type> match_type);
+    IntermediateScope s;
+
+    CheckExpressionType(std::shared_ptr<Type> match_type, IntermediateScope s);
     std::shared_ptr<Type> traverse_type(std::shared_ptr<ASTNode> expr);
 };
 #endif

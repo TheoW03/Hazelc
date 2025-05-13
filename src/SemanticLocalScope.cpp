@@ -55,7 +55,6 @@ std::optional<FunctionNode *> SemanticLocalScopeVisitor::get_local_function(Toke
         if (scope[i].functions.find(name.value) != scope[i].functions.end())
         {
             return scope[i].functions[name.value];
-            // return f;
         }
     }
     return {};
@@ -224,4 +223,37 @@ void SemanticLocalScopeVisitor::Visit(BlockNode *node)
         node->functions[i]->Accept(this);
     }
     node->exit->Accept(this);
+}
+
+IntermediateScope::IntermediateScope()
+{
+}
+
+IntermediateScope::IntermediateScope(std::map<std::string, SemanticModule> m)
+{
+    this->modules = m;
+}
+void IntermediateScope::set_current_module(std::string s)
+{
+    this->current = this->modules[s];
+}
+std::optional<FunctionNode *> IntermediateScope::get_global_function(Tokens name)
+{
+    auto global_functions = current.functions;
+    if (global_functions.find(name.value) != global_functions.end())
+    {
+        return global_functions[name.value];
+    }
+    else
+    {
+        auto imports = current.imports;
+        for (int i = 0; i < imports.size(); i++)
+        {
+            if (modules[imports[i].value].exported_functions.find(name.value) != modules[imports[i].value].exported_functions.end())
+            {
+                return modules[imports[i].value].exported_functions[name.value];
+            }
+        }
+    }
+    return {};
 }
