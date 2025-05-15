@@ -16,7 +16,8 @@ int main(int argc, char const *argv[])
 {
     struct String c2 = {"hello ", 6};
     struct String c1 = get_str();
-    int eq = strcmp(c1.str, c2.str);
+    int eq = strcmp("abc", "abcabc");
     printf("%d\n", eq);
+
     return 0;
 }

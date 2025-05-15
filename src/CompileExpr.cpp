@@ -138,8 +138,8 @@ llvm::Value *CompileExpr::StringBoolMath(llvm::Value *lhs, Tokens op, llvm::Valu
     auto streq = compiler_context.CProcedures.strcmp;
 
     auto expr = builder.CreateCall(streq, {strLhsPtr, strRhsPtr});
-    // builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: foos str %s\n"),
-    //                                                            strLhsPtr});
+    // builder.CreateCall(compiler_context.CProcedures.printf, {builder.CreateGlobalString("[HAZELC DEBUG]: foos str %s\n"),
+    //                                                          strLhsPtr});
     // auto strLhsLen = builder.CreateLoad(builder.getInt64Ty(), builder.CreateStructGEP(c, lhs, 1, "strrhsval"));
 
     // builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: foo length %d \n"),
@@ -373,21 +373,25 @@ llvm::Value *CompileExpr::StringMathExpr(llvm::Value *lhs, Tokens op, llvm::Valu
         auto dest = builder
                         .CreateCall(compiler_context.CProcedures.malloc, {added_lengths});
 
-        builder.CreateMemCpy(dest,
-                             strLhsPtr->getAlign(),
-                             strLhsPtr,
-                             strLhsPtr->getAlign(),
-                             lenthlhs);
+        // builder.CreateMemCpy(dest,
+        //                      strLhsPtr->getAlign(),
+        //                      strLhsPtr,
+        //                      strLhsPtr->getAlign(),
+        //                      lenthlhs);
+        builder.CreateCall(compiler_context.CProcedures.memcpy, {dest, strLhsPtr, lenthlhs, builder.getInt1(0)});
+
         auto second_dest = builder.CreateInBoundsGEP(builder.getInt8Ty(), dest, {lenthlhs});
-        builder.CreateMemCpy(second_dest,
-                             strRhsPtr->getAlign(),
-                             strRhsPtr,
-                             strRhsPtr->getAlign(),
-                             lenthrhs);
+
+        builder.CreateCall(compiler_context.CProcedures.memcpy, {second_dest, strRhsPtr, lenthrhs, builder.getInt1(0)});
+        // builder.CreateMemCpy(second_dest,
+        //                      strRhsPtr->getAlign(),
+        //                      strRhsPtr,
+        //                      strRhsPtr->getAlign(),
+        //                      lenthrhs);
 
         // DEBUG PRINTS
-        // builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: concat result: %s \n"),
-        //    dest});
+        // builder.CreateCall(compiler_context.CProcedures.printf, {builder.CreateGlobalString("[HAZELC DEBUG]: concat result: %s \n"),
+        //                                                          dest});
 
         return this->CompileStr(dest, added_lengths, builder.CreateAlloca(c));
     }

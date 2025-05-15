@@ -82,9 +82,9 @@ void runPasses(std::shared_ptr<ProgramNode> node, Output cli)
     std::cout << "hazelc: resolved Local scope" << std::endl;
     std::cout << "" << std::endl;
     auto typechecker = std::make_shared<TypeCheckerVistor>(IntermediateScope(semantic->modules));
-    // typechecker->Visit()
-    node->Accept(typechecker.get());
-    std::cout << "hazelc: checking types" << std::endl;
+    // typechecker->Visit()/
+    // node->Accept(typechecker.get());
+    // std::cout << "hazelc: checking types" << std::endl;
 
     node->Accept(std::make_shared<ConstantFoldingVisitor>().get());
     std::cout << "hazelc: constant folding" << std::endl;
