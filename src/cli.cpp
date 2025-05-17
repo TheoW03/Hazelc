@@ -105,6 +105,11 @@ Output parse_cmd(std::vector<std::string> args)
                     current.value().function(args[i], o);
                     current = {};
                 }
+                else
+                {
+                    std::cout << "hazelc: incomplete option" << std::endl;
+                    exit(EXIT_FAILURE);
+                }
             }
             else
             {

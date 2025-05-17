@@ -44,13 +44,15 @@ std::shared_ptr<Type> CheckExpressionType::traverse_type(std::shared_ptr<ASTNode
     {
         return std::make_shared<NativeType>(TokenType::Integer);
     }
-    else if (dynamic_cast<DecimalNode *>(expr.get()) != nullptr)
-    {
-        return std::make_shared<NativeType>(TokenType::Decimal);
-    }
+
     else if (dynamic_cast<StringNode *>(expr.get()) != nullptr)
     {
         return std::make_shared<NativeType>(TokenType::string);
+    }
+    else if (dynamic_cast<ConditionalNode *>(expr.get()) != nullptr)
+    {
+        auto f = dynamic_cast<ConditionalNode *>(expr.get());
+        return f->type;
     }
     else if (dynamic_cast<FunctionCallNode *>(expr.get()) != nullptr)
     {
@@ -68,6 +70,18 @@ std::shared_ptr<Type> CheckExpressionType::traverse_type(std::shared_ptr<ASTNode
             exit(EXIT_FAILURE);
         }
         return rhstype;
+    }
+    else if (dynamic_cast<BooleanExprNode *>(expr.get()) != nullptr)
+    {
+        auto exprs = dynamic_cast<BooleanExprNode *>(expr.get());
+        auto lhstype = traverse_type(exprs->lhs);
+        auto rhstype = traverse_type(exprs->rhs);
+        if (!lhstype->can_accept(rhstype.get()))
+        {
+            std::cout << "hazelc: type error in expr" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+        return std::make_shared<NativeType>(TokenType::boolean);
     }
     return nullptr;
 }

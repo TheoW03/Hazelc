@@ -160,9 +160,9 @@ TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n, ProgramScope ctx)
     if (dynamic_cast<ExprNode *>(c->rhs.get()))
         return get_expr_type(c->rhs, ctx);
     if (dynamic_cast<BooleanExprNode *>(c->rhs.get()))
-        return get_bool_expr_type(c->rhs, ctx);
+        return TypeOfExpr::Boolean_Type;
     if (dynamic_cast<BooleanExprNode *>(c->lhs.get()))
-        return get_bool_expr_type(c->lhs, ctx);
+        return TypeOfExpr::Boolean_Type;
     return TypeOfExpr::Void_Type;
 }
 

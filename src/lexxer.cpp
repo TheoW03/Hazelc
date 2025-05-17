@@ -247,21 +247,29 @@ void is_operand(Lexxer_Context &ctx, char value)
         is_token(ctx);
         ctx.state = 1;
     }
+    else if (value == '=')
+    {
+        ctx.buffer += value;
+        ctx.state = 3;
+    }
     else
     {
         is_token(ctx);
         ctx.buffer += value;
+        ctx.state = 1;
 
-        if (value != '(' && value != ')')
-            ctx.state = 1;
-        else
-            ctx.state = 2;
+        // if (value != '(' && value != ')')
+        //     ctx.state = 1;
+        // else
+        //     ctx.state = 2;
     }
 }
 void is_equal(Lexxer_Context &ctx, char value)
 {
+
     if (value == '=' || value == '>' || value == '<' || value == '/')
     {
+
         ctx.buffer += value;
     }
     else
