@@ -464,13 +464,8 @@ std::shared_ptr<BlockNode> parse_block(std::vector<Tokens> &tokens)
     else
     {
         error("missing dedent or arrow on line or indent", peek(tokens));
-
-        // std::cout << "missing dedent or arrow on line or indent " << tokens[0].line_num << "in file: "<< << std::endl;
-        // exit(EXIT_FAILURE);
-        // exit(EXIT_FAILURE);
     }
     return std::make_shared<BlockNode>(ast, exit_ret);
-    // return ast;
 }
 std::shared_ptr<ProgramNode> parse_node(std::vector<Tokens> &tokens)
 {
@@ -481,6 +476,10 @@ std::shared_ptr<ProgramNode> parse_node(std::vector<Tokens> &tokens)
         {
             auto m = parse_module(tokens);
             modules.insert(std::make_pair(m->name.value, m));
+        }
+        else
+        {
+            error("expected module", peek(tokens));
         }
     }
     return std::make_shared<ProgramNode>(modules);
