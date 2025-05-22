@@ -58,7 +58,7 @@ enum TokenType
     Export,
     Concation,
     Index_In,
-    Instance_Function
+    Instance_Function,
 
 };
 #endif
@@ -69,6 +69,7 @@ struct Tokens
     std::string value;
     TokenType type;
     int line_num;
+    std::string file_name;
     bool operator==(const Tokens &other) const
     {
         std::cout << value << std::endl;

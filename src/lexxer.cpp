@@ -18,6 +18,7 @@ struct Lexxer_Context
     std::vector<Tokens> tokens;
     int indents_idx;
     int indents_num;
+    std::string file_name;
 };
 bool is_hex_digit(std::string &str)
 {
@@ -208,13 +209,13 @@ void is_token(Lexxer_Context &ctx)
         return;
     std::map<std::string, TokenType> token_map = get_keyword_map();
     if (token_map.find(ctx.buffer) != token_map.end())
-        ctx.tokens.push_back({ctx.buffer, token_map[ctx.buffer], ctx.line_num});
+        ctx.tokens.push_back({ctx.buffer, token_map[ctx.buffer], ctx.line_num, ctx.file_name});
     else if (is_hex_digit(ctx.buffer))
-        ctx.tokens.push_back({ctx.buffer.substr(2, ctx.buffer.size()), TokenType::HexDigit, ctx.line_num});
+        ctx.tokens.push_back({ctx.buffer.substr(2, ctx.buffer.size()), TokenType::HexDigit, ctx.line_num, ctx.file_name});
     else if (is_binary_digit(ctx.buffer))
-        ctx.tokens.push_back({ctx.buffer.substr(2, ctx.buffer.size()), TokenType::BinaryDigit, ctx.line_num});
+        ctx.tokens.push_back({ctx.buffer.substr(2, ctx.buffer.size()), TokenType::BinaryDigit, ctx.line_num, ctx.file_name});
     else if (is_base_ten(ctx.buffer))
-        ctx.tokens.push_back({ctx.buffer, TokenType::BaseTenDigit, ctx.line_num});
+        ctx.tokens.push_back({ctx.buffer, TokenType::BaseTenDigit, ctx.line_num, ctx.file_name});
     // else if (is_indent(ctx) && ctx.state == 0)
     // {
     //     ctx.indents_num = ctx.indents_idx;
@@ -234,7 +235,7 @@ void is_token(Lexxer_Context &ctx)
     else
         ctx.tokens.push_back({ctx.buffer,
                               TokenType::Identifier,
-                              ctx.line_num});
+                              ctx.line_num, ctx.file_name});
     ctx.buffer = "";
 }
 
@@ -384,10 +385,11 @@ void dot_state(Lexxer_Context &ctx, char value)
 
     ctx.state = 1;
 }
-std::vector<Tokens> lexxer(std::vector<std::string> lines)
+std::vector<Tokens> lexxer(std::vector<std::string> lines, std::string file_name)
 {
     std::vector<Tokens> tokens;
     Lexxer_Context ctx = {1, 0, "", tokens};
+    ctx.file_name = file_name;
     int state = 0;
     int is_comment = 0;
     int is_str = 0;
@@ -508,7 +510,6 @@ std::vector<Tokens> lexxer(std::vector<std::string> lines)
         is_token(ctx);
         ctx.buffer = "";
     }
-    ctx.tokens.push_back({"EOF", TokenType::EndOfFile});
     return ctx.tokens;
 }
 void print_tokens(std::vector<Tokens> tokens)
@@ -560,6 +561,6 @@ void print_tokens(std::vector<Tokens> tokens)
 
     for (int i = 0; i < tokens.size(); i++)
     {
-        std::cout << token_map[tokens[i].type] << ": \"" << tokens[i].value << "\": " << tokens[i].line_num << std::endl;
+        std::cout << token_map[tokens[i].type] << ": \"" << tokens[i].value << "\": " << tokens[i].line_num << ": " << tokens[i].file_name << std::endl;
     }
 }

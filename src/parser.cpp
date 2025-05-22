@@ -18,6 +18,11 @@ using parser = std::optional<std::shared_ptr<ASTNode>> (*)(std::vector<Tokens> &
 // match and romve has been overloaded to take a vector
 // what it does in that codase is iterate the vector if it contians one tokenType of the 0th element of the list of tokens
 // it removes it and returns it
+void error(std::string message, Tokens error_token)
+{
+    std::cout << "hazelc: " << message << " in file  " << error_token.file_name << " on line " << error_token.line_num << std::endl;
+    exit(EXIT_FAILURE);
+}
 
 std::optional<Tokens> match_and_remove(TokenType token_type, std::vector<Tokens> &tokens)
 {
@@ -87,7 +92,6 @@ std::vector<std::shared_ptr<ASTNode>> parse_call_params(std::vector<Tokens> &tok
         {
             params.push_back(expr_parse(tokens).value());
             match_and_remove(TokenType::Comma, tokens);
-            /* code */
         }
     }
     return params;
@@ -145,6 +149,10 @@ std::optional<std::shared_ptr<ASTNode>> factor(std::vector<Tokens> &tokens)
         auto ret = expr_parse(tokens);
         match_and_remove(TokenType::Close_Parenthesis, tokens);
         return ret;
+    }
+    else
+    {
+        error("invalid expr identifier ", peek(tokens));
     }
     return {};
 }
@@ -245,9 +253,9 @@ std::optional<std::shared_ptr<ConditionalNode>> parse_conditional(std::vector<To
     match_and_remove(TokenType::Colon, tokens);
     auto type = parse_type(tokens);
     std::vector<std::shared_ptr<BranchNode>> c;
-    match_and_remove(TokenType::Indents, tokens);
+    auto f = match_and_remove(TokenType::Indents, tokens);
     while (!look_ahead(TokenType::Default, tokens) &&
-           (!match_and_remove(TokenType::Dedents, tokens).has_value() //
+           (!look_ahead(TokenType::Dedents, tokens) //
             && !look_ahead(TokenType::EndOfFile, tokens)))
     {
 
@@ -264,9 +272,11 @@ std::optional<std::shared_ptr<ConditionalNode>> parse_conditional(std::vector<To
     }
     else
     {
-        std::cout << "hazelc: conditionals must always have a defualt condition, denoted as $defualt" << std::endl;
-        std::cout << "hazelc: compilation terminated" << std::endl;
-        exit(EXIT_FAILURE);
+        error("conditionals must always have a defualt condition, denoted as $defualt", peek(tokens));
+
+        // std::cout << "hazelc: conditionals must always have a defualt condition, denoted as $defualt" << std::endl;
+        // std::cout << "hazelc: compilation terminated" << std::endl;
+        // exit(EXIT_FAILURE);
     }
     match_and_remove(TokenType::Dedents, tokens);
     return std::make_shared<ConditionalNode>(c, type.value());
@@ -354,35 +364,7 @@ std::optional<std::shared_ptr<FunctionRefNode>> parse_function_ref(std::vector<T
     auto ret_type = parse_type(tokens);
     return std::make_shared<FunctionRefNode>(name.value(), params, ret_type.value());
 }
-// std::vector<std::shared_ptr<ASTNode>> parse_scope(std::vector<Tokens> &tokens)
-// {
-//     std::vector<std::shared_ptr<ASTNode>> ast;
-//     if (match_and_remove(TokenType::Indents, tokens))
-//     {
 
-//         while (!match_and_remove(TokenType::Dedents, tokens).has_value() && get_next_token(tokens).type != TokenType::EndOfFile)
-//         {
-//             // print_tokens(tokens);
-
-//             std::optional<std::shared_ptr<ASTNode>>
-//                 parse_stmnts(std::vector<Tokens> & tokens);
-//             auto v = parse_stmnts(tokens);
-
-//             ast.push_back(v.value());
-//         }
-//     }
-//     else if (match_and_remove(TokenType::Arrow, tokens).has_value())
-//     {
-
-//         ast.push_back(std::make_shared<ReturnNode>(expr_parse(tokens).value()));
-//     }
-//     else
-//     {
-//         std::cout << "missing dedent or arrow on line or indent " << tokens[0].line_num << std::endl;
-//         exit(EXIT_FAILURE);
-//     }
-//     return ast;
-// }
 std::optional<std::shared_ptr<FunctionNode>> parse_function(std::vector<Tokens> &tokens)
 {
     bool is_export = current.value().type == TokenType::Export;
@@ -398,25 +380,6 @@ std::optional<std::shared_ptr<ASTNode>> parse_return(std::vector<Tokens> &tokens
 {
     match_and_remove(TokenType::Return, tokens);
     return std::make_shared<ReturnNode>(expr_parse(tokens).value());
-}
-
-std::optional<std::shared_ptr<ASTNode>> parse_stmnts(std::vector<Tokens> &tokens)
-{
-    using std::make_pair; // here bc im lazy you may use using on the stack level. but lets stick to this
-
-    std::map<TokenType, parser> parse_map;
-    parse_map.insert(make_pair(TokenType::Let, (parser)parse_function)); //
-    parse_map.insert(make_pair(TokenType::Return, (parser)parse_return));
-
-    if (parse_map.count(peek(tokens).type))
-    {
-        return parse_map.at(peek(tokens).type)(tokens); // meow :3
-    }
-    else
-    {
-        std::cout << "unexpected identifier \"" << peek(tokens).value << "\" on line " << tokens[0].line_num << std::endl;
-        exit(EXIT_FAILURE);
-    }
 }
 
 std::shared_ptr<ModuleNode> parse_module(std::vector<Tokens> &tokens)
@@ -443,6 +406,10 @@ std::shared_ptr<ModuleNode> parse_module(std::vector<Tokens> &tokens)
         if (look_ahead(TokenType::Let, tokens))
         {
             functions.push_back(parse_function(tokens).value());
+        }
+        else
+        {
+            error("invalid identifier", peek(tokens));
         }
     }
     return std::make_shared<ModuleNode>(functions, module_name.value(), imports);
@@ -478,6 +445,11 @@ std::shared_ptr<BlockNode> parse_block(std::vector<Tokens> &tokens)
                 match_and_remove(TokenType::Return, tokens);
                 exit_ret = std::make_shared<ReturnNode>(expression(tokens).value());
             }
+            else
+            {
+                error("invalid identifier", peek(tokens));
+                // std::cout << "" << std::endl;
+            }
             // auto v = parse_stmnts(tokens);
 
             // ast.push_back(v.value());
@@ -491,9 +463,11 @@ std::shared_ptr<BlockNode> parse_block(std::vector<Tokens> &tokens)
     }
     else
     {
-        std::cout << "missing dedent or arrow on line or indent " << tokens[0].line_num << std::endl;
+        error("missing dedent or arrow on line or indent", peek(tokens));
+
+        // std::cout << "missing dedent or arrow on line or indent " << tokens[0].line_num << "in file: "<< << std::endl;
         // exit(EXIT_FAILURE);
-        exit(EXIT_FAILURE);
+        // exit(EXIT_FAILURE);
     }
     return std::make_shared<BlockNode>(ast, exit_ret);
     // return ast;
