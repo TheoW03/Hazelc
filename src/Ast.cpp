@@ -138,6 +138,68 @@ std::string NativeType::get_type_value()
 {
     return type.value;
 }
+IntegerType::IntegerType(bool is_unsigned)
+{
+    this->is_unsigned = is_unsigned;
+}
+std::string IntegerType::get_type_value()
+{
+    if (is_unsigned)
+        return "unsigned integer";
+    return "integer";
+}
+bool IntegerType::can_accept(Type *type)
+{
+    if (dynamic_cast<IntegerType *>(type))
+    {
+        auto f = dynamic_cast<IntegerType *>(type);
+        return f->is_unsigned == this->is_unsigned;
+    }
+    return false;
+}
+ByteType::ByteType(bool is_unsigned)
+{
+    this->is_unsigned = is_unsigned;
+}
+std::string ByteType::get_type_value()
+{
+    if (is_unsigned)
+        return "unsigned byte";
+    return "byte";
+}
+bool ByteType::can_accept(Type *type)
+{
+    if (dynamic_cast<ByteType *>(type))
+    {
+        auto f = dynamic_cast<ByteType *>(type);
+        return f->is_unsigned == this->is_unsigned;
+    }
+    return false;
+}
+CharacterType::CharacterType()
+{
+}
+
+std::string CharacterType::get_type_value()
+{
+    return "character";
+}
+bool CharacterType::can_accept(Type *type)
+{
+    return dynamic_cast<CharacterType *>(type);
+}
+BoolType::BoolType()
+{
+}
+std::string BoolType::get_type_value()
+{
+    return "boolean";
+}
+
+bool BoolType::can_accept(Type *type)
+{
+    return dynamic_cast<BoolType *>(type);
+}
 bool NativeType::can_accept(Type *type)
 {
     if (dynamic_cast<NativeType *>(type))
@@ -211,6 +273,29 @@ std::string ReturnNode::to_string()
 {
     return std::string();
 }
+DecimalType::DecimalType()
+{
+}
+std::string DecimalType::get_type_value()
+{
+    return "decimal";
+}
+bool DecimalType::can_accept(Type *type)
+{
+    return dynamic_cast<DecimalType *>(type);
+}
+
+StringType::StringType()
+{
+}
+bool StringType::can_accept(Type *type)
+{
+    return dynamic_cast<StringType *>(type);
+}
+std::string StringType::get_type_value()
+{
+    return "string";
+}
 
 ListType::ListType(std::shared_ptr<Type> inner)
 {
@@ -219,7 +304,7 @@ ListType::ListType(std::shared_ptr<Type> inner)
 
 std::string ListType::get_type_value()
 {
-    return inner_type->get_type_value();
+    return "List inner=" + inner_type->get_type_value();
 }
 bool ListType::can_accept(Type *type)
 {

@@ -56,6 +56,80 @@ public:
 };
 
 #endif
+#ifndef INTEGER_TYPE_H
+#define INTEGER_TYPE_H
+class IntegerType : public Type
+{
+public:
+    bool is_unsigned;
+    IntegerType(bool is_unsigned);
+    std::string get_type_value() override;
+
+    bool can_accept(Type *type) override;
+};
+#endif
+
+#ifndef BYTE_TYPE_H
+#define BYTE_TYPE_H
+class ByteType : public Type
+{
+public:
+    bool is_unsigned;
+
+    ByteType(bool is_unsigned);
+    std::string get_type_value() override;
+
+    bool can_accept(Type *type) override;
+};
+#endif
+
+#ifndef BOOL_TYPE_H
+#define BOOL_TYPE_H
+class BoolType : public Type
+{
+public:
+    BoolType();
+    std::string get_type_value() override;
+
+    bool can_accept(Type *type) override;
+};
+#endif
+
+#ifndef CHAR_TYPE_H
+#define CHAR_TYPE_H
+class CharacterType : public Type
+{
+public:
+    CharacterType();
+    std::string get_type_value() override;
+
+    bool can_accept(Type *type) override;
+};
+#endif
+
+#ifndef DECIMAL_TYPE_H
+#define DECIMAL_TYPE_H
+class DecimalType : public Type
+{
+public:
+    DecimalType();
+    std::string get_type_value() override;
+
+    bool can_accept(Type *type) override;
+};
+#endif
+
+#ifndef STRING_TYPE_H
+#define STRING_TYPE_H
+class StringType : public Type
+{
+public:
+    StringType();
+    std::string get_type_value() override;
+    bool can_accept(Type *type) override;
+};
+#endif
+
 #ifndef NATIVE_TYPE_H
 #define NATIVE_TYPE_H
 
