@@ -85,7 +85,8 @@
         "stack": "cpp",
         "__memory": "cpp",
         "charconv": "cpp",
-        "__threading_support": "cpp"
+        "__threading_support": "cpp",
+        "__hash_table": "cpp"
     },
     "editor.fontFamily": "'Droid Sans Mono', 'monospace', monospace",
     "editor.fontLigatures": false
