@@ -44,7 +44,10 @@ std::shared_ptr<Type> CheckExpressionType::traverse_type(std::shared_ptr<ASTNode
     {
         return std::make_shared<NativeType>(TokenType::Integer);
     }
-
+    else if (dynamic_cast<BooleanConstNode *>(expr.get()) != nullptr)
+    {
+        return std::make_shared<NativeType>(TokenType::boolean);
+    }
     else if (dynamic_cast<StringNode *>(expr.get()) != nullptr)
     {
         return std::make_shared<NativeType>(TokenType::string);
@@ -52,6 +55,16 @@ std::shared_ptr<Type> CheckExpressionType::traverse_type(std::shared_ptr<ASTNode
     else if (dynamic_cast<ConditionalNode *>(expr.get()) != nullptr)
     {
         auto f = dynamic_cast<ConditionalNode *>(expr.get());
+        for (int i = 0; i < f->branches.size(); i++)
+        {
+            auto c = CheckExpressionType(std::make_shared<NativeType>(TokenType::boolean), s);
+            auto a = c.traverse_type(f->branches[i]->condition);
+            if (!std::make_shared<NativeType>(TokenType::boolean)->can_accept(a.get()))
+            {
+                std::cout << "hazelc: conditionals require a boolean expression" << std::endl;
+                exit(EXIT_FAILURE);
+            }
+        }
         return f->type;
     }
     else if (dynamic_cast<FunctionCallNode *>(expr.get()) != nullptr)
