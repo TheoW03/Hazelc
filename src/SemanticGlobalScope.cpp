@@ -7,10 +7,42 @@
 void SemanticGlobalScopeVisitor::Visit(ASTNode *node)
 {
 }
-
+bool SemanticGlobalScopeVisitor::function_exists(Tokens name)
+{
+    if (module_functions.find(name.value) != module_functions.end())
+    {
+        return true;
+    }
+    else
+    {
+        for (int i = 0; i < current->imports.size(); i++)
+        {
+            if (this->modules.find(current->imports[i].value) != this->modules.end())
+            {
+                auto f = this->modules[current->imports[i].value];
+                if (f.exported_functions.find(name.value) != f.exported_functions.end())
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                auto c = this->avail_modules[current->imports[i].value];
+                for (const auto &function : c->functions)
+                {
+                    if (function->f->FunctionName.value == name.value && function->can_export)
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
 void SemanticGlobalScopeVisitor::Visit(FunctionNode *node)
 {
-    if (module_functions.find(node->f->FunctionName.value) == module_functions.end())
+    if (!function_exists(node->f->FunctionName))
     {
 
         module_functions.insert(std::make_pair(node->f->FunctionName.value, (node->f)));
@@ -60,6 +92,7 @@ void SemanticGlobalScopeVisitor::Visit(ProgramNode *node)
     {
         SemanticModule c;
         // this->current_AST_module = c;
+        this->current = current_module;
         current_module->Accept(this);
         c = {current_module->name, this->module_functions, this->exported_functions, current_module->imports};
 

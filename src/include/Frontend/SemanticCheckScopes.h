@@ -52,6 +52,7 @@ public:
     std::map<std::string, SemanticModule> modules;
     std::shared_ptr<ModuleNode> current;
     SemanticModule current_AST_module;
+    bool function_exists(Tokens name);
     void Visit(ASTNode *node) override;
     void Visit(FunctionNode *node) override;
     void Visit(ModuleNode *node) override;
