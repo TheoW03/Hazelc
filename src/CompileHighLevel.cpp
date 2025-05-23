@@ -118,12 +118,15 @@ void CompileHighLevel::Visit(ReturnNode *node)
 
 void CompileHighLevel::Visit(FunctionCallNode *node)
 {
+    std::cout << node->name.value << std::endl;
+    std::cout << node->param_types.size() << std::endl;
 
     for (int i = 0; i < node->param_types.size(); i++)
     {
         std::vector<std::shared_ptr<FunctionNode>> stmnts;
         auto compiled_function = CompileFunctionHeader(node->param_types[i]);
         compiled_function.isAnonymous = true;
+
         this->compiled_functions.push(compiled_function);
         auto ret = std::make_shared<ReturnNode>(node->params[i]);
         auto param_func = std::make_shared<FunctionNode>(false, node->param_types[i], std::make_shared<BlockNode>(stmnts, ret));

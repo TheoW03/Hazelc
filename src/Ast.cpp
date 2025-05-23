@@ -244,7 +244,30 @@ std::string Type::to_string()
 {
     return "";
 }
-
+std::string BoolType::to_string()
+{
+    return "";
+}
+std::string ByteType::to_string()
+{
+    return "";
+}
+std::string CharacterType::to_string()
+{
+    return "";
+}
+std::string IntegerType::to_string()
+{
+    return "";
+}
+std::string DecimalType::to_string()
+{
+    return "";
+}
+std::string StringType::to_string()
+{
+    return "";
+}
 NoneNode::NoneNode()
 {
 }

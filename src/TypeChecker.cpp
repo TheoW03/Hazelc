@@ -24,42 +24,66 @@ void TypeCheckerVistor::Visit(ModuleNode *node)
 }
 void TypeCheckerVistor::Visit(FunctionNode *node)
 {
+    if (!modules.get_global_function(node->f->FunctionName).has_value())
+    {
+        if (this->local_functions.find(node->f->FunctionName.value) != this->local_functions.end())
+        {
+            this->local_functions[node->f->FunctionName.value] = node->f;
+        }
+        else
+        {
+            this->local_functions.insert(std::make_pair(node->f->FunctionName.value, node->f));
+        }
+    }
+    for (int i = 0; i < node->f->params.size(); i++)
+    {
+        if (this->local_functions.find(node->f->FunctionName.value) != this->local_functions.end())
+        {
+            this->local_functions[node->f->params[i]->FunctionName.value] = node->f;
+        }
+        else
+        {
+            this->local_functions.insert(std::make_pair(node->f->params[i]->FunctionName.value, node->f->params[i]));
+        }
+    }
     auto e = node->stmnts->exit->Expr;
-    auto c = CheckExpressionType(node->f->RetType, modules);
+    auto c = CheckExpressionType(node->f->RetType, modules, local_functions);
     auto a = c.traverse_type(e);
+
     if (!node->f->RetType->can_accept(a.get()))
     {
         std::cout << "hazelc: type error in function " << node->f->FunctionName.value << " expression type doesnt match the return type" << std::endl;
         exit(EXIT_FAILURE);
     }
 }
-CheckExpressionType::CheckExpressionType(std::shared_ptr<Type> match_type, IntermediateScope s)
+CheckExpressionType::CheckExpressionType(std::shared_ptr<Type> match_type, IntermediateScope s, std::map<std::string, std::shared_ptr<FunctionRefNode>> local_functions)
 {
     this->match_type = match_type;
+    this->local_functions = local_functions;
     this->s = s;
 }
 std::shared_ptr<Type> CheckExpressionType::traverse_type(std::shared_ptr<ASTNode> expr)
 {
     if (dynamic_cast<IntegerNode *>(expr.get()) != nullptr)
     {
-        return std::make_shared<NativeType>(TokenType::Integer);
+        return std::make_shared<IntegerType>(false);
     }
     else if (dynamic_cast<BooleanConstNode *>(expr.get()) != nullptr)
     {
-        return std::make_shared<NativeType>(TokenType::boolean);
+        return std::make_shared<BoolType>();
     }
     else if (dynamic_cast<StringNode *>(expr.get()) != nullptr)
     {
-        return std::make_shared<NativeType>(TokenType::string);
+        return std::make_shared<StringType>();
     }
     else if (dynamic_cast<ConditionalNode *>(expr.get()) != nullptr)
     {
         auto f = dynamic_cast<ConditionalNode *>(expr.get());
         for (int i = 0; i < f->branches.size(); i++)
         {
-            auto c = CheckExpressionType(std::make_shared<NativeType>(TokenType::boolean), s);
+            auto c = CheckExpressionType(std::make_shared<NativeType>(TokenType::boolean), s, local_functions);
             auto a = c.traverse_type(f->branches[i]->condition);
-            if (!std::make_shared<NativeType>(TokenType::boolean)->can_accept(a.get()))
+            if (!std::make_shared<BoolType>()->can_accept(a.get()))
             {
                 std::cout << "hazelc: conditionals require a boolean expression" << std::endl;
                 exit(EXIT_FAILURE);
@@ -70,7 +94,7 @@ std::shared_ptr<Type> CheckExpressionType::traverse_type(std::shared_ptr<ASTNode
     else if (dynamic_cast<FunctionCallNode *>(expr.get()) != nullptr)
     {
         auto f = dynamic_cast<FunctionCallNode *>(expr.get());
-        return this->s.get_global_function(f->name).value()->f->RetType;
+        return this->s.get_global_function(f->name).value_or(this->local_functions[f->name.value])->RetType;
     }
     else if (dynamic_cast<ExprNode *>(expr.get()) != nullptr)
     {
@@ -94,7 +118,7 @@ std::shared_ptr<Type> CheckExpressionType::traverse_type(std::shared_ptr<ASTNode
             std::cout << "hazelc: type error in expr" << std::endl;
             exit(EXIT_FAILURE);
         }
-        return std::make_shared<NativeType>(TokenType::boolean);
+        return std::make_shared<BoolType>();
     }
     return nullptr;
 }

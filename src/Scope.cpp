@@ -16,18 +16,18 @@ void ProgramScope::set_current(Tokens name)
 {
     this->current_module = modules[name.value];
 }
-// Function ProgramScope::get_function(Tokens name)
-// {
-//     auto global = this->get_global_function(name);
-//     if (global.has_value())
-//     {
-//         return global.value();
-//     }
-//     else
-//     {
-//         return local_functions[name.value];
-//     }
-// }
+Function ProgramScope::get_function(Tokens name)
+{
+    auto global = this->get_global_function(name);
+    if (global.has_value())
+    {
+        return global.value();
+    }
+    else
+    {
+        return local_functions[name.value];
+    }
+}
 
 std::optional<Function> ProgramScope::get_global_function(Tokens name)
 {

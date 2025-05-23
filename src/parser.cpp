@@ -329,6 +329,38 @@ std::optional<std::shared_ptr<Type>> parse_type(std::vector<Tokens> &tokens)
     {
 
         auto ty = match_and_remove(typeVector, tokens);
+        if (ty.value().type == TokenType::boolean)
+        {
+            return std::make_shared<BoolType>();
+        }
+        else if (ty.value().type == TokenType::character)
+        {
+            return std::make_shared<CharacterType>();
+        }
+        else if (ty.value().type == TokenType::Byte)
+        {
+            return std::make_shared<ByteType>(false);
+        }
+        else if (ty.value().type == TokenType::Ubyte)
+        {
+            return std::make_shared<ByteType>(true);
+        }
+        else if (ty.value().type == TokenType::Integer)
+        {
+            return std::make_shared<IntegerType>(false);
+        }
+        else if (ty.value().type == TokenType::Uinteger)
+        {
+            return std::make_shared<IntegerType>(true);
+        }
+        else if (ty.value().type == TokenType::Decimal)
+        {
+            return std::make_shared<DecimalType>();
+        }
+        else if (ty.value().type == TokenType::string)
+        {
+            return std::make_shared<StringType>();
+        }
         return std::make_shared<NativeType>(ty.value());
     }
     else if (look_ahead(TokenType::Open_Parenthesis, tokens))

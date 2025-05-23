@@ -16,8 +16,8 @@ struct SemanticFunction
 struct SemanticModule
 {
     Tokens name;
-    std::map<std::string, FunctionNode *> functions;
-    std::map<std::string, FunctionNode *> exported_functions;
+    std::map<std::string, std::shared_ptr<FunctionRefNode>> functions;
+    std::map<std::string, std::shared_ptr<FunctionRefNode>> exported_functions;
     std::vector<Tokens> imports;
     // std::shared_ptr<ModuleNode> module;
     // std::map<std::string, std::vector<SemanticFunction>> functions;
@@ -31,12 +31,13 @@ class IntermediateScope
 {
 public:
     std::map<std::string, SemanticModule> modules;
+
     SemanticModule current;
     IntermediateScope();
 
     IntermediateScope(std::map<std::string, SemanticModule> modules);
     void set_current_module(std::string s);
-    std::optional<FunctionNode *> get_global_function(Tokens name);
+    std::optional<std::shared_ptr<FunctionRefNode>> get_global_function(Tokens name);
 };
 #endif
 
@@ -46,8 +47,8 @@ class SemanticGlobalScopeVisitor : public Visitor
 {
 public:
     std::map<std::string, std::shared_ptr<ModuleNode>> avail_modules;
-    std::map<std::string, FunctionNode *> module_functions;
-    std::map<std::string, FunctionNode *> exported_functions;
+    std::map<std::string, std::shared_ptr<FunctionRefNode>> module_functions;
+    std::map<std::string, std::shared_ptr<FunctionRefNode>> exported_functions;
     std::map<std::string, SemanticModule> modules;
     std::shared_ptr<ModuleNode> current;
     SemanticModule current_AST_module;
@@ -64,7 +65,7 @@ public:
 #define FUNCTION_LOCAL_SCOPE_H
 struct FunctionLocalScope
 {
-    std::map<std::string, FunctionNode *> functions;
+    std::map<std::string, std::shared_ptr<FunctionRefNode>> functions;
 };
 #endif
 
@@ -79,9 +80,9 @@ private:
     std::optional<FastLookup> find_function_local(Tokens name);
     std::optional<FastLookup> find_function(Tokens name);
 
-    std::optional<FunctionNode *> get_local_function(Tokens name);
-    std::optional<FunctionNode *> get_function(Tokens name);
-    std::optional<FunctionNode *> get_global_function(Tokens name);
+    std::optional<std::shared_ptr<FunctionRefNode>> get_local_function(Tokens name);
+    std::optional<std::shared_ptr<FunctionRefNode>> get_function(Tokens name);
+    std::optional<std::shared_ptr<FunctionRefNode>> get_global_function(Tokens name);
 
     std::map<std::string, SemanticModule> modules;
     SemanticModule current_AST_module;
@@ -112,6 +113,7 @@ class TypeCheckerVistor : public Visitor
 public:
     IntermediateScope modules;
     SemanticModule current_AST_module;
+    std::map<std::string, std::shared_ptr<FunctionRefNode>> local_functions;
 
     TypeCheckerVistor(IntermediateScope modules);
 
@@ -129,8 +131,8 @@ class CheckExpressionType : public Visitor
 public:
     std::shared_ptr<Type> match_type;
     IntermediateScope s;
-
-    CheckExpressionType(std::shared_ptr<Type> match_type, IntermediateScope s);
+    std::map<std::string, std::shared_ptr<FunctionRefNode>> local_functions;
+    CheckExpressionType(std::shared_ptr<Type> match_type, IntermediateScope s, std::map<std::string, std::shared_ptr<FunctionRefNode>> local_functions);
     std::shared_ptr<Type> traverse_type(std::shared_ptr<ASTNode> expr);
 };
 #endif

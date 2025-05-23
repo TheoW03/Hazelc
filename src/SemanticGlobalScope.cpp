@@ -13,7 +13,7 @@ void SemanticGlobalScopeVisitor::Visit(FunctionNode *node)
     if (module_functions.find(node->f->FunctionName.value) == module_functions.end())
     {
 
-        module_functions.insert(std::make_pair(node->f->FunctionName.value, (node)));
+        module_functions.insert(std::make_pair(node->f->FunctionName.value, (node->f)));
     }
     else
     {
@@ -22,7 +22,7 @@ void SemanticGlobalScopeVisitor::Visit(FunctionNode *node)
     }
     if (node->can_export)
     {
-        this->exported_functions.insert(std::make_pair(node->f->FunctionName.value, (node)));
+        this->exported_functions.insert(std::make_pair(node->f->FunctionName.value, (node->f)));
     }
     // std::map<std::string, std::vector<SemanticFunction>> func;
     // // SemanticFunction f = {no};

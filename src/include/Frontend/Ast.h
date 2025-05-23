@@ -64,6 +64,7 @@ public:
     bool is_unsigned;
     IntegerType(bool is_unsigned);
     std::string get_type_value() override;
+    std::string to_string() override;
 
     bool can_accept(Type *type) override;
 };
@@ -78,6 +79,7 @@ public:
 
     ByteType(bool is_unsigned);
     std::string get_type_value() override;
+    std::string to_string() override;
 
     bool can_accept(Type *type) override;
 };
@@ -90,6 +92,7 @@ class BoolType : public Type
 public:
     BoolType();
     std::string get_type_value() override;
+    std::string to_string() override;
 
     bool can_accept(Type *type) override;
 };
@@ -102,6 +105,7 @@ class CharacterType : public Type
 public:
     CharacterType();
     std::string get_type_value() override;
+    std::string to_string() override;
 
     bool can_accept(Type *type) override;
 };
@@ -114,6 +118,7 @@ class DecimalType : public Type
 public:
     DecimalType();
     std::string get_type_value() override;
+    std::string to_string() override;
 
     bool can_accept(Type *type) override;
 };
@@ -127,6 +132,7 @@ public:
     StringType();
     std::string get_type_value() override;
     bool can_accept(Type *type) override;
+    std::string to_string() override;
 };
 #endif
 
@@ -311,7 +317,6 @@ class Visitor;
 class FunctionCallNode : public ASTNode
 {
 public:
-    FastLookup ident;
     Tokens name;
     std::vector<std::shared_ptr<FunctionRefNode>> param_types;
     std::vector<std::shared_ptr<ASTNode>> params;

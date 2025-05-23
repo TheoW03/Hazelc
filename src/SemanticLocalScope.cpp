@@ -48,7 +48,7 @@ std::optional<FastLookup> SemanticLocalScopeVisitor::find_function_local(Tokens 
     return {};
 }
 
-std::optional<FunctionNode *> SemanticLocalScopeVisitor::get_local_function(Tokens name)
+std::optional<std::shared_ptr<FunctionRefNode>> SemanticLocalScopeVisitor::get_local_function(Tokens name)
 {
     for (int i = 0; i < scope.size(); i++)
     {
@@ -59,7 +59,7 @@ std::optional<FunctionNode *> SemanticLocalScopeVisitor::get_local_function(Toke
     }
     return {};
 }
-std::optional<FunctionNode *> SemanticLocalScopeVisitor::get_global_function(Tokens name)
+std::optional<std::shared_ptr<FunctionRefNode>> SemanticLocalScopeVisitor::get_global_function(Tokens name)
 {
     auto global_functions = this->current_AST_module.functions;
     if (global_functions.find(name.value) != global_functions.end())
@@ -83,7 +83,7 @@ std::optional<FunctionNode *> SemanticLocalScopeVisitor::get_global_function(Tok
     }
     return {};
 }
-std::optional<FunctionNode *> SemanticLocalScopeVisitor::get_function(Tokens name)
+std::optional<std::shared_ptr<FunctionRefNode>> SemanticLocalScopeVisitor::get_function(Tokens name)
 {
     auto function_global = get_global_function(name);
     if (function_global.has_value())
@@ -126,7 +126,7 @@ void SemanticLocalScopeVisitor::Visit(FunctionNode *node)
     }
     if (scope.size() >= 1)
     {
-        scope[scope.size() - 1].functions.insert(std::make_pair(node->f->FunctionName.value, (node)));
+        scope[scope.size() - 1].functions.insert(std::make_pair(node->f->FunctionName.value, (node->f)));
         // scope[scope.size() - 1].functions.insert(node->f->FunctionName.value);
     }
     FunctionLocalScope f;
@@ -134,7 +134,7 @@ void SemanticLocalScopeVisitor::Visit(FunctionNode *node)
     for (int i = 0; i < node->f->params.size(); i++)
     {
         scope[scope.size() - 1].functions.insert(std::make_pair(node->f->params[i]->FunctionName.value,
-                                                                (node)));
+                                                                (node->f->params[i])));
     }
 
     // for (int i = 0; i < node->stmnts.size(); i++)
@@ -169,8 +169,7 @@ void SemanticLocalScopeVisitor::Visit(FunctionCallNode *node)
     {
         node->params[i]->Accept(this);
     }
-    node->ident = this->find_function(node->name).value();
-    node->param_types = this->get_function(node->name).value()->f->params;
+    node->param_types = this->get_function(node->name).value()->params;
     // std::cout << node->ident.ident_name.value().value << std::endl;
 }
 
@@ -237,7 +236,7 @@ void IntermediateScope::set_current_module(std::string s)
 {
     this->current = this->modules[s];
 }
-std::optional<FunctionNode *> IntermediateScope::get_global_function(Tokens name)
+std::optional<std::shared_ptr<FunctionRefNode>> IntermediateScope::get_global_function(Tokens name)
 {
     auto global_functions = current.functions;
     if (global_functions.find(name.value) != global_functions.end())

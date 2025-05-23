@@ -45,6 +45,7 @@ public:
 
     Function get_current_function();
     Function set_current_function();
+    Function get_function(Tokens name);
 
     Function get_function_fast(FastLookup lookup);
     // Function get_function_fast(FastLookup name);
