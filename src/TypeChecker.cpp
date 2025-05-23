@@ -46,7 +46,12 @@ void TypeCheckerVistor::Visit(FunctionNode *node)
             this->local_functions.insert(std::make_pair(node->f->params[i]->FunctionName.value, node->f->params[i]));
         }
     }
+    for (int i = 0; i < node->stmnts->functions.size(); i++)
+    {
+        node->stmnts->functions[i]->Accept(this);
+    }
     auto e = node->stmnts->exit->Expr;
+    e->Accept(this);
     auto c = CheckExpressionType(node->f->RetType, modules, local_functions);
     auto a = c.traverse_type(e);
 
@@ -54,6 +59,44 @@ void TypeCheckerVistor::Visit(FunctionNode *node)
     {
         std::cout << "hazelc: type error in function " << node->f->FunctionName.value << " expression type doesnt match the return type" << std::endl;
         exit(EXIT_FAILURE);
+    }
+}
+void TypeCheckerVistor::Visit(ExprNode *node)
+{
+    node->lhs->Accept(this);
+
+    node->rhs->Accept(this);
+}
+void TypeCheckerVistor::Visit(BooleanExprNode *node)
+{
+    node->lhs->Accept(this);
+
+    node->rhs->Accept(this);
+}
+
+void TypeCheckerVistor::Visit(ConditionalNode *node)
+{
+    for (int i = 0; i < node->branches.size(); i++)
+    {
+        auto c = CheckExpressionType(std::make_shared<BoolType>(), modules, local_functions);
+        auto a = c.traverse_type(node->branches[i]->condition);
+        if (!std::make_shared<BoolType>()->can_accept(a.get()))
+        {
+            std::cout << "hazelc: conditionals require a boolean expression" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+        for (int i = 0; i < node->branches[i]->stmnts->functions.size(); i++)
+        {
+            node->branches[i]->stmnts->functions[i]->Accept(this);
+        }
+        auto e = node->branches[i]->stmnts->exit->Expr;
+        auto type = CheckExpressionType(node->type, modules, local_functions).traverse_type(e);
+        node->branches[i]->stmnts->exit->Expr->Accept(this);
+        if (!node->type->can_accept(type.get()))
+        {
+            std::cout << "hazelc: type error in conditional" << std::endl;
+            exit(EXIT_FAILURE);
+        }
     }
 }
 CheckExpressionType::CheckExpressionType(std::shared_ptr<Type> match_type, IntermediateScope s, std::map<std::string, std::shared_ptr<FunctionRefNode>> local_functions)
@@ -81,7 +124,7 @@ std::shared_ptr<Type> CheckExpressionType::traverse_type(std::shared_ptr<ASTNode
         auto f = dynamic_cast<ConditionalNode *>(expr.get());
         for (int i = 0; i < f->branches.size(); i++)
         {
-            auto c = CheckExpressionType(std::make_shared<NativeType>(TokenType::boolean), s, local_functions);
+            auto c = CheckExpressionType(std::make_shared<BoolType>(), s, local_functions);
             auto a = c.traverse_type(f->branches[i]->condition);
             if (!std::make_shared<BoolType>()->can_accept(a.get()))
             {

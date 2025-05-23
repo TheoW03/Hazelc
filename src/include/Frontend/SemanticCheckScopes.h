@@ -120,6 +120,10 @@ public:
     void Visit(ProgramNode *node) override;
     void Visit(ModuleNode *node) override;
     void Visit(FunctionNode *node) override;
+
+    void Visit(ExprNode *node) override;
+    void Visit(BooleanExprNode *node) override;
+    void Visit(ConditionalNode *node) override;
 };
 #endif
 
