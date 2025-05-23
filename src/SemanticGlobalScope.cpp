@@ -1,6 +1,6 @@
 #include <Frontend/SemanticCheckScopes.h>
 #include <map>
-
+#include <error.h>
 // pass to resolve global scope
 // it creates a list data structure of the different modules and there imports
 // so we can then validate the local scope
@@ -49,8 +49,9 @@ void SemanticGlobalScopeVisitor::Visit(FunctionNode *node)
     }
     else
     {
-        std::cout << "repeating function name, \"" << node->f->FunctionName.value << "\"" << std::endl;
-        exit(EXIT_FAILURE);
+        error("repeating function name, " + node->f->FunctionName.value, node->f->FunctionName);
+        // std::cout << "repeating function name, \"" << node->f->FunctionName.value << "\"" << std::endl;
+        // exit(EXIT_FAILURE);
     }
     if (node->can_export)
     {

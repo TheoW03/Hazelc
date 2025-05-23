@@ -5,6 +5,7 @@
 #include <Frontend/Ast.h>
 #include <map>
 #include <stdint.h>
+#include <error.h>
 
 std::optional<Tokens> current;
 
@@ -18,11 +19,6 @@ using parser = std::optional<std::shared_ptr<ASTNode>> (*)(std::vector<Tokens> &
 // match and romve has been overloaded to take a vector
 // what it does in that codase is iterate the vector if it contians one tokenType of the 0th element of the list of tokens
 // it removes it and returns it
-void error(std::string message, Tokens error_token)
-{
-    std::cout << "hazelc: " << message << " in file  " << error_token.file_name << " on line " << error_token.line_num << std::endl;
-    exit(EXIT_FAILURE);
-}
 
 std::optional<Tokens> match_and_remove(TokenType token_type, std::vector<Tokens> &tokens)
 {

@@ -1,6 +1,6 @@
 #include <vector>
 #include <Frontend/SemanticCheckScopes.h>
-
+#include <error.h>
 TypeCheckerVistor::TypeCheckerVistor(IntermediateScope modules)
 {
     this->modules = modules;
@@ -57,8 +57,9 @@ void TypeCheckerVistor::Visit(FunctionNode *node)
 
     if (!node->f->RetType->can_accept(a.get()))
     {
-        std::cout << "hazelc: type error in function " << node->f->FunctionName.value << " expression type doesnt match the return type" << std::endl;
-        exit(EXIT_FAILURE);
+        error("type error in function, expects a " + node->f->RetType->get_type_value() + " got a " + a->get_type_value(), node->f->FunctionName);
+        // std::cout << "hazelc: type error in function " << node->f->FunctionName.value << " expression type doesnt match the return type" << std::endl;
+        // exit(EXIT_FAILURE);
     }
 }
 void TypeCheckerVistor::Visit(ExprNode *node)
@@ -122,16 +123,6 @@ std::shared_ptr<Type> CheckExpressionType::traverse_type(std::shared_ptr<ASTNode
     else if (dynamic_cast<ConditionalNode *>(expr.get()) != nullptr)
     {
         auto f = dynamic_cast<ConditionalNode *>(expr.get());
-        for (int i = 0; i < f->branches.size(); i++)
-        {
-            auto c = CheckExpressionType(std::make_shared<BoolType>(), s, local_functions);
-            auto a = c.traverse_type(f->branches[i]->condition);
-            if (!std::make_shared<BoolType>()->can_accept(a.get()))
-            {
-                std::cout << "hazelc: conditionals require a boolean expression" << std::endl;
-                exit(EXIT_FAILURE);
-            }
-        }
         return f->type;
     }
     else if (dynamic_cast<FunctionCallNode *>(expr.get()) != nullptr)

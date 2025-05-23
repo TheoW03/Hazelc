@@ -1,5 +1,5 @@
 #include <optimization/TreeShake.h>
-
+#include <error.h>
 // this pass impls a "tree-shake" for modules only for functions the LLVM has to be the one todo this.
 // It goes through each module
 // creates a data strcuture of the modules that are used
@@ -63,15 +63,18 @@ void ResolveRecursiveModules::Visit(ModuleNode *node)
     {
         if (this->avail_modules.find(node->imports[i].value) == this->avail_modules.end())
         {
-            std::cout << "invalid import \"" << node->imports[i].value << "\" in module \"" << node->name.value << "\"" << std::endl;
-            exit(EXIT_FAILURE);
+            error("invalid import, " + node->imports[i].value, node->imports[i]);
+
+            // std::cout << "invalid import \"" << node->imports[i].value << "\" in module \"" << node->name.value << "\"" << std::endl;
+            // exit(EXIT_FAILURE);
         }
         auto m = avail_modules[node->imports[i].value];
 
         if (visited_modules.find(m->name.value) != visited_modules.end())
         {
-            std::cout << "hazelc: cicurlar import module " << node->name.value << " depends on module " << m->name.value << std::endl;
-            exit(EXIT_FAILURE);
+            error("circular import, " + node->name.value + "depends on module " + m->name.value, node->name);
+            // std::cout << "hazelc: cicurlar import module " << node->name.value << " depends on module " << m->name.value << std::endl;
+            // exit(EXIT_FAILURE);
         }
         if (this->used_modules.find(m->name.value) == this->used_modules.end())
         {

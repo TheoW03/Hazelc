@@ -49,6 +49,7 @@ add_llvm_executable(${EXECUTABLE_NAME}
    src/DeadCodeElim.cpp
    src/TypeChecker.cpp
    src/CRuntimeProcudures.cpp
+   src/error.cpp
 
 )
 

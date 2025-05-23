@@ -1,5 +1,5 @@
 #include <Frontend/SemanticCheckScopes.h>
-
+#include <error.h>
 SemanticLocalScopeVisitor::SemanticLocalScopeVisitor(std::map<std::string, SemanticModule> modules)
 {
     this->modules = modules;
@@ -121,8 +121,10 @@ void SemanticLocalScopeVisitor::Visit(FunctionNode *node)
     if ((find_function_global(node->f->FunctionName).has_value() && scope.size() != 0) //
         || find_function_local(node->f->FunctionName).has_value())
     {
-        std::cout << "there is an already defined function \"" << node->f->FunctionName.value << "\"" << node->f->FunctionName.line_num << std::endl;
-        exit(EXIT_FAILURE);
+        // std::cout << "there is an already defined function \"" << node->f->FunctionName.value << "\"" << node->f->FunctionName.line_num << std::endl;
+        // exit(EXIT_FAILURE);
+
+        error("repeating function name, " + node->f->FunctionName.value, node->f->FunctionName);
     }
     if (scope.size() >= 1)
     {
@@ -161,9 +163,7 @@ void SemanticLocalScopeVisitor::Visit(FunctionCallNode *node)
 {
     if (!this->find_function(node->name).has_value())
     {
-        std::cout << "hazelc: function call " << node->name.value
-                  << " is not a defined function " << std::endl;
-        exit(EXIT_FAILURE);
+        error("undefined function call," + node->name.value, node->name);
     }
     for (int i = 0; i < node->params.size(); i++)
     {
