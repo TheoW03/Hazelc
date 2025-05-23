@@ -1,14 +1,32 @@
 #include <Frontend/Ast.h>
 #include <visitor.h>
 #include <map>
+#include <error.h>
 
 ASTNode::~ASTNode()
 {
 }
-ASTNode::ASTNode()
+
+ASTNode::ASTNode(NodeLocation node)
 {
+    this->node = node;
 }
 IntegerNode::IntegerNode(Tokens num)
+{
+    if (num.type == TokenType::BaseTenDigit)
+    {
+        this->number = stoi(num.value);
+    }
+    else if (num.type == TokenType::HexDigit)
+    {
+        this->number = std::stoul(num.value, nullptr, 16);
+    }
+    else if (num.type == TokenType::BinaryDigit)
+    {
+        this->number = std::stoul(num.value, nullptr, 2);
+    }
+}
+IntegerNode::IntegerNode(Tokens num, NodeLocation location) : ASTNode(location)
 {
     if (num.type == TokenType::BaseTenDigit)
     {
@@ -32,6 +50,9 @@ void IntegerNode::Accept(Visitor *v)
     v->Visit(this);
 }
 
+ASTNode::ASTNode()
+{
+}
 std::string IntegerNode::to_string()
 {
     return std::to_string(this->number);
@@ -529,10 +550,11 @@ ConditionalNode::ConditionalNode()
 {
 }
 
-ConditionalNode::ConditionalNode(std::vector<std::shared_ptr<BranchNode>> branches, std::shared_ptr<Type> type)
+ConditionalNode::ConditionalNode(std::vector<std::shared_ptr<BranchNode>> branches, std::shared_ptr<Type> type, NodeLocation location) : ASTNode(location)
 {
     this->branches = branches;
     this->type = type;
+    this->node = location;
 }
 
 void ConditionalNode::Accept(Visitor *v)

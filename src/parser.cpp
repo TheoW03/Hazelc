@@ -113,7 +113,9 @@ std::optional<std::shared_ptr<ASTNode>> factor(std::vector<Tokens> &tokens)
         {
             return std::make_shared<DecimalNode>(number.value());
         }
-        return std::make_shared<IntegerNode>(number.value());
+        NodeLocation a = {number.value().file_name,
+                          number.value().line_num};
+        return std::make_shared<IntegerNode>(number.value(), a);
     }
     else if (match_and_remove(TokenType::None, tokens).has_value())
     {
@@ -245,6 +247,8 @@ std::optional<std::shared_ptr<BranchNode>> parse_branch(std::vector<Tokens> &tok
 }
 std::optional<std::shared_ptr<ConditionalNode>> parse_conditional(std::vector<Tokens> &tokens)
 {
+    auto location = match_and_remove(TokenType::Conditional, tokens).value();
+    NodeLocation n = {location.file_name, location.line_num};
     std::optional<std::shared_ptr<Type>> parse_type(std::vector<Tokens> & tokens);
     match_and_remove(TokenType::Colon, tokens);
     auto type = parse_type(tokens);
@@ -260,26 +264,24 @@ std::optional<std::shared_ptr<ConditionalNode>> parse_conditional(std::vector<To
     if (match_and_remove(TokenType::Default, tokens).has_value())
     {
         std::shared_ptr<BlockNode> parse_block(std::vector<Tokens> & tokens);
-        Tokens fake_bool = {"true", TokenType::True, peek(tokens).line_num};
-
         auto s = parse_block(tokens);
-        auto condutio = std::make_shared<BooleanConstNode>(fake_bool);
+        auto condutio = std::make_shared<BooleanConstNode>(true);
         c.push_back(std::make_shared<BranchNode>(condutio, s));
     }
     else
     {
-        error("conditionals must always have a defualt condition, denoted as $defualt", peek(tokens));
+        error("conditionals must always have a defualt condition, denoted as $defualt", n);
 
         // std::cout << "hazelc: conditionals must always have a defualt condition, denoted as $defualt" << std::endl;
         // std::cout << "hazelc: compilation terminated" << std::endl;
         // exit(EXIT_FAILURE);
     }
     match_and_remove(TokenType::Dedents, tokens);
-    return std::make_shared<ConditionalNode>(c, type.value());
+    return std::make_shared<ConditionalNode>(c, type.value(), n);
 }
 std::optional<std::shared_ptr<ASTNode>> expr_parse(std::vector<Tokens> &tokens)
 {
-    if (match_and_remove(TokenType::Conditional, tokens).has_value())
+    if (look_ahead(TokenType::Conditional, tokens))
     {
         auto f = parse_conditional(tokens);
         return f;

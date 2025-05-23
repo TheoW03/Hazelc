@@ -58,8 +58,6 @@ void TypeCheckerVistor::Visit(FunctionNode *node)
     if (!node->f->RetType->can_accept(a.get()))
     {
         error("type error in function, expects a " + node->f->RetType->get_type_value() + " got a " + a->get_type_value(), node->f->FunctionName);
-        // std::cout << "hazelc: type error in function " << node->f->FunctionName.value << " expression type doesnt match the return type" << std::endl;
-        // exit(EXIT_FAILURE);
     }
 }
 void TypeCheckerVistor::Visit(ExprNode *node)
@@ -83,8 +81,9 @@ void TypeCheckerVistor::Visit(ConditionalNode *node)
         auto a = c.traverse_type(node->branches[i]->condition);
         if (!std::make_shared<BoolType>()->can_accept(a.get()))
         {
-            std::cout << "hazelc: conditionals require a boolean expression" << std::endl;
-            exit(EXIT_FAILURE);
+            error("expected boolean got " + a->get_type_value(), node->node);
+            // std::cout << "hazelc: conditionals require a boolean expression" << std::endl;
+            // exit(EXIT_FAILURE);
         }
         for (int i = 0; i < node->branches[i]->stmnts->functions.size(); i++)
         {
@@ -95,8 +94,7 @@ void TypeCheckerVistor::Visit(ConditionalNode *node)
         node->branches[i]->stmnts->exit->Expr->Accept(this);
         if (!node->type->can_accept(type.get()))
         {
-            std::cout << "hazelc: type error in conditional" << std::endl;
-            exit(EXIT_FAILURE);
+            error("expected " + node->type->get_type_value() + " type got " + type->get_type_value() + " type", node->node);
         }
     }
 }
@@ -111,6 +109,10 @@ std::shared_ptr<Type> CheckExpressionType::traverse_type(std::shared_ptr<ASTNode
     if (dynamic_cast<IntegerNode *>(expr.get()) != nullptr)
     {
         return std::make_shared<IntegerType>(false);
+    }
+    else if (dynamic_cast<DecimalNode *>(expr.get()) != nullptr)
+    {
+        return std::make_shared<DecimalType>();
     }
     else if (dynamic_cast<BooleanConstNode *>(expr.get()) != nullptr)
     {
@@ -137,8 +139,7 @@ std::shared_ptr<Type> CheckExpressionType::traverse_type(std::shared_ptr<ASTNode
         auto rhstype = traverse_type(exprs->rhs);
         if (!lhstype->can_accept(rhstype.get()))
         {
-            std::cout << "hazelc: type error in expr" << std::endl;
-            exit(EXIT_FAILURE);
+            error("expected " + lhstype->get_type_value() + " got " + rhstype->get_type_value(), exprs->operation);
         }
         return rhstype;
     }
@@ -149,8 +150,7 @@ std::shared_ptr<Type> CheckExpressionType::traverse_type(std::shared_ptr<ASTNode
         auto rhstype = traverse_type(exprs->rhs);
         if (!lhstype->can_accept(rhstype.get()))
         {
-            std::cout << "hazelc: type error in expr" << std::endl;
-            exit(EXIT_FAILURE);
+            error("expected " + lhstype->get_type_value() + "got " + rhstype->get_type_value(), exprs->op);
         }
         return std::make_shared<BoolType>();
     }

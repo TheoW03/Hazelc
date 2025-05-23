@@ -148,6 +148,8 @@ void InitCompiler(Output output, std::shared_ptr<ProgramNode> node)
             }
             pass.run(module);
             int returnCode = std::system(("clang a.o -o " + output.output_files[i]).c_str());
+            std::system("rm a.o");
+
             dest.flush();
 
             break;

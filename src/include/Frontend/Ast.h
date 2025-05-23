@@ -3,7 +3,7 @@
 #include <memory>
 #include <map>
 #include <optional>
-
+#include <error.h>
 #ifndef IDENT_H
 #define IDENT_H
 struct FastLookup
@@ -20,12 +20,17 @@ class ASTNode
 {
 public:
     // Visitor v;
+
+    NodeLocation node;
     virtual void Accept(Visitor *v) = 0;
     ASTNode();
+    ASTNode(NodeLocation node);
+
     ~ASTNode();
     virtual std::string to_string() = 0;
 };
 #endif
+
 // #ifndef CALL_H
 // #define CALL_H
 // class Visitor;
@@ -191,6 +196,8 @@ public:
     int number;
 
     IntegerNode(Tokens num);
+    IntegerNode(Tokens num, NodeLocation location);
+
     IntegerNode(int num);
     void Accept(Visitor *v);
     std::string to_string();
@@ -463,7 +470,7 @@ public:
     std::shared_ptr<Type> type;
     ConditionalNode();
     ConditionalNode(std::vector<std::shared_ptr<BranchNode>> branches,
-                    std::shared_ptr<Type> type);
+                    std::shared_ptr<Type> type, NodeLocation location);
     void Accept(Visitor *v) override;
     std::string to_string();
 };
