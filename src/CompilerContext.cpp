@@ -30,30 +30,56 @@ llvm::Type *CompilerContext::compile_Type(llvm::IRBuilder<> &builder, llvm::LLVM
 
     //     // TODO:
     //     // very temporary solution. need to fix later to include functions
-    if (dynamic_cast<NativeType *>(ty.get()))
+
+    if (dynamic_cast<IntegerType *>(ty.get()))
     {
-        auto p = dynamic_cast<NativeType *>(ty.get());
-        if (p->type.type == TokenType::Integer || p->type.type == TokenType::Uinteger)
-        {
-            return builder.getInt64Ty();
-        }
-        else if (p->type.type == TokenType::Decimal)
-        {
-            return builder.getDoubleTy();
-        }
-        else if (p->type.type == TokenType::Byte || p->type.type == TokenType::character || p->type.type == TokenType::Ubyte)
-        {
-            return builder.getInt8Ty();
-        }
-        else if (p->type.type == TokenType::boolean)
-        {
-            return builder.getInt1Ty();
-        }
-        else if (p->type.type == TokenType::string)
-        {
-            return this->get_string_inner_type();
-        }
+        return builder.getInt64Ty();
     }
+    else if (dynamic_cast<ByteType *>(ty.get()))
+    {
+        return builder.getInt8Ty();
+    }
+    else if (dynamic_cast<BoolType *>(ty.get()))
+    {
+        return builder.getInt1Ty();
+    }
+    else if (dynamic_cast<StringType *>(ty.get()))
+    {
+        return this->get_string_inner_type();
+    }
+    else if (dynamic_cast<DecimalType *>(ty.get()))
+    {
+        return builder.getDoubleTy();
+    }
+    else if (dynamic_cast<CharacterType *>(ty.get()))
+    {
+        return builder.getInt8Ty();
+    }
+
+    // if (dynamic_cast<NativeType *>(ty.get()))
+    // {
+    //     auto p = dynamic_cast<NativeType *>(ty.get());
+    //     if (p->type.type == TokenType::Integer || p->type.type == TokenType::Uinteger)
+    //     {
+    //         return builder.getInt64Ty();
+    //     }
+    //     else if (p->type.type == TokenType::Decimal)
+    //     {
+    //         return builder.getDoubleTy();
+    //     }
+    //     else if (p->type.type == TokenType::Byte || p->type.type == TokenType::character || p->type.type == TokenType::Ubyte)
+    //     {
+    //         return builder.getInt8Ty();
+    //     }
+    //     else if (p->type.type == TokenType::boolean)
+    //     {
+    //         return builder.getInt1Ty();
+    //     }
+    //     else if (p->type.type == TokenType::string)
+    //     {
+    //         return this->get_string_inner_type();
+    //     }
+    // }
     // NOTE:
     //  for lists generate the entire list and when index simply shrink down the list
     //  and return the value indexed

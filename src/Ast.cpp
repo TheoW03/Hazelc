@@ -138,27 +138,27 @@ std::string FunctionNode::to_string()
     return std::string();
 }
 
-std::string NativeType::to_string()
-{
-    return std::string();
-}
+// std::string NativeType::to_string()
+// {
+//     return std::string();
+// }
 Type::Type() {}
 Type::~Type() {}
 
-NativeType::NativeType(Tokens type)
-{
-    this->type = type;
-}
+// NativeType::NativeType(Tokens type)
+// {
+//     this->type = type;
+// }
 
-NativeType::NativeType(TokenType t)
-{
-    this->type = {"", t, 0};
-}
+// NativeType::NativeType(TokenType t)
+// {
+//     this->type = {"", t, 0};
+// }
 
-std::string NativeType::get_type_value()
-{
-    return type.value;
-}
+// std::string NativeType::get_type_value()
+// {
+//     return type.value;
+// }
 IntegerType::IntegerType(bool is_unsigned)
 {
     this->is_unsigned = is_unsigned;
@@ -221,15 +221,15 @@ bool BoolType::can_accept(Type *type)
 {
     return dynamic_cast<BoolType *>(type);
 }
-bool NativeType::can_accept(Type *type)
-{
-    if (dynamic_cast<NativeType *>(type))
-    {
-        auto c = dynamic_cast<NativeType *>(type);
-        return c->type.type == this->type.type;
-    }
-    return false;
-}
+// bool NativeType::can_accept(Type *type)
+// {
+//     if (dynamic_cast<NativeType *>(type))
+//     {
+//         auto c = dynamic_cast<NativeType *>(type);
+//         return c->type.type == this->type.type;
+//     }
+//     return false;
+// }
 FunctionType::FunctionType(std::vector<std::shared_ptr<Type>> params,
                            std::shared_ptr<Type> returnType)
 {

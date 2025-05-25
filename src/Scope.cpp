@@ -74,21 +74,21 @@ Function ProgramScope::set_current_function()
     return current_module.set_current_function();
 }
 
-Function ProgramScope::get_function_fast(FastLookup lookup)
-{
-    if (lookup.module_name.has_value())
-    {
-        if (this->current_module.get_function(lookup.ident_name.value()).has_value())
-        {
-            return this->current_module.get_function(lookup.ident_name.value()).value();
-        }
-        return modules[lookup.module_name.value().value].get_exported_function(lookup.ident_name.value()).value();
-    }
-    else
-    {
-        return local_functions[lookup.ident_name.value().value];
-    }
-}
+// Function ProgramScope::get_function_fast(FastLookup lookup)
+// {
+//     if (lookup.module_name.has_value())
+//     {
+//         if (this->current_module.get_function(lookup.ident_name.value()).has_value())
+//         {
+//             return this->current_module.get_function(lookup.ident_name.value()).value();
+//         }
+//         return modules[lookup.module_name.value().value].get_exported_function(lookup.ident_name.value()).value();
+//     }
+//     else
+//     {
+//         return local_functions[lookup.ident_name.value().value];
+//     }
+// }
 std::optional<int> ProgramScope::addLocal(Tokens name, Function function)
 {
     if (this->local_functions.find(name.value) != this->local_functions.end())

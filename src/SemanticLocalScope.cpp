@@ -7,15 +7,12 @@ SemanticLocalScopeVisitor::SemanticLocalScopeVisitor(std::map<std::string, Seman
 
 // these find functions, optional so we can do more stuff with them
 
-std::optional<FastLookup> SemanticLocalScopeVisitor::find_function_global(Tokens name)
+std::optional<bool> SemanticLocalScopeVisitor::find_function_global(Tokens name)
 {
     auto global_functions = this->current_AST_module.functions;
     if (global_functions.find(name.value) != global_functions.end())
     {
-        FastLookup f = {
-            current_AST_module.name,
-            name};
-        return f;
+        return true;
     }
     else
     {
@@ -25,24 +22,20 @@ std::optional<FastLookup> SemanticLocalScopeVisitor::find_function_global(Tokens
             if (modules[imports[i].value].exported_functions.find(name.value) != modules[imports[i].value].exported_functions.end())
             {
 
-                FastLookup f = {
-                    imports[i],
-                    name};
-                return f;
+                return true;
             }
         }
     }
     return {};
 }
 
-std::optional<FastLookup> SemanticLocalScopeVisitor::find_function_local(Tokens name)
+std::optional<bool> SemanticLocalScopeVisitor::find_function_local(Tokens name)
 {
     for (int i = 0; i < scope.size(); i++)
     {
         if (scope[i].functions.find(name.value) != scope[i].functions.end())
         {
-            FastLookup f = {{}, name};
-            return f;
+            return true;
         }
     }
     return {};
@@ -97,7 +90,7 @@ std::optional<std::shared_ptr<FunctionRefNode>> SemanticLocalScopeVisitor::get_f
     }
     return {}; // return std::optional<int>();
 }
-std::optional<FastLookup> SemanticLocalScopeVisitor::find_function(Tokens name)
+std::optional<bool> SemanticLocalScopeVisitor::find_function(Tokens name)
 {
     auto function_global = find_function_global(name);
     if (function_global.has_value())

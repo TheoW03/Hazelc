@@ -4,14 +4,14 @@
 #include <map>
 #include <optional>
 #include <error.h>
-#ifndef IDENT_H
-#define IDENT_H
-struct FastLookup
-{
-    std::optional<Tokens> module_name;
-    std::optional<Tokens> ident_name;
-};
-#endif
+// #ifndef IDENT_H
+// #define IDENT_H
+// struct FastLookup
+// {
+//     std::optional<Tokens> module_name;
+//     std::optional<Tokens> ident_name;
+// };
+// #endif
 
 #ifndef ASTNODE_H
 #define ASTNODE_H
@@ -141,20 +141,20 @@ public:
 };
 #endif
 
-#ifndef NATIVE_TYPE_H
-#define NATIVE_TYPE_H
+// #ifndef NATIVE_TYPE_H
+// #define NATIVE_TYPE_H
 
-class NativeType : public Type
-{
-public:
-    Tokens type;
-    NativeType(Tokens type);
-    NativeType(TokenType t);
-    std::string get_type_value() override;
-    bool can_accept(Type *type) override;
-    std::string to_string();
-};
-#endif
+// class NativeType : public Type
+// {
+// public:
+//     Tokens type;
+//     NativeType(Tokens type);
+//     NativeType(TokenType t);
+//     std::string get_type_value() override;
+//     bool can_accept(Type *type) override;
+//     std::string to_string();
+// };
+// #endif
 
 #ifndef FUNCTION_TYPE_H
 #define FUNCTION_TYPE_H
@@ -306,7 +306,7 @@ class Visitor;
 class FunctionNode : public ASTNode
 {
 public:
-    FastLookup ident;
+    // FastLookup ident;
     std::shared_ptr<FunctionRefNode> f;
     std::shared_ptr<BlockNode> stmnts;
     bool can_export;

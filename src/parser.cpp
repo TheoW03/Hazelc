@@ -359,7 +359,7 @@ std::optional<std::shared_ptr<Type>> parse_type(std::vector<Tokens> &tokens)
         {
             return std::make_shared<StringType>();
         }
-        return std::make_shared<NativeType>(ty.value());
+        // return std::make_shared<NativeType>(ty.value());
     }
     else if (look_ahead(TokenType::Open_Parenthesis, tokens))
     {

@@ -77,9 +77,9 @@ class SemanticLocalScopeVisitor : public Visitor
 {
 private:
     std::vector<FunctionLocalScope> scope;
-    std::optional<FastLookup> find_function_global(Tokens name);
-    std::optional<FastLookup> find_function_local(Tokens name);
-    std::optional<FastLookup> find_function(Tokens name);
+    std::optional<bool> find_function_global(Tokens name);
+    std::optional<bool> find_function_local(Tokens name);
+    std::optional<bool> find_function(Tokens name);
 
     std::optional<std::shared_ptr<FunctionRefNode>> get_local_function(Tokens name);
     std::optional<std::shared_ptr<FunctionRefNode>> get_function(Tokens name);
