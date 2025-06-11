@@ -1,7 +1,6 @@
 #include <Frontend/SemanticCheckScopes.h>
 #include <error.h>
 #include <sha256.h>
-#include "SemanticCheckScopes.h"
 SemanticLocalScopeVisitor::SemanticLocalScopeVisitor(std::map<std::string, SemanticModule> modules)
 {
     this->modules = modules;
@@ -273,8 +272,10 @@ std::optional<std::shared_ptr<FunctionRefNode>> IntermediateScope::get_global_fu
     }
     return {};
 }
-std::optional<std::string> IntermediateScope::get_global_function_hash(Tokens function_name, Tokens module_name)
+std::optional<std::string> IntermediateScope::get_global_function_hash(Tokens function_name)
 {
-    auto new_name = function_name.value + " " + module_name.value;
+    if (!get_global_function(function_name).has_value())
+        return {};
+    auto new_name = function_name.value + " " + getModuleNameByFunction(function_name).name.value;
     return sha256(new_name);
 }

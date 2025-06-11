@@ -48,6 +48,7 @@ add_llvm_executable(${EXECUTABLE_NAME}
    src/TypeChecker.cpp
    src/CRuntimeProcudures.cpp
    src/error.cpp
+   src/DemodularizationPass.cpp
    src/sha256.cpp
 
 )

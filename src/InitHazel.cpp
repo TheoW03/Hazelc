@@ -4,6 +4,7 @@
 #include <fstream>
 #include <cstdlib>
 #include <cli.h>
+#include <Demoduerlization.h>
 #include <stdexcept>
 #include <visitor.h>
 #include <optimization/TreeShake.h>
@@ -133,8 +134,14 @@ void runPasses(std::shared_ptr<ProgramNode> node, Output cli)
     std::cout << "hazelc: checking types" << std::endl;
 
     node->Accept(std::make_shared<ConstantFoldingVisitor>().get());
+
     std::cout << "hazelc: constant folding" << std::endl;
     auto mainModule = node->getMainModule();
+    auto demoddlarize = std::make_shared<DemodularizedVisitor>(IntermediateScope(semantic->modules));
+    node->Accept(demoddlarize.get());
+
+    std::cout << "hazelc: demodularize" << std::endl;
+
     if (mainModule.has_value())
     {
         std::shared_ptr<TreeShake> shake_imports = std::make_shared<TreeShake>();

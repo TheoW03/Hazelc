@@ -41,7 +41,7 @@ public:
     IntermediateScope(std::map<std::string, SemanticModule> modules);
     void set_current_module(std::string s);
     std::optional<std::shared_ptr<FunctionRefNode>> get_global_function(Tokens function_name);
-    std::optional<std::string> get_global_function_hash(Tokens function_name, Tokens module_name);
+    std::optional<std::string> get_global_function_hash(Tokens function_name);
 };
 #endif
 
