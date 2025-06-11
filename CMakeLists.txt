@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22.1)
-project(SimpleProject)
+project(Hazel)
 
 find_package(LLVM 17 REQUIRED CONFIG)
 set(CMAKE_CXX_STANDARD 20)  # Requires C++20
@@ -19,9 +19,7 @@ if(DEFINED PROFILING AND PROFILING STREQUAL "ON")
    string(APPEND CMAKE_CXX_FLAGS " -pg")
    string(APPEND CMAKE_EXE_LINKER_FLAGS " -pg")
 endif()
-if(DEFINED DEBUG AND DEBUG)
-   message("test")
-endif()
+
 set(EXECUTABLE_NAME hazelc)
 
 # Add your source files to an executable target
@@ -50,6 +48,7 @@ add_llvm_executable(${EXECUTABLE_NAME}
    src/TypeChecker.cpp
    src/CRuntimeProcudures.cpp
    src/error.cpp
+   src/sha256.cpp
 
 )
 

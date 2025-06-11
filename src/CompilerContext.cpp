@@ -211,7 +211,6 @@ OptionalType CompilerContext::get_type(std::shared_ptr<Type> type)
     //         return get_byte_type();
     //     }
     // }
-    exit(EXIT_FAILURE);
 }
 
 void CompilerContext::AddModule(std::string module_name, CompiledModule module)

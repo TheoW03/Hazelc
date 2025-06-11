@@ -8,6 +8,7 @@
 #include <stdexcept>
 #include <filesystem>
 #include <InitHazel.h>
+#include <sha256.h>
 #include <unordered_map>
 
 int main(int argc, char *argv[])
