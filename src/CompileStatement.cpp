@@ -66,6 +66,14 @@ void CompileStatement::Visit(ModuleNode *node)
     }
 }
 
+void CompileStatement::Visit(DemoduarlizedProgramNode *node)
+{
+    for (const auto &[key, current_function] : node->global_functions)
+    {
+        current_function->Accept(this);
+    }
+}
+
 void CompileStatement::Visit(ReturnNode *node)
 {
 

@@ -38,39 +38,16 @@ void CompileHighLevel::Visit(ASTNode *node)
 void CompileHighLevel::Visit(FunctionNode *node)
 {
     using std::make_pair;
-    // auto c = node->f->RetType;
-    // llvm::FunctionType *functype = llvm::FunctionType::get(
-    //     compileType(builder, c), {}, false);
-
-    // llvm::Function *function = llvm::Function::Create(
-    //     functype, llvm::Function::ExternalLinkage, node->f->FunctionName.value, module);
-    // func_map.insert(, node->f->FunctionName.value, );
     std::vector<std::shared_ptr<ASTNode>> filter_functions;
     Function compiled_function = CompileFunctionHeader(node->f);
-    // std::cout << "func name: " << node->f->FunctionName.value << std::endl;
-    // compiler_context.add_function(node->f->FunctionName, CompileFunctionHeader(node->f));
-    if (is_global)
+
+    if (node->hash_name != "")
     {
-        this->func_map.insert(std::make_pair(node->f->FunctionName.value, compiled_function));
-        if (node->can_export)
-            this->exported_func_map.insert(std::make_pair(node->f->FunctionName.value, compiled_function));
+        this->func_map.insert(std::make_pair(node->hash_name, compiled_function));
     }
-    is_global = false;
     this->compiled_functions.push(compiled_function);
-    // for (int i = 0; i < node->stmnts.size(); i++)
-    // {
+
     node->stmnts->Accept(this);
-    // node->stmnts[i]->Accept(this);
-    // if (dynamic_cast<FunctionNode *>(node->stmnts[i].get()))
-    // {
-    //     this->functions.push_back(node->stmnts[i]);
-    // }
-    // else
-    // {
-    //     filter_functions.push_back(node->stmnts[i]);
-    // }
-    // }
-    // node->stmnts = filter_functions;
 }
 
 void CompileHighLevel::Visit(ModuleNode *node)
@@ -135,6 +112,10 @@ void CompileHighLevel::Visit(FunctionCallNode *node)
 }
 void CompileHighLevel::Visit(DemoduarlizedProgramNode *node)
 {
+    for (const auto &[key, current_function] : node->global_functions)
+    {
+        current_function->Accept(this);
+    }
 }
 void CompileHighLevel::Visit(ProgramNode *node)
 {

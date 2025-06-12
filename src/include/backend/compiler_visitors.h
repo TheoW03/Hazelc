@@ -5,6 +5,7 @@
 #include <backend/Scope.h>
 #include <backend/CompilerContext.h>
 #include <backend/CompilerUtil.h>
+
 #ifndef COMPILER_H
 #define COMPILER_H
 class CompileHighLevel : public Visitor
@@ -67,6 +68,7 @@ public:
     void Visit(ASTNode *node) override;
     void Visit(FunctionNode *node) override;
     void Visit(ModuleNode *node) override;
+    void Visit(DemoduarlizedProgramNode *node) override;
 
     void Visit(ReturnNode *node) override;
     void Visit(ProgramNode *node) override;

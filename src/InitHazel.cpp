@@ -138,10 +138,6 @@ void runPasses(std::shared_ptr<ProgramNode> node, Output cli)
 
     std::cout << "hazelc: constant folding" << std::endl;
     auto mainModule = node->getMainModule();
-    auto demoddlarize = std::make_shared<DemodularizedVisitor>(IntermediateScope(semantic->modules));
-    node->Accept(demoddlarize.get());
-
-    std::cout << "hazelc: demodularize" << std::endl;
 
     if (mainModule.has_value())
     {
@@ -149,6 +145,11 @@ void runPasses(std::shared_ptr<ProgramNode> node, Output cli)
         node->Accept(shake_imports.get());
         std::cout << "hazelc: Treeshake" << std::endl;
     }
+    auto demoddlarize = std::make_shared<DemodularizedVisitor>(IntermediateScope(semantic->modules));
+    node->Accept(demoddlarize.get());
+
+    std::cout << "hazelc: demodularize" << std::endl;
+    InitCompiler(cli, std::make_shared<DemoduarlizedProgramNode>(demoddlarize->program));
 }
 
 int Init(std::vector<std::string> args)
@@ -179,7 +180,7 @@ int Init(std::vector<std::string> args)
     runPasses(modules, cli);
 
     // SemanticAnalysisTopLevel seman_analy;
-    InitCompiler(cli, modules);
+    // InitCompiler(cli, modules);
     std::cout << "" << std::endl;
     std::cout << "hazelc: \033[32mSuccessfully Compiled \033[0m" << std::endl;
     return EXIT_SUCCESS;
