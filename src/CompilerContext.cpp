@@ -56,30 +56,6 @@ llvm::Type *CompilerContext::compile_Type(llvm::IRBuilder<> &builder, llvm::LLVM
         return builder.getInt8Ty();
     }
 
-    // if (dynamic_cast<NativeType *>(ty.get()))
-    // {
-    //     auto p = dynamic_cast<NativeType *>(ty.get());
-    //     if (p->type.type == TokenType::Integer || p->type.type == TokenType::Uinteger)
-    //     {
-    //         return builder.getInt64Ty();
-    //     }
-    //     else if (p->type.type == TokenType::Decimal)
-    //     {
-    //         return builder.getDoubleTy();
-    //     }
-    //     else if (p->type.type == TokenType::Byte || p->type.type == TokenType::character || p->type.type == TokenType::Ubyte)
-    //     {
-    //         return builder.getInt8Ty();
-    //     }
-    //     else if (p->type.type == TokenType::boolean)
-    //     {
-    //         return builder.getInt1Ty();
-    //     }
-    //     else if (p->type.type == TokenType::string)
-    //     {
-    //         return this->get_string_inner_type();
-    //     }
-    // }
     // NOTE:
     //  for lists generate the entire list and when index simply shrink down the list
     //  and return the value indexed
@@ -133,23 +109,6 @@ OptionalType CompilerContext::compile_Type_Optional(std::shared_ptr<Type> ty)
         return NativeTypes[TokenType::character];
     }
 
-    // else if (dynamic_cast<DecimalType *>(f.ret_type.get()))
-    // {
-    //     return TypeOfExpr::Float_Type;
-    // }
-    // else if (dynamic_cast<BoolType *>(f.ret_type.get()))
-    // {
-    //     return TypeOfExpr::Boolean_Type;
-    // }
-    // else if (dynamic_cast<StringType *>(f.ret_type.get()))
-    // {
-    //     return TypeOfExpr::String_Type;
-    // }
-    // if (dynamic_cast<NativeType *>(ty.get()))
-    // {
-    //     auto p = dynamic_cast<NativeType *>(ty.get());
-    //     return NativeTypes[p->type.type];
-    // }
     else
     {
         std::cout << "error" << std::endl;
@@ -187,39 +146,4 @@ OptionalType CompilerContext::get_byte_type()
 OptionalType CompilerContext::get_type(std::shared_ptr<Type> type)
 {
     return compile_Type_Optional(type);
-    // if (dynamic_cast<NativeType *>(type.get()))
-    // {
-    //     auto p = dynamic_cast<NativeType *>(type.get());
-    //     if (p->type.type == TokenType::Integer || p->type.type == TokenType::Uinteger)
-    //     {
-    //         return get_integer_type();
-    //     }
-    //     else if (p->type.type == TokenType::boolean)
-    //     {
-    //         return get_boolean_type();
-    //     }
-    //     else if (p->type.type == TokenType::Decimal)
-    //     {
-    //         return get_float_type();
-    //     }
-    //     else if (p->type.type == TokenType::string)
-    //     {
-    //         return get_string_type();
-    //     }
-    //     else if (p->type.type == TokenType::character || p->type.type == TokenType::Byte || p->type.type == TokenType::Ubyte)
-    //     {
-    //         return get_byte_type();
-    //     }
-    // }
-}
-
-void CompilerContext::AddModule(std::string module_name, CompiledModule module)
-{
-
-    modules.insert(std::make_pair(module_name, CompiledModuleClass(module)));
-}
-
-ProgramScope CompilerContext::getScope()
-{
-    return ProgramScope(modules);
 }

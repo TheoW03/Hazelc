@@ -26,7 +26,7 @@ TypeOfExpr get_bool_expr_type(std::shared_ptr<ASTNode> n, ProgramScope ctx)
     if (dynamic_cast<FunctionCallNode *>(c->lhs.get()))
     {
         auto d = dynamic_cast<FunctionCallNode *>(c->lhs.get());
-        auto f = ctx.get_function(d->name);
+        auto f = ctx.get_function(d->hash_name != "" ? d->hash_name : d->name.value).value();
 
         if (dynamic_cast<IntegerType *>(f.ret_type.get()) || dynamic_cast<ByteType *>(f.ret_type.get()))
         {
@@ -68,7 +68,7 @@ TypeOfExpr get_bool_expr_type(std::shared_ptr<ASTNode> n, ProgramScope ctx)
     if (dynamic_cast<FunctionCallNode *>(c->rhs.get()))
     {
         auto d = dynamic_cast<FunctionCallNode *>(c->rhs.get());
-        auto f = ctx.get_function(d->name);
+        auto f = ctx.get_function(d->hash_name != "" ? d->hash_name : d->name.value).value();
         if (dynamic_cast<IntegerType *>(f.ret_type.get()) || dynamic_cast<ByteType *>(f.ret_type.get()))
         {
             return TypeOfExpr::Integer_Type;
@@ -112,7 +112,7 @@ TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n, ProgramScope ctx)
     if (dynamic_cast<FunctionCallNode *>(c->lhs.get()))
     {
         auto d = dynamic_cast<FunctionCallNode *>(c->lhs.get());
-        auto f = ctx.get_function(d->name);
+        auto f = ctx.get_function(d->hash_name != "" ? d->hash_name : d->name.value).value();
         if (dynamic_cast<IntegerType *>(f.ret_type.get()) || dynamic_cast<ByteType *>(f.ret_type.get()))
         {
             return TypeOfExpr::Integer_Type;
@@ -135,7 +135,7 @@ TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n, ProgramScope ctx)
     if (dynamic_cast<FunctionCallNode *>(c->rhs.get()))
     {
         auto d = dynamic_cast<FunctionCallNode *>(c->rhs.get());
-        auto f = ctx.get_function(d->name);
+        auto f = ctx.get_function(d->hash_name != "" ? d->hash_name : d->name.value).value();
         if (dynamic_cast<IntegerType *>(f.ret_type.get()) || dynamic_cast<ByteType *>(f.ret_type.get()))
         {
             return TypeOfExpr::Integer_Type;

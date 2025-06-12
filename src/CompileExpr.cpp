@@ -481,7 +481,7 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
     {
         auto c = dynamic_cast<FunctionCallNode *>(node.get());
 
-        auto fu = program.get_function(c->name);
+        auto fu = program.get_function(c->hash_name != "" ? c->hash_name : c->name.value).value();
         // std::cout << fu.name.value << std::endl;
 
         // auto v =

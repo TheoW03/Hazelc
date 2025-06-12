@@ -505,9 +505,26 @@ std::vector<Tokens> lexxer(std::vector<std::string> lines, std::string file_name
                 dot_state(ctx, current_char);
             }
         }
+        // is_space(ct)
         ctx.line_num++;
         ctx.state = 0;
         is_token(ctx);
+        ctx.buffer = "";
+    }
+    std::cout << ctx.indents_num << std::endl;
+    if (ctx.indents_idx > ctx.indents_num)
+    {
+        ctx.indents_num = ctx.indents_idx;
+        ctx.indents_idx = 0;
+        ctx.tokens.push_back({"Indent", TokenType::Indents, ctx.line_num});
+        ctx.buffer = "";
+    }
+    else if (ctx.indents_idx < ctx.indents_num)
+    {
+        ctx.indents_num = ctx.indents_idx;
+        ctx.indents_idx = 0;
+
+        ctx.tokens.push_back({"dedent", TokenType::Dedents, ctx.line_num});
         ctx.buffer = "";
     }
     return ctx.tokens;

@@ -27,6 +27,9 @@ int forceEvaluation(struct ThunkMemoized *t)
 }
 int nMinusOne(struct Params *p)
 {
+    printf("%d \n", p->n->computation);
+    printf("%d \n", p->n->computed);
+
     return forceEvaluation(p->n) - 1;
 }
 
@@ -36,12 +39,18 @@ int factorial(struct Params *p)
     {
         return 1;
     }
+    // p->n =
     int n = forceEvaluation(p->n);
+    printf("m: %d \n", n);
+
+    // p->n = next_thunk;
+
     struct ThunkMemoized next_thunk =
-        {0, nMinusOne, 0, p};
-    struct Params new_params;
-    new_params.n = &next_thunk;
-    return n * factorial(&new_params);
+        {n, nMinusOne, 0};
+    next_thunk.params = malloc(sizeof(struct Params));
+    *next_thunk.params = *p;
+    p->n = &next_thunk;
+    return n * factorial(p);
 }
 int add(struct Params *p)
 {
@@ -60,7 +69,6 @@ int main(int argc, char const *argv[])
 
     /* code */
 
-    // int f = factorial(&p);
     /*
         this is how
 
@@ -84,23 +92,27 @@ int main(int argc, char const *argv[])
 
     */
 
-    struct Params p1;
+    struct Params *p1 = malloc(sizeof(struct Params));
     struct ThunkMemoized n =
         {
-            1,
+            6,
             NULL,
             1,
             &p1};
-    p1.a = &n;
-    struct ThunkMemoized n2 =
-        {
-            0,
-            functio_for_b,
-            0,
-            &p1};
-    p1.b = &n2;
+    p1->n = &n;
 
-    int a = add(&p1);
-    printf("%d \n", a);
+    // struct Params *p = malloc(sizeof(struct Params));
+    // p.n =
+    int f = factorial(p1);
+    // struct ThunkMemoized n2 =
+    //     {
+    //         0,
+    //         functio_for_b,
+    //         0,
+    //         &p1};
+    // p1.b = &n2;
+
+    // int a = add(&p1);
+    printf("%d \n", f);
     return 0;
 }
