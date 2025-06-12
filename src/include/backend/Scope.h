@@ -33,19 +33,12 @@ private:
 
 public:
     std::map<std::string, CompiledModuleClass> modules;
+    std::map<std::string, Function>
+        global_functions;
     ProgramScope();
-    ProgramScope(std::map<std::string, CompiledModuleClass> modules);
-    std::optional<Function> get_global_function(Tokens name);
-    std::optional<Function> get_inmodule_global_function(Tokens name);
-    Function get_inmodule_function(Tokens name);
+    ProgramScope(std::map<std::string, Function> functions);
 
-    void set_current(Tokens name);
-    // Function get_function(Tokens name);
-    // Function get_function(Tokens name);
-
-    Function get_current_function();
-    Function set_current_function();
-    Function get_function(Tokens name);
+    std::optional<Function> get_function(std::string name);
 
     // Function get_function_fast(FastLookup lookup);
     // Function get_function_fast(FastLookup name);

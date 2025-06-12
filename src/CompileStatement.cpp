@@ -35,7 +35,7 @@ void CompileStatement::Visit(FunctionNode *node)
     }
     else if (this->program_scope.get_inmodule_global_function(c.name).has_value())
     {
-        auto func = program_scope.get_inmodule_global_function(node->f->FunctionName).value();
+        auto func = program_scope.get_function(node->f->FunctionName).value();
         llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, "entry", func.function);
         this->block = EntryBlock;
 

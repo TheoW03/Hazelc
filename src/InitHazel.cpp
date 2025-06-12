@@ -109,7 +109,7 @@ std::vector<std::string> get_lines(Output cli)
     return lines;
 }
 
-void runPasses(std::shared_ptr<ProgramNode> node, Output cli)
+std::shared_ptr<DemoduarlizedProgramNode> runPasses(std::shared_ptr<ProgramNode> node, Output cli)
 {
     // This runs intermediate passes
     // that take care of error checking and basic optimization if needed
@@ -149,6 +149,7 @@ void runPasses(std::shared_ptr<ProgramNode> node, Output cli)
         node->Accept(shake_imports.get());
         std::cout << "hazelc: Treeshake" << std::endl;
     }
+    return std::make_shared<DemoduarlizedProgramNode>(demoddlarize->program);
 }
 
 int Init(std::vector<std::string> args)
@@ -176,10 +177,10 @@ int Init(std::vector<std::string> args)
 
     std::cout << "hazelc: parsed" << std::endl;
     std::cout << "" << std::endl;
-    runPasses(modules, cli);
+    auto program = runPasses(modules, cli);
 
     // SemanticAnalysisTopLevel seman_analy;
-    InitCompiler(cli, modules);
+    InitCompiler(cli, program);
     std::cout << "" << std::endl;
     std::cout << "hazelc: \033[32mSuccessfully Compiled \033[0m" << std::endl;
     return EXIT_SUCCESS;

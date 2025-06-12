@@ -19,7 +19,7 @@
 #include "llvm/IR/LLVMContext.h"
 #include <cli.h>
 
-void InitCompiler(Output output, std::shared_ptr<ProgramNode> node)
+void InitCompiler(Output output, std::shared_ptr<DemoduarlizedProgramNode> node)
 {
     llvm::LLVMContext context;
     llvm::Module module("MyModule", context);

@@ -213,13 +213,13 @@ OptionalType CompilerContext::get_type(std::shared_ptr<Type> type)
     // }
 }
 
-void CompilerContext::AddModule(std::string module_name, CompiledModule module)
-{
+// void CompilerContext::AddModule(std::string module_name, CompiledModule module)
+// {
 
-    modules.insert(std::make_pair(module_name, CompiledModuleClass(module)));
-}
+//     // modules.insert(std::make_pair(module_name, CompiledModuleClass(module)));
+// }
 
 ProgramScope CompilerContext::getScope()
 {
-    return ProgramScope(modules);
+    return ProgramScope(func_map);
 }

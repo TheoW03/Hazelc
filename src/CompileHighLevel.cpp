@@ -49,13 +49,15 @@ void CompileHighLevel::Visit(FunctionNode *node)
     Function compiled_function = CompileFunctionHeader(node->f);
     // std::cout << "func name: " << node->f->FunctionName.value << std::endl;
     // compiler_context.add_function(node->f->FunctionName, CompileFunctionHeader(node->f));
-    if (is_global)
+    // if ()
+    if (node->hash_name != "")
     {
-        this->func_map.insert(std::make_pair(node->f->FunctionName.value, compiled_function));
-        if (node->can_export)
-            this->exported_func_map.insert(std::make_pair(node->f->FunctionName.value, compiled_function));
+        this->compiler_context.func_map.insert(std::make_pair(node->hash_name, compiled_function));
+
+        // this->func_map.insert(std::make_pair(node->f->FunctionName.value, compiled_function));
+        // if (node->can_export)
+        // this->exported_func_map.insert(std::make_pair(node->f->FunctionName.value, compiled_function));
     }
-    is_global = false;
     this->compiled_functions.push(compiled_function);
     // for (int i = 0; i < node->stmnts.size(); i++)
     // {
@@ -75,14 +77,6 @@ void CompileHighLevel::Visit(FunctionNode *node)
 
 void CompileHighLevel::Visit(ModuleNode *node)
 {
-    for (int i = 0; i < node->functions.size(); i++)
-    {
-        functions.push_back(node->functions[i]);
-        is_global = true;
-        node->functions[i]->Accept(this);
-    }
-    node->functions = functions;
-    functions.clear();
 }
 
 void CompileHighLevel::Visit(BranchNode *node)
@@ -135,22 +129,26 @@ void CompileHighLevel::Visit(FunctionCallNode *node)
 }
 void CompileHighLevel::Visit(DemoduarlizedProgramNode *node)
 {
+    for (const auto &[key, current_function] : node->global_functions)
+    {
+        current_function->Accept(this);
+    }
 }
 void CompileHighLevel::Visit(ProgramNode *node)
 {
-    for (const auto &[key, current_module] : node->avail_modules)
-    {
-        current_module->Accept(this);
-        compiler_context.AddModule(current_module->name.value, {func_map,
-                                                                this->exported_func_map,
-                                                                current_module->imports,
-                                                                this->compiled_functions});
-        this->func_map.clear();
-        this->exported_func_map.clear();
-        this->compiled_functions = {};
+    // for (const auto &[key, current_module] : node->avail_modules)
+    // {
+    //     current_module->Accept(this);
+    //     compiler_context.AddModule(current_module->name.value, {func_map,
+    //                                                             this->exported_func_map,
+    //                                                             current_module->imports,
+    //                                                             this->compiled_functions});
+    //     this->func_map.clear();
+    //     this->exported_func_map.clear();
+    //     this->compiled_functions = {};
 
-        // std::cout << "Key: " << key << ", Value: " << value << std::endl;
-    }
+    //     // std::cout << "Key: " << key << ", Value: " << value << std::endl;
+    // }
     // for (int i = 0; i < node->modules.size(); i++)
     // {
     //     node->modules[i]->Accept(this);
@@ -199,7 +197,7 @@ Function CompileHighLevel::CompileFunctionHeader(std::shared_ptr<FunctionRefNode
 
 ProgramScope CompileHighLevel::getProgramScope()
 {
-    return ProgramScope(this->modules);
+    return ProgramScope(this->func_map);
 }
 std::tuple<llvm::FunctionType *, std::vector<Thunks>> CompileHighLevel::compile_Function_Type(std::shared_ptr<FunctionRefNode> n)
 {
