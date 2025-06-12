@@ -53,17 +53,17 @@ void CompileHighLevel::Visit(FunctionNode *node)
     node->stmnts->Accept(this);
 }
 
-void CompileHighLevel::Visit(ModuleNode *node)
-{
-    for (int i = 0; i < node->functions.size(); i++)
-    {
-        functions.push_back(node->functions[i]);
-        is_global = true;
-        node->functions[i]->Accept(this);
-    }
-    node->functions = functions;
-    functions.clear();
-}
+// void CompileHighLevel::Visit(ModuleNode *node)
+// {
+//     for (int i = 0; i < node->functions.size(); i++)
+//     {
+//         functions.push_back(node->functions[i]);
+//         is_global = true;
+//         node->functions[i]->Accept(this);
+//     }
+//     node->functions = functions;
+//     functions.clear();
+// }
 
 void CompileHighLevel::Visit(BranchNode *node)
 {
@@ -123,26 +123,20 @@ void CompileHighLevel::Visit(DemoduarlizedProgramNode *node)
     }
     node->functions = this->functions;
 }
-void CompileHighLevel::Visit(ProgramNode *node)
-{
-    for (const auto &[key, current_module] : node->avail_modules)
-    {
-        current_module->Accept(this);
-        compiler_context.AddModule(current_module->name.value, {func_map,
-                                                                this->exported_func_map,
-                                                                current_module->imports,
-                                                                this->compiled_functions});
-        this->func_map.clear();
-        this->exported_func_map.clear();
-        this->compiled_functions = {};
-
-        // std::cout << "Key: " << key << ", Value: " << value << std::endl;
-    }
-    // for (int i = 0; i < node->modules.size(); i++)
-    // {
-    //     node->modules[i]->Accept(this);
-    // }
-}
+// void CompileHighLevel::Visit(ProgramNode *node)
+// {
+//     for (const auto &[key, current_module] : node->avail_modules)
+//     {
+//         current_module->Accept(this);
+//         compiler_context.AddModule(current_module->name.value, {func_map,
+//                                                                 this->exported_func_map,
+//                                                                 current_module->imports,
+//                                                                 this->compiled_functions});
+//         this->func_map.clear();
+//         this->exported_func_map.clear();
+//         this->compiled_functions = {};
+//     }
+// }
 
 void CompileHighLevel::Visit(ExprNode *node)
 {

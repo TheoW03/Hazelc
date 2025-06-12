@@ -39,7 +39,6 @@ class CompilerContext
 {
 public:
     std::map<std::string, Function> func_map;
-    std::map<std::string, CompiledModuleClass> modules;
     // std::map<std::string, llvm::Function *> CFunctions;
     std::map<TokenType, OptionalType> NativeTypes;
     Tokens current_module;
@@ -73,7 +72,7 @@ public:
     OptionalType get_byte_type();
     OptionalType get_type(std::shared_ptr<Type> type);
 
-    void AddModule(std::string module_name, CompiledModule module);
+    // void AddModule(std::string module_name, CompiledModule module);
     // ProgramScope getScope();
     // CompiledModule get_module(Tokens module);
     // CompiledModule get_current_module();

@@ -11,7 +11,7 @@
 class CompileHighLevel : public Visitor
 {
 private:
-    std::map<std::string, CompiledModuleClass> modules;
+    // std::map<std::string, CompiledModuleClass> modules;
 
 public:
     llvm::Module &module;
@@ -30,12 +30,12 @@ public:
     CompileHighLevel(llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context);
     void Visit(ASTNode *node) override;
     void Visit(FunctionNode *node) override;
-    void Visit(ModuleNode *node) override;
+    // void Visit(ModuleNode *node) override;
     void Visit(BranchNode *node) override;
     void Visit(ConditionalNode *node) override;
     void Visit(ReturnNode *node) override;
     void Visit(FunctionCallNode *node) override;
-    void Visit(ProgramNode *node) override;
+    // void Visit(ProgramNode *node) override;
     void Visit(DemoduarlizedProgramNode *node) override;
 
     void Visit(ExprNode *node) override;
@@ -67,11 +67,11 @@ public:
     CompileStatement(llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context, CompilerContext compiler_context, llvm::StructType *params, ProgramScope program);
     void Visit(ASTNode *node) override;
     void Visit(FunctionNode *node) override;
-    void Visit(ModuleNode *node) override;
+    // void Visit(ModuleNode *node) override;
     void Visit(DemoduarlizedProgramNode *node) override;
 
     void Visit(ReturnNode *node) override;
-    void Visit(ProgramNode *node) override;
+    // void Visit(ProgramNode *node) override;
 };
 
 #endif

@@ -58,16 +58,16 @@ void CompileStatement::Visit(FunctionNode *node)
     // }
 }
 
-void CompileStatement::Visit(ModuleNode *node)
-{
-    auto functions = node->functions;
-    std::reverse(functions.begin(), functions.end());
-    for (int i = 0; i < node->functions.size(); i++)
-    {
-        // program_scope.set_current(node->name);
-        functions[i]->Accept(this);
-    }
-}
+// void CompileStatement::Visit(ModuleNode *node)
+// {
+//     auto functions = node->functions;
+//     std::reverse(functions.begin(), functions.end());
+//     for (int i = 0; i < node->functions.size(); i++)
+//     {
+//         // program_scope.set_current(node->name);
+//         functions[i]->Accept(this);
+//     }
+// }
 
 void CompileStatement::Visit(DemoduarlizedProgramNode *node)
 {
@@ -145,11 +145,11 @@ void CompileStatement::Visit(ReturnNode *node)
     auto error = llvm::verifyFunction(*(f), output);
 }
 
-void CompileStatement::Visit(ProgramNode *node)
-{
-    for (const auto &[key, current_module] : node->avail_modules)
-    {
-        program_scope.set_current(current_module->name);
-        current_module->Accept(this);
-    }
-}
+// void CompileStatement::Visit(ProgramNode *node)
+// {
+//     for (const auto &[key, current_module] : node->avail_modules)
+//     {
+//         program_scope.set_current(current_module->name);
+//         current_module->Accept(this);
+//     }
+// }
