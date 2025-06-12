@@ -133,7 +133,9 @@ void CompileHighLevel::Visit(FunctionCallNode *node)
         this->functions.push_back(param_func);
     }
 }
-
+void CompileHighLevel::Visit(DemoduarlizedProgramNode *node)
+{
+}
 void CompileHighLevel::Visit(ProgramNode *node)
 {
     for (const auto &[key, current_module] : node->avail_modules)

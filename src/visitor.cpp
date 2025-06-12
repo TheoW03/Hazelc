@@ -72,3 +72,7 @@ void Visitor::Visit(BlockNode *node)
 void Visitor::Visit(ListNode *node)
 {
 }
+
+void Visitor::Visit(DemoduarlizedProgramNode *node)
+{
+}

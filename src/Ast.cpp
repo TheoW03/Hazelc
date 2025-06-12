@@ -46,6 +46,7 @@ IntegerNode::IntegerNode(int num)
     this->number = num;
 }
 void IntegerNode::Accept(Visitor *v)
+
 {
     v->Visit(this);
 }
@@ -601,6 +602,18 @@ void BlockNode::Accept(Visitor *v)
     v->Visit(this);
 }
 std::string BlockNode::to_string()
+{
+    return std::string();
+}
+
+DemoduarlizedProgramNode::DemoduarlizedProgramNode()
+{
+}
+void DemoduarlizedProgramNode::Accept(Visitor *v)
+{
+    v->Visit(this);
+}
+std::string DemoduarlizedProgramNode::to_string()
 {
     return std::string();
 }

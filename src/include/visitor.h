@@ -32,5 +32,6 @@ public:
     virtual void Visit(BlockNode *node);
 
     virtual void Visit(ListNode *node);
+    virtual void Visit(DemoduarlizedProgramNode *node);
 };
 #endif

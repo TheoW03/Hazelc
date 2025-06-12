@@ -4,9 +4,10 @@
 #include <fstream>
 #include <cstdlib>
 #include <cli.h>
-#include <Demoduerlization.h>
 #include <stdexcept>
 #include <visitor.h>
+#include <Demoduerlization.h>
+
 #include <optimization/TreeShake.h>
 #include <filesystem>
 #include <Frontend/SemanticCheckScopes.h>

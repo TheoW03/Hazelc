@@ -6,7 +6,6 @@
 Hazel is an open source, purely functional, declartive programming language that is designed 
 to make functional programming more apporachable for people coming from imparaitive langauges such as C.
 
-This is the compiler for it
 
 ## Build Instructions
 

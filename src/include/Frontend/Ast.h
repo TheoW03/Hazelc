@@ -477,3 +477,20 @@ public:
     std::string to_string();
 };
 #endif
+
+#ifndef DEMODULARIZED_PROGRAM_NODE_H
+#define DEMODULARZIED_PROGRAM_NODE_H
+#pragma once
+class Visitor;
+
+class DemoduarlizedProgramNode : public ASTNode
+{
+public:
+    std::map<std::string, std::shared_ptr<FunctionNode>> global_functions;
+    std::map<std::string, std::shared_ptr<ModuleNode>> avail_modules;
+    std::map<std::string, std::shared_ptr<ModuleNode>> used_modules;
+    DemoduarlizedProgramNode();
+    void Accept(Visitor *v) override;
+    std::string to_string() override;
+};
+#endif

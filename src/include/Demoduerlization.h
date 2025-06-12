@@ -4,9 +4,11 @@
 
 #ifndef DEMODULERIZATION_VISTOR_H
 #define DEMODULERIZATION_VISTOR_H
+
 class DemodularizedVisitor : public Visitor
 {
 public:
+    DemoduarlizedProgramNode program;
     IntermediateScope modules;
     DemodularizedVisitor(IntermediateScope s);
     void Visit(FunctionNode *node) override;

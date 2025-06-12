@@ -35,6 +35,8 @@ public:
     void Visit(ReturnNode *node) override;
     void Visit(FunctionCallNode *node) override;
     void Visit(ProgramNode *node) override;
+    void Visit(DemoduarlizedProgramNode *node) override;
+
     void Visit(ExprNode *node) override;
     void Visit(BlockNode *node) override;
 
