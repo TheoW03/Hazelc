@@ -74,7 +74,7 @@ public:
     OptionalType get_type(std::shared_ptr<Type> type);
 
     void AddModule(std::string module_name, CompiledModule module);
-    ProgramScope getScope();
+    // ProgramScope getScope();
     // CompiledModule get_module(Tokens module);
     // CompiledModule get_current_module();
     // void set_current_module(Tokens module_name);

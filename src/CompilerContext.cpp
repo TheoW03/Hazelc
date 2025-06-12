@@ -219,7 +219,7 @@ void CompilerContext::AddModule(std::string module_name, CompiledModule module)
     modules.insert(std::make_pair(module_name, CompiledModuleClass(module)));
 }
 
-ProgramScope CompilerContext::getScope()
-{
-    return ProgramScope(modules);
-}
+// ProgramScope CompilerContext::getScope()
+// {
+//     // return ProgramScope(modules);
+// }

@@ -7,10 +7,15 @@
 ProgramScope::ProgramScope()
 {
 }
-ProgramScope::ProgramScope(std::map<std::string, CompiledModuleClass> modules)
+ProgramScope::ProgramScope(std::map<std::string, Function> global_functions, std::stack<Function> functions)
 {
-    this->modules = modules;
+    this->global_functions = global_functions;
+    this->functions = functions;
 }
+// rogramScope::ProgramScope(std::map<std::string, CompiledModuleClass> modules)
+// {
+//     this->modules = modules;
+// }
 
 void ProgramScope::set_current(Tokens name)
 {
@@ -46,6 +51,19 @@ std::optional<Function> ProgramScope::get_global_function(Tokens name)
     return this->current_module.get_function(name);
 }
 
+std::optional<Function> ProgramScope::get_function(std::string name)
+{
+    if (this->global_functions.find(name) != this->global_functions.end())
+    {
+        return this->global_functions[name];
+    }
+    if (this->local_functions.find(name) != this->local_functions.end())
+    {
+        return this->local_functions[name];
+    }
+    return {};
+}
+
 std::optional<Function> ProgramScope::get_inmodule_global_function(Tokens name)
 {
     return this->current_module.get_function(name);
@@ -66,12 +84,16 @@ Function ProgramScope::get_inmodule_function(Tokens name)
 
 Function ProgramScope::get_current_function()
 {
-    return current_module.get_current_function();
+    return this->currentFunction;
 }
 
 Function ProgramScope::set_current_function()
 {
-    return current_module.set_current_function();
+    this->currentFunction = this->functions.top();
+    this->functions.pop();
+    return this->currentFunction;
+
+    // return current_module.set_current_function();
 }
 
 // Function ProgramScope::get_function_fast(FastLookup lookup)
@@ -94,7 +116,6 @@ std::optional<int> ProgramScope::addLocal(Tokens name, Function function)
     if (this->local_functions.find(name.value) != this->local_functions.end())
     {
         local_functions[name.value] = function;
-        std::cout << "aaa" << std::endl;
         return {};
     }
     else

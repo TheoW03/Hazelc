@@ -29,6 +29,7 @@ class ProgramScope
 {
 private:
     CompiledModuleClass current_module;
+    Function currentFunction;
     std::map<std::string, Function> local_functions;
 
 public:
@@ -37,9 +38,14 @@ public:
     std::stack<Function> functions;
 
     ProgramScope();
-    ProgramScope(std::map<std::string, CompiledModuleClass> modules);
+    // ProgramScope(std::map<std::string, CompiledModuleClass> modules);
+    ProgramScope(std::map<std::string, Function> global_functions, std::stack<Function> functions);
+
     // ProgramScope(std::map<std::string, Function> functions);
     std::optional<Function> get_global_function(Tokens name);
+
+    std::optional<Function> get_function(std::string name);
+
     std::optional<Function> get_inmodule_global_function(Tokens name);
     Function get_inmodule_function(Tokens name);
 

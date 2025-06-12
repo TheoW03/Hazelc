@@ -37,6 +37,9 @@ void CompileHighLevel::Visit(ASTNode *node)
 }
 void CompileHighLevel::Visit(FunctionNode *node)
 {
+    // We are indexing functions via a hash
+    // I do plan to build on top of it.
+    // so this may be temporary
     using std::make_pair;
     std::vector<std::shared_ptr<ASTNode>> filter_functions;
     Function compiled_function = CompileFunctionHeader(node->f);
@@ -46,7 +49,7 @@ void CompileHighLevel::Visit(FunctionNode *node)
         this->func_map.insert(std::make_pair(node->hash_name, compiled_function));
     }
     this->compiled_functions.push(compiled_function);
-
+    // this->functions.push_back()
     node->stmnts->Accept(this);
 }
 
@@ -114,8 +117,11 @@ void CompileHighLevel::Visit(DemoduarlizedProgramNode *node)
 {
     for (const auto &[key, current_function] : node->global_functions)
     {
+        this->functions.push_back(current_function);
+
         current_function->Accept(this);
     }
+    node->functions = this->functions;
 }
 void CompileHighLevel::Visit(ProgramNode *node)
 {
@@ -180,7 +186,7 @@ Function CompileHighLevel::CompileFunctionHeader(std::shared_ptr<FunctionRefNode
 
 ProgramScope CompileHighLevel::getProgramScope()
 {
-    return ProgramScope(this->modules);
+    return ProgramScope(this->func_map, this->compiled_functions);
 }
 std::tuple<llvm::FunctionType *, std::vector<Thunks>> CompileHighLevel::compile_Function_Type(std::shared_ptr<FunctionRefNode> n)
 {
