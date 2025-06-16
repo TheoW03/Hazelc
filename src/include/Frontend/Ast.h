@@ -489,6 +489,8 @@ public:
     std::map<std::string, std::shared_ptr<FunctionNode>> global_functions;
     std::map<std::string, std::shared_ptr<ModuleNode>> avail_modules;
     std::map<std::string, std::shared_ptr<ModuleNode>> used_modules;
+
+    std::vector<std::shared_ptr<FunctionNode>> functions;
     DemoduarlizedProgramNode();
     void Accept(Visitor *v) override;
     std::string to_string() override;

@@ -7,10 +7,11 @@
 // compiles the lower level (so return statements and expressions)
 // this is the final stage
 CompileStatement::CompileStatement(llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context,
-                                   CompilerContext compiler_context, llvm::StructType *params) : module(module), builder(builder), context(context)
+                                   CompilerContext compiler_context, llvm::StructType *params, ProgramScope program) : module(module), builder(builder), context(context)
 {
     this->compiler_context = compiler_context;
-    this->program_scope = compiler_context.getScope();
+    // this->program_scope = compiler_context.getScope();
+    this->program_scope = program;
     this->params = params;
 }
 
@@ -25,6 +26,8 @@ void CompileStatement::Visit(FunctionNode *node)
     // sees if its a global or local function
     // if local we put it in the local scope. if global we generate it
     auto c = this->program_scope.set_current_function();
+    std::cout << c.name.value << std::endl;
+    std::cout << node->f->FunctionName.value << std::endl;
 
     // the anonmoous prevents collisons
     if (c.isAnonymous)
@@ -33,9 +36,9 @@ void CompileStatement::Visit(FunctionNode *node)
         this->block = EntryBlock;
         builder.SetInsertPoint(EntryBlock);
     }
-    else if (this->program_scope.get_inmodule_global_function(c.name).has_value())
+    else if (node->hash_name != "")
     {
-        auto func = program_scope.get_inmodule_global_function(node->f->FunctionName).value();
+        auto func = program_scope.get_function(node->hash_name).value();
         llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, "entry", func.function);
         this->block = EntryBlock;
 
@@ -55,14 +58,32 @@ void CompileStatement::Visit(FunctionNode *node)
     // }
 }
 
-void CompileStatement::Visit(ModuleNode *node)
+// void CompileStatement::Visit(ModuleNode *node)
+// {
+//     auto functions = node->functions;
+//     std::reverse(functions.begin(), functions.end());
+//     for (int i = 0; i < node->functions.size(); i++)
+//     {
+//         // program_scope.set_current(node->name);
+//         functions[i]->Accept(this);
+//     }
+// }
+
+void CompileStatement::Visit(DemoduarlizedProgramNode *node)
 {
+    // for (const auto &[key, current_function] : node->global_functions)
+    // {
+    //     current_function->Accept(this);
+    // }
+    std::cout << node->functions.size() << std::endl;
+    std::cout << node->global_functions.size() << std::endl;
+
     auto functions = node->functions;
     std::reverse(functions.begin(), functions.end());
     for (int i = 0; i < node->functions.size(); i++)
     {
-        // program_scope.set_current(node->name);
         functions[i]->Accept(this);
+        // std::cout <<
     }
 }
 
@@ -124,11 +145,11 @@ void CompileStatement::Visit(ReturnNode *node)
     auto error = llvm::verifyFunction(*(f), output);
 }
 
-void CompileStatement::Visit(ProgramNode *node)
-{
-    for (const auto &[key, current_module] : node->avail_modules)
-    {
-        program_scope.set_current(current_module->name);
-        current_module->Accept(this);
-    }
-}
+// void CompileStatement::Visit(ProgramNode *node)
+// {
+//     for (const auto &[key, current_module] : node->avail_modules)
+//     {
+//         program_scope.set_current(current_module->name);
+//         current_module->Accept(this);
+//     }
+// }
