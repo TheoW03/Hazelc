@@ -183,6 +183,7 @@ bool is_dedent(Lexxer_Context &ctx)
 {
     return ctx.indents_idx < ctx.indents_num;
 }
+
 bool is_indent(Lexxer_Context &ctx)
 {
     return ctx.indents_idx > ctx.indents_num;
@@ -202,6 +203,22 @@ bool is_indent(Lexxer_Context &ctx)
     //     ctx.tokens.push_back({"dedent", TokenType::Dedents, ctx.line_num});
     //     ctx.buffer = "";
     // }
+}
+void handle_indents(Lexxer_Context &ctx)
+{
+    if (is_indent(ctx))
+    {
+        ctx.indents_num = ctx.indents_idx;
+        ctx.tokens.push_back({"Indent", TokenType::Indents, ctx.line_num});
+    }
+    else if (is_dedent(ctx))
+    {
+        ctx.indents_num = ctx.indents_idx;
+        ctx.tokens.push_back({"Dedent", TokenType::Dedents, ctx.line_num});
+    }
+    ctx.indents_idx = 0;
+
+    ctx.buffer = "";
 }
 void is_token(Lexxer_Context &ctx)
 {
@@ -369,6 +386,7 @@ void is_space(Lexxer_Context &ctx, char value)
     else
         ctx.buffer += value;
 }
+
 void dot_state(Lexxer_Context &ctx, char value)
 {
     if (value == '.')
@@ -416,11 +434,11 @@ std::vector<Tokens> lexxer(std::vector<std::string> lines, std::string file_name
             {
                 if (is_str == 1 && current_char == '\"')
                 {
-                    std::cout << "str: " << ctx.buffer << " state: " << ctx.state << " indents: "
-                              << ctx.indents_idx
-                              << " indents num: "
-                              << ctx.indents_num
-                              << std::endl;
+                    // std::cout << "str: " << ctx.buffer << " state: " << ctx.state << " indents: "
+                    //   << ctx.indents_idx
+                    //   << " indents num: "
+                    //   << ctx.indents_num
+                    //   << std::endl;
 
                     ctx.tokens.push_back({ctx.buffer, TokenType::String_Lit, ctx.line_num});
                     ctx.buffer = "";
@@ -437,20 +455,20 @@ std::vector<Tokens> lexxer(std::vector<std::string> lines, std::string file_name
                 {
                     if (ctx.state == 0)
                     {
-                        if (is_indent(ctx))
-                        {
-                            ctx.indents_num = ctx.indents_idx;
-                            ctx.tokens.push_back({"Indent", TokenType::Indents, ctx.line_num});
-                        }
-                        else if (is_dedent(ctx))
-                        {
-                            ctx.indents_num = ctx.indents_idx;
-                            ctx.tokens.push_back({"Dedent", TokenType::Dedents, ctx.line_num});
-                        }
-                        std::cout << ctx.indents_num << std::endl;
-                        ctx.indents_idx = 0;
+                        // if (is_indent(ctx))
+                        // {
+                        //     ctx.indents_num = ctx.indents_idx;
+                        //     ctx.tokens.push_back({"Indent", TokenType::Indents, ctx.line_num});
+                        // }
+                        // else if (is_dedent(ctx))
+                        // {
+                        //     ctx.indents_num = ctx.indents_idx;
+                        //     ctx.tokens.push_back({"Dedent", TokenType::Dedents, ctx.line_num});
+                        // }
+                        // ctx.indents_idx = 0;
 
-                        ctx.buffer = "";
+                        // ctx.buffer = "";
+                        handle_indents(ctx);
                     }
                     else
                     {
@@ -511,22 +529,23 @@ std::vector<Tokens> lexxer(std::vector<std::string> lines, std::string file_name
         is_token(ctx);
         ctx.buffer = "";
     }
-    std::cout << ctx.indents_num << std::endl;
-    if (ctx.indents_idx > ctx.indents_num)
-    {
-        ctx.indents_num = ctx.indents_idx;
-        ctx.indents_idx = 0;
-        ctx.tokens.push_back({"Indent", TokenType::Indents, ctx.line_num});
-        ctx.buffer = "";
-    }
-    else if (ctx.indents_idx < ctx.indents_num)
-    {
-        ctx.indents_num = ctx.indents_idx;
-        ctx.indents_idx = 0;
+    handle_indents(ctx);
+    // std::cout << ctx.indents_num << std::endl;
+    // if (ctx.indents_idx > ctx.indents_num)
+    // {
+    //     ctx.indents_num = ctx.indents_idx;
+    //     ctx.indents_idx = 0;
+    //     ctx.tokens.push_back({"Indent", TokenType::Indents, ctx.line_num});
+    //     ctx.buffer = "";
+    // }
+    // else if (ctx.indents_idx < ctx.indents_num)
+    // {
+    //     ctx.indents_num = ctx.indents_idx;
+    //     ctx.indents_idx = 0;
 
-        ctx.tokens.push_back({"dedent", TokenType::Dedents, ctx.line_num});
-        ctx.buffer = "";
-    }
+    //     ctx.tokens.push_back({"dedent", TokenType::Dedents, ctx.line_num});
+    //     ctx.buffer = "";
+    // }
     return ctx.tokens;
 }
 void print_tokens(std::vector<Tokens> tokens)

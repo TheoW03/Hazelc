@@ -26,8 +26,8 @@ void CompileStatement::Visit(FunctionNode *node)
     // sees if its a global or local function
     // if local we put it in the local scope. if global we generate it
     auto c = this->program_scope.set_current_function();
-    std::cout << c.name.value << std::endl;
-    std::cout << node->f->FunctionName.value << std::endl;
+    // std::cout << c.name.value << std::endl;
+    // std::cout << node->f->FunctionName.value << std::endl;
 
     // the anonmoous prevents collisons
     if (c.isAnonymous)
@@ -75,8 +75,8 @@ void CompileStatement::Visit(DemoduarlizedProgramNode *node)
     // {
     //     current_function->Accept(this);
     // }
-    std::cout << node->functions.size() << std::endl;
-    std::cout << node->global_functions.size() << std::endl;
+    // std::cout << node->functions.size() << std::endl;
+    // std::cout << node->global_functions.size() << std::endl;
 
     auto functions = node->functions;
     std::reverse(functions.begin(), functions.end());

@@ -6,29 +6,29 @@
 // it creates a data strcuture, in ProgramScope
 CompileHighLevel::CompileHighLevel(llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context) : module(module), builder(builder), context(context)
 {
-    std::map<TokenType, OptionalType>
-        types;
+    // std::map<TokenType, OptionalType>
+    //     types;
     // types.insert(std::make_pair(TokenType::Integer, OptionalType()));
-    std::map<TokenType, OptionalType> NativeTypes;
+    // std::map<TokenType, OptionalType> NativeTypes;
 
-    auto string_type = llvm::StructType::create(context, "string");
-    std::vector<llvm::Type *> elements = {builder.getPtrTy(), builder.getInt64Ty()};
-    string_type->setBody(elements);
-    NativeTypes.insert(std::make_pair(TokenType::Integer, OptionalType(context, builder, builder.getInt64Ty())));
-    NativeTypes.insert(std::make_pair(TokenType::Uinteger, OptionalType(context, builder, builder.getInt64Ty())));
+    // auto string_type = llvm::StructType::create(context, "string");
+    // std::vector<llvm::Type *> elements = {builder.getPtrTy(), builder.getInt64Ty()};
+    // string_type->setBody(elements);
+    // NativeTypes.insert(std::make_pair(TokenType::Integer, OptionalType(context, builder, builder.getInt64Ty())));
+    // NativeTypes.insert(std::make_pair(TokenType::Uinteger, OptionalType(context, builder, builder.getInt64Ty())));
 
-    NativeTypes.insert(std::make_pair(TokenType::Decimal, OptionalType(context, builder, builder.getDoubleTy())));
-    NativeTypes.insert(std::make_pair(TokenType::boolean, OptionalType(context, builder, builder.getInt1Ty())));
+    // NativeTypes.insert(std::make_pair(TokenType::Decimal, OptionalType(context, builder, builder.getDoubleTy())));
+    // NativeTypes.insert(std::make_pair(TokenType::boolean, OptionalType(context, builder, builder.getInt1Ty())));
 
-    NativeTypes.insert(std::make_pair(TokenType::character, OptionalType(context, builder, builder.getInt8Ty())));
-    NativeTypes.insert(std::make_pair(TokenType::Byte, OptionalType(context, builder, builder.getInt8Ty())));
-    NativeTypes.insert(std::make_pair(TokenType::Ubyte, OptionalType(context, builder, builder.getInt8Ty())));
+    // NativeTypes.insert(std::make_pair(TokenType::character, OptionalType(context, builder, builder.getInt8Ty())));
+    // NativeTypes.insert(std::make_pair(TokenType::Byte, OptionalType(context, builder, builder.getInt8Ty())));
+    // NativeTypes.insert(std::make_pair(TokenType::Ubyte, OptionalType(context, builder, builder.getInt8Ty())));
 
-    NativeTypes.insert(std::make_pair(TokenType::string, OptionalType(context, builder, string_type)));
+    // NativeTypes.insert(std::make_pair(TokenType::string, OptionalType(context, builder, string_type)));
 
     this->params = llvm::StructType::create(context, "params");
     CRunTimeFunctions c(builder, module);
-    this->compiler_context = CompilerContext(c, NativeTypes, string_type);
+    this->compiler_context = CompilerContext(c, context, module, builder);
     // builder.CreateMemCpy()
 }
 
@@ -98,8 +98,8 @@ void CompileHighLevel::Visit(ReturnNode *node)
 
 void CompileHighLevel::Visit(FunctionCallNode *node)
 {
-    std::cout << node->name.value << std::endl;
-    std::cout << node->param_types.size() << std::endl;
+    // std::cout << node->name.value << std::endl;
+    // std::cout << node->param_types.size() << std::endl;
 
     for (int i = 0; i < node->param_types.size(); i++)
     {
