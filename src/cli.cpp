@@ -133,6 +133,7 @@ Output parse_cmd(std::vector<std::string> args)
         else if (current.has_value())
         {
             current.value().function(args[i], o);
+            current = {};
         }
         else
         {
