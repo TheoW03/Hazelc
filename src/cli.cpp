@@ -4,6 +4,7 @@
 #include <cli.h>
 #include <functional>
 #include <optional>
+#include <error.h>
 struct Parse_F
 {
     std::function<void(std::string &, Output &)> function;
@@ -92,6 +93,7 @@ Output parse_cmd(std::vector<std::string> args)
         if (!current.has_value() && args[i].size() < 2)
         {
             std::cout << "hazelc: arguement has to little characters to count as an option (they must be atleast 2 characters in length)" << std::endl;
+            // error("arguement has to little characters to count as an option (they must be atleast 2 characters in length)")
             exit(EXIT_FAILURE);
         }
         if (args[i].at(0) == '-' && args[i].at(1) != '-')
@@ -108,8 +110,7 @@ Output parse_cmd(std::vector<std::string> args)
             }
             else
             {
-                std::cout << "hazelc: unknown option \"" << short_optop << "\" run -h or --help for a list of commands" << std::endl;
-                exit(EXIT_FAILURE);
+                error(std::to_string(short_optop));
             }
         }
         else if (args[i].at(0) == '-' && args[i].at(1) == '-')
@@ -126,8 +127,7 @@ Output parse_cmd(std::vector<std::string> args)
             }
             else
             {
-                std::cout << "hazelc: unknown option \"" << optop << "\"run -h or --help for a list of commands" << std::endl;
-                exit(EXIT_FAILURE);
+                error(optop);
             }
         }
         else if (current.has_value())
