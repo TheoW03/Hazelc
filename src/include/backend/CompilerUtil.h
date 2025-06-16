@@ -41,6 +41,7 @@ struct Thunks
 {
     llvm::Type *thunk_type;
     llvm::Function *eval_func;
+    size_t gep_loc;
 };
 #endif
 

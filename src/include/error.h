@@ -12,3 +12,4 @@ struct NodeLocation
 
 void error(std::string message, Tokens error_token);
 void error(std::string message, NodeLocation error_token);
+void error(std::string message);

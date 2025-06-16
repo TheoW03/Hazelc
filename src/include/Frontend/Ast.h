@@ -310,7 +310,7 @@ public:
     std::shared_ptr<FunctionRefNode> f;
     std::shared_ptr<BlockNode> stmnts;
     bool can_export;
-    std::string hash_name;
+    std::optional<std::string> hash_name;
     FunctionNode(bool can_export,
                  std::shared_ptr<FunctionRefNode> functionHeader,
                  std::shared_ptr<BlockNode>);
@@ -326,7 +326,7 @@ class FunctionCallNode : public ASTNode
 {
 public:
     Tokens name;
-    std::string hash_name;
+    std::optional<std::string> hash_name;
     std::vector<std::shared_ptr<FunctionRefNode>> param_types;
     std::vector<std::shared_ptr<ASTNode>> params;
     FunctionCallNode(Tokens name, std::vector<std::shared_ptr<ASTNode>> params);

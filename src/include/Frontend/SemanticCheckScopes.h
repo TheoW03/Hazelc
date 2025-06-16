@@ -30,7 +30,7 @@ struct SemanticModule
 class IntermediateScope
 {
 private:
-    SemanticModule getModuleNameByFunction(Tokens name);
+    std::optional<SemanticModule> getModuleNameByFunction(Tokens name);
 
 public:
     std::map<std::string, SemanticModule> modules;

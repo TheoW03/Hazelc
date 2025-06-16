@@ -44,9 +44,9 @@ void CompileHighLevel::Visit(FunctionNode *node)
     std::vector<std::shared_ptr<ASTNode>> filter_functions;
     Function compiled_function = CompileFunctionHeader(node->f);
 
-    if (node->hash_name != "")
+    if (node->hash_name.has_value())
     {
-        this->func_map.insert(std::make_pair(node->hash_name, compiled_function));
+        this->func_map.insert(std::make_pair(node->hash_name.value(), compiled_function));
     }
     this->compiled_functions.push(compiled_function);
     // this->functions.push_back()
@@ -190,6 +190,7 @@ std::tuple<llvm::FunctionType *, std::vector<Thunks>> CompileHighLevel::compile_
     {
         auto funct = compile_Function_Type(n->params[i]);
         auto p = get_thunk_types(n->params[i]);
+        p.gep_loc = params_struct.size() + 1;
         params_struct.push_back(p.thunk_type);
         thunks.push_back(p);
         // this->params->

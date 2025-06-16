@@ -36,9 +36,9 @@ void CompileStatement::Visit(FunctionNode *node)
         this->block = EntryBlock;
         builder.SetInsertPoint(EntryBlock);
     }
-    else if (node->hash_name != "")
+    else if (node->hash_name.has_value())
     {
-        auto func = program_scope.get_function(node->hash_name).value();
+        auto func = program_scope.get_function(node->hash_name.value()).value();
         llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, "entry", func.function);
         this->block = EntryBlock;
 

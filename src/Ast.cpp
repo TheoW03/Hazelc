@@ -125,6 +125,7 @@ FunctionNode::FunctionNode(bool can_export, std::shared_ptr<FunctionRefNode> fun
 
     this->can_export = can_export;
     this->f = functionHeader;
+    this->hash_name = {};
     this->stmnts = stmnts;
 }
 
@@ -485,6 +486,7 @@ FunctionCallNode::FunctionCallNode(Tokens name, std::vector<std::shared_ptr<ASTN
 {
     this->name = name;
     this->params = params;
+    this->hash_name = {};
 }
 
 void FunctionCallNode::Accept(Visitor *v)

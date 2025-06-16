@@ -230,7 +230,7 @@ void IntermediateScope::set_current_module(std::string s)
 {
     this->current = this->modules[s];
 }
-SemanticModule IntermediateScope::getModuleNameByFunction(Tokens name)
+std::optional<SemanticModule> IntermediateScope::getModuleNameByFunction(Tokens name)
 {
 
     auto global_functions = this->current.functions;
@@ -250,6 +250,7 @@ SemanticModule IntermediateScope::getModuleNameByFunction(Tokens name)
             }
         }
     }
+    return {};
     // return SemanticModule();
 }
 std::optional<std::shared_ptr<FunctionRefNode>> IntermediateScope::get_global_function(Tokens name)
@@ -276,6 +277,6 @@ std::optional<std::string> IntermediateScope::get_global_function_hash(Tokens fu
 {
     if (!get_global_function(function_name).has_value())
         return {};
-    auto new_name = function_name.value + " " + getModuleNameByFunction(function_name).name.value;
+    auto new_name = function_name.value + ":" + getModuleNameByFunction(function_name).value().name.value;
     return new_name;
 }
