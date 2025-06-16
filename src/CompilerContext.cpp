@@ -8,16 +8,23 @@
 CompilerContext::CompilerContext()
 {
 }
-
-CompilerContext::CompilerContext(
-    CRunTimeFunctions CProcedures,
-    std::map<TokenType, OptionalType>
-        NativeTypes,
-    llvm::StructType *str_type)
+CompilerContext::CompilerContext(CRunTimeFunctions CProcedures, llvm::LLVMContext &context, llvm::Module &module, llvm::IRBuilder<> &builder)
 {
+    auto string_type = llvm::StructType::create(context, "string");
+    std::vector<llvm::Type *> elements = {builder.getPtrTy(), builder.getInt64Ty()};
+    string_type->setBody(elements);
+    this->string_type = string_type;
+    NativeTypes.insert(std::make_pair(TokenType::Integer, OptionalType(context, builder, builder.getInt64Ty())));
+    NativeTypes.insert(std::make_pair(TokenType::Uinteger, OptionalType(context, builder, builder.getInt64Ty())));
 
-    this->NativeTypes = NativeTypes;
-    this->string_type = str_type;
+    NativeTypes.insert(std::make_pair(TokenType::Decimal, OptionalType(context, builder, builder.getDoubleTy())));
+    NativeTypes.insert(std::make_pair(TokenType::boolean, OptionalType(context, builder, builder.getInt1Ty())));
+
+    NativeTypes.insert(std::make_pair(TokenType::character, OptionalType(context, builder, builder.getInt8Ty())));
+    NativeTypes.insert(std::make_pair(TokenType::Byte, OptionalType(context, builder, builder.getInt8Ty())));
+    NativeTypes.insert(std::make_pair(TokenType::Ubyte, OptionalType(context, builder, builder.getInt8Ty())));
+
+    NativeTypes.insert(std::make_pair(TokenType::string, OptionalType(context, builder, string_type)));
     this->CProcedures = CProcedures;
 }
 

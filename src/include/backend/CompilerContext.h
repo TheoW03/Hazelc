@@ -48,10 +48,12 @@ public:
     std::vector<llvm::StructType *> lists;
     llvm::StructType *string_type;
     CompilerContext();
-    CompilerContext(
-        CRunTimeFunctions CProcedures,
-        std::map<TokenType, OptionalType> NativeTypes,
-        llvm::StructType *str_type);
+
+    CompilerContext(CRunTimeFunctions CProcedures, llvm::LLVMContext &context, llvm::Module &module, llvm::IRBuilder<> &builder);
+    // CompilerContext(
+    //     CRunTimeFunctions CProcedures,
+    //     std::map<TokenType, OptionalType> NativeTypes,
+    //     llvm::StructType *str_type);
     // Function get_function(Tokens name);
     // Function get_local_function(Tokens name);
     // void add_local_function(Tokens name, Function function);
