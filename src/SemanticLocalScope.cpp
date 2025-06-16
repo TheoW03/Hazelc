@@ -277,5 +277,5 @@ std::optional<std::string> IntermediateScope::get_global_function_hash(Tokens fu
     if (!get_global_function(function_name).has_value())
         return {};
     auto new_name = function_name.value + " " + getModuleNameByFunction(function_name).name.value;
-    return sha256(new_name);
+    return new_name;
 }
