@@ -134,7 +134,7 @@ void runPasses(std::shared_ptr<ProgramNode> node, Output cli)
     node->Accept(typechecker.get());
     std::cout << "hazelc: checking types" << std::endl; // /
 
-    node->Accept(std::make_shared<ConstantFoldingVisitor>().get()); //
+    node->Accept(std::make_shared<ConstantFoldingVisitor>().get()); // aa
 
     std::cout << "hazelc: constant folding" << std::endl;
     auto mainModule = node->getMainModule();
