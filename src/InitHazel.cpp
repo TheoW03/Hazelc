@@ -148,7 +148,7 @@ void runPasses(std::shared_ptr<ProgramNode> node, Output cli)
         std::cout << "hazelc: Treeshake" << std::endl;
         demoddlarize = std::make_shared<DemodularizedVisitor>(IntermediateScope(semantic->modules));
         node->Accept(demoddlarize.get());
-        std::cout << "hazelc: reapplying demodulerization" << std::endl; // /
+        std::cout << "hazelc: updating Demod for this" << std::endl; // /
     }
 
     InitCompiler(cli, std::make_shared<DemoduarlizedProgramNode>(demoddlarize->program));

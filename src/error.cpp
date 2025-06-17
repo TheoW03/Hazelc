@@ -17,3 +17,7 @@ void error(std::string message)
     std::cout << "hazelc: " << "unknown option \"" << message << " run -h or --help for a list of commands" << std::endl;
     exit(EXIT_FAILURE);
 }
+void status(std::string message)
+{
+    std::cout << "hazelc: " << message << std::endl;
+}
