@@ -148,7 +148,7 @@ void runPasses(std::shared_ptr<ProgramNode> node, Output cli)
     auto demoddlarize = std::make_shared<DemodularizedVisitor>(IntermediateScope(semantic->modules));
     node->Accept(demoddlarize.get());
 
-    std::cout << "hazelc: demodularize" << std::endl;
+    std::cout << "hazelc: demodularize" << std::endl; //
     InitCompiler(cli, std::make_shared<DemoduarlizedProgramNode>(demoddlarize->program));
 }
 
