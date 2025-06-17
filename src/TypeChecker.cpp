@@ -72,7 +72,9 @@ void TypeCheckerVistor::Visit(BooleanExprNode *node)
 
     node->rhs->Accept(this);
 }
-
+void TypeCheckerVistor::Visit(DemoduarlizedProgramNode *node)
+{
+}
 void TypeCheckerVistor::Visit(ConditionalNode *node)
 {
     for (int i = 0; i < node->branches.size(); i++)
