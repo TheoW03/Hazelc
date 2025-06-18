@@ -222,11 +222,17 @@ IntermediateScope::IntermediateScope()
 {
 }
 
-IntermediateScope::IntermediateScope(std::map<std::string, SemanticModule> m)
+IntermediateScope::IntermediateScope(std::map<std::string, SemanticModule> modules)
 {
-    this->modules = m;
+    this->modules = modules;
 }
+IntermediateScope::IntermediateScope(std::map<std::string, std::shared_ptr<FunctionNode>> functions)
+{
+    this->functions = functions;
+}
+
 void IntermediateScope::set_current_module(std::string s)
+
 {
     this->current = this->modules[s];
 }
@@ -270,6 +276,18 @@ std::optional<std::shared_ptr<FunctionRefNode>> IntermediateScope::get_global_fu
                 return modules[imports[i].value].exported_functions[name.value];
             }
         }
+    }
+    return {};
+}
+std::optional<std::shared_ptr<FunctionRefNode>> IntermediateScope::get_global_function_demodularized(std::optional<std::string> function_name)
+{
+    if (!function_name.has_value())
+    {
+        return {};
+    }
+    if (functions.find(function_name.value()) != this->functions.end())
+    {
+        return functions[function_name.value()]->f;
     }
     return {};
 }

@@ -132,7 +132,7 @@ void runPasses(std::shared_ptr<ProgramNode> node, Output cli)
     auto demoddlarize = std::make_shared<DemodularizedVisitor>(IntermediateScope(semantic->modules));
     node->Accept(demoddlarize.get());
     std::cout << "hazelc: removing modules" << std::endl; // /
-    auto typechecker = std::make_shared<TypeCheckerVistor>(IntermediateScope(semantic->modules));
+    auto typechecker = std::make_shared<TypeCheckerVistor>(IntermediateScope(demoddlarize->program.global_functions));
     node->Accept(typechecker.get());
     std::cout << "hazelc: checking types" << std::endl; // /
 

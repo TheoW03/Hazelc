@@ -34,13 +34,17 @@ private:
 
 public:
     std::map<std::string, SemanticModule> modules;
-
+    std::map<std::string, std::shared_ptr<FunctionNode>> functions;
     SemanticModule current;
     IntermediateScope();
 
     IntermediateScope(std::map<std::string, SemanticModule> modules);
+    IntermediateScope(std::map<std::string, std::shared_ptr<FunctionNode>> functions);
+
     void set_current_module(std::string s);
     std::optional<std::shared_ptr<FunctionRefNode>> get_global_function(Tokens function_name);
+    std::optional<std::shared_ptr<FunctionRefNode>> get_global_function_demodularized(std::optional<std::string> function_name);
+
     std::optional<std::string> get_global_function_hash(Tokens function_name);
 };
 #endif
@@ -115,6 +119,9 @@ public:
 
 class TypeCheckerVistor : public Visitor
 {
+private:
+    void add_local_function(Tokens name, std::shared_ptr<FunctionRefNode> value);
+
 public:
     IntermediateScope modules;
     SemanticModule current_AST_module;

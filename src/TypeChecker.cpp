@@ -22,29 +22,26 @@ void TypeCheckerVistor::Visit(ModuleNode *node)
         node->functions[i]->Accept(this);
     }
 }
+void TypeCheckerVistor::add_local_function(Tokens name, std::shared_ptr<FunctionRefNode> value)
+{
+    if (this->local_functions.find(name.value) != this->local_functions.end())
+    {
+        this->local_functions[name.value] = value;
+    }
+    else
+    {
+        this->local_functions.insert(std::make_pair(name.value, value));
+    }
+}
 void TypeCheckerVistor::Visit(FunctionNode *node)
 {
-    if (!modules.get_global_function(node->f->FunctionName).has_value())
+    if (!node->hash_name.has_value())
     {
-        if (this->local_functions.find(node->f->FunctionName.value) != this->local_functions.end())
-        {
-            this->local_functions[node->f->FunctionName.value] = node->f;
-        }
-        else
-        {
-            this->local_functions.insert(std::make_pair(node->f->FunctionName.value, node->f));
-        }
+        add_local_function(node->f->FunctionName, node->f);
     }
     for (int i = 0; i < node->f->params.size(); i++)
     {
-        if (this->local_functions.find(node->f->FunctionName.value) != this->local_functions.end())
-        {
-            this->local_functions[node->f->params[i]->FunctionName.value] = node->f;
-        }
-        else
-        {
-            this->local_functions.insert(std::make_pair(node->f->params[i]->FunctionName.value, node->f->params[i]));
-        }
+        add_local_function(node->f->FunctionName, node->f);
     }
     for (int i = 0; i < node->stmnts->functions.size(); i++)
     {
@@ -74,6 +71,11 @@ void TypeCheckerVistor::Visit(BooleanExprNode *node)
 }
 void TypeCheckerVistor::Visit(DemoduarlizedProgramNode *node)
 {
+    for (const auto &[key, current_function] : node->global_functions)
+    {
+
+        current_function->Accept(this);
+    }
 }
 void TypeCheckerVistor::Visit(ConditionalNode *node)
 {
@@ -84,8 +86,6 @@ void TypeCheckerVistor::Visit(ConditionalNode *node)
         if (!std::make_shared<BoolType>()->can_accept(a.get()))
         {
             error("expected boolean got " + a->get_type_value(), node->node);
-            // std::cout << "hazelc: conditionals require a boolean expression" << std::endl;
-            // exit(EXIT_FAILURE);
         }
         for (int i = 0; i < node->branches[i]->stmnts->functions.size(); i++)
         {
@@ -132,7 +132,7 @@ std::shared_ptr<Type> CheckExpressionType::traverse_type(std::shared_ptr<ASTNode
     else if (dynamic_cast<FunctionCallNode *>(expr.get()) != nullptr)
     {
         auto f = dynamic_cast<FunctionCallNode *>(expr.get());
-        return this->s.get_global_function(f->name).value_or(this->local_functions[f->name.value])->RetType;
+        return this->s.get_global_function_demodularized(f->hash_name).value_or(this->local_functions[f->name.value])->RetType;
     }
     else if (dynamic_cast<ExprNode *>(expr.get()) != nullptr)
     {
