@@ -129,8 +129,8 @@ public:
 
     TypeCheckerVistor(IntermediateScope modules);
 
-    void Visit(ProgramNode *node) override;
-    void Visit(ModuleNode *node) override;
+    // void Visit(ProgramNode *node) override;
+    // void Visit(ModuleNode *node) override;
     void Visit(FunctionNode *node) override;
 
     void Visit(ExprNode *node) override;
