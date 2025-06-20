@@ -133,7 +133,8 @@ void runPasses(std::shared_ptr<ProgramNode> node, Output cli)
     node->Accept(demoddlarize.get());
     std::cout << "hazelc: removing modules" << std::endl; // /
     auto typechecker = std::make_shared<TypeCheckerVistor>(IntermediateScope(demoddlarize->program.global_functions));
-    node->Accept(typechecker.get());
+    // d->Accept(typechecker.get());
+    demoddlarize->program.Accept(typechecker.get());
     std::cout << "hazelc: checking types" << std::endl; // /
 
     node->Accept(std::make_shared<ConstantFoldingVisitor>().get()); // aa

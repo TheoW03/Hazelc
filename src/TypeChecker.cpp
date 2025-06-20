@@ -54,7 +54,7 @@ void TypeCheckerVistor::Visit(FunctionNode *node)
 
     if (!node->f->RetType->can_accept(a.get()))
     {
-        error("type error in function, expects a " + node->f->RetType->get_type_value() + " got a " + a->get_type_value(), node->f->FunctionName);
+        error("type error in function \"" + node->f->FunctionName.value + "\"" + " expects a " + node->f->RetType->get_type_value() + " got a " + a->get_type_value(), node->f->FunctionName);
     }
 }
 void TypeCheckerVistor::Visit(ExprNode *node)
