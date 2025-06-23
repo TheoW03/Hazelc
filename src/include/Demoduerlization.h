@@ -15,6 +15,9 @@ public:
     void Visit(ModuleNode *node) override;
     void Visit(ProgramNode *node) override;
     // void Visit(ProgramNode *node) override;
+    void Visit(ExprNode *node) override;
+    void Visit(BooleanExprNode *node) override;
+    void Visit(ConditionalNode *node) override;
 
     void Visit(FunctionCallNode *node) override;
 };
