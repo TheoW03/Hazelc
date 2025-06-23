@@ -202,9 +202,14 @@ llvm::Value *CompileExpr::BoolBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs
     auto math = BoolIntMathExpr(lhs_val, op, rhs_val);
     return BoolType.set_loaded_value(math, builder);
 }
-llvm::Value *CompileExpr::NoneBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
+llvm::Value *CompileExpr::NoneBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs, BooleanExprNode *nodE)
 {
     auto BoolType = compiler_context.get_boolean_type();
+    // lhs->getType()->
+    // BoolType.type->dump();
+    // std::cout
+    //     << "expr type: " << get_expr_type(nodE->lhs, program) << std::endl;
+    // std::cout << get_expr_type(nodE->rhs, program) << std::endl;
 
     auto lhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(lhs->getType(), lhs, 1, "lhs"));
     auto rhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(rhs->getType(), rhs, 1, "rhs"));
@@ -536,6 +541,7 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
 
         auto lhs = Expression(c->lhs);
         auto rhs = Expression(c->rhs);
+
         auto get_type = get_bool_expr_type(node, this->program);
         std::cout << get_type << std::endl;
         switch (get_type)
@@ -547,7 +553,7 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         case String_Type:
             return {this->block, StringBoolMathExpr(lhs.value, c->op, rhs.value)};
         case None_Type:
-            // return {this->block, NoneBool(lhs.value, c->op, rhs.value)};
+            return {this->block, NoneBool(lhs.value, c->op, rhs.value, c)};
             break;
         case Boolean_Type:
             return {this->block, BoolBool(lhs.value, c->op, rhs.value)};

@@ -100,7 +100,7 @@ private:
     llvm::Value *FloatBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
     llvm::Value *BoolBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
 
-    llvm::Value *NoneBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
+    llvm::Value *NoneBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs, BooleanExprNode *expr);
     ValueStruct CompileBranch(std::shared_ptr<BlockNode> stmnts);
 
     ValueStruct CompileConditional(ConditionalNode *codnition_stmnt);

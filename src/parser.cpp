@@ -171,12 +171,13 @@ std::optional<std::shared_ptr<ASTNode>> BoolExpr(std::vector<Tokens> &tokens)
     auto op = match_and_remove(bool_expr_tokens,
                                tokens);
 
-    // std::cout << "boolexpr" << std::endl;
-
     if (op.has_value())
     {
+        std::cout << "boolexpr" << std::endl;
+
         auto rhs = factor(tokens);
-        lhs = std::make_shared<BooleanExprNode>(lhs.value(), op.value(), rhs.value());
+
+        return std::make_shared<BooleanExprNode>(lhs.value(), op.value(), rhs.value());
     }
     return lhs;
 }
