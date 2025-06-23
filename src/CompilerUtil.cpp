@@ -221,11 +221,17 @@ llvm::Value *OptionalType::get_value(llvm::IRBuilder<> &builder)
 llvm::Value *OptionalType::get_none(llvm::IRBuilder<> &builder)
 {
     llvm::Value *structPtr = builder.CreateAlloca(this->type);
-    auto destField1ptr = builder.CreateStructGEP(this->type, structPtr, 1, "OptionalStructPtr1");
+    auto destField0ptr = builder.CreateStructGEP(this->type, structPtr, 0, "OptionalStructPtr0.Value");
+
+    builder.CreateStore(llvm::Constant::getNullValue(inner), destField0ptr);
+    auto destField1ptr = builder.CreateStructGEP(this->type, structPtr, 1, "OptionalStructPtr1.isNone");
     auto isNone = llvm::ConstantInt::get(builder.getInt1Ty(), 1);
     builder.CreateStore(isNone, destField1ptr);
-
     return structPtr;
+    // llvm::Value *structPtr = builder.CreateAlloca(this->type);
+    // auto destField1ptr = builder.CreateStructGEP(this->type, structPtr, 1, "OptionalStructPtr1");
+    // auto isNone = llvm::ConstantInt::get(builder.getInt1Ty(), 1);
+    // builder.CreateStore(isNone, destField1ptr);
 }
 
 llvm::Type *OptionalType::get_type()

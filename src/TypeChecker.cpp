@@ -124,6 +124,10 @@ std::shared_ptr<Type> CheckExpressionType::traverse_type(std::shared_ptr<ASTNode
     {
         return std::make_shared<StringType>();
     }
+    else if (dynamic_cast<NoneNode *>(expr.get()) != nullptr)
+    {
+        return this->match_type;
+    }
     else if (dynamic_cast<ConditionalNode *>(expr.get()) != nullptr)
     {
         auto f = dynamic_cast<ConditionalNode *>(expr.get());
