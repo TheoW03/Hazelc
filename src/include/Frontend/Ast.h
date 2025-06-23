@@ -187,6 +187,19 @@ public:
 };
 #endif
 
+#ifndef NONE_TYPE_H
+#define NONE_TYPE_H
+
+class NoneType : public Type
+{
+public:
+    NoneType();
+    std::string get_type_value() override;
+    bool can_accept(Type *type) override;
+
+    std::string to_string();
+};
+#endif
 #ifndef INTNODE_H
 #define INTNODE_H
 class Visitor;
