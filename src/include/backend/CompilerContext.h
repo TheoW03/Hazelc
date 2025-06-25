@@ -46,6 +46,7 @@ public:
     std::map<TokenType, OptionalType> NativeTypes;
     Tokens current_module;
     CRunTimeFunctions CProcedures;
+    Function current_function;
     // std::map<std::string, llvm::Type *> types;
     // std::map<TokenType, OptionalType> types;
     std::vector<llvm::StructType *> lists;
@@ -67,6 +68,10 @@ public:
     OptionalType get_byte_type();
     OptionalType get_type(std::shared_ptr<Type> type);
     void add_function(FunctionNode *node, Function function);
+    std::optional<Function> get_function(std::string name);
+    std::optional<int> addLocal(Tokens name, Function function);
+    Function get_current_function();
+    Function set_current_function();
     // void AddModule(std::string module_name, CompiledModule module);
     // ProgramScope getScope();
     // CompiledModule get_module(Tokens module);

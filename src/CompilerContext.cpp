@@ -163,3 +163,41 @@ void CompilerContext::add_function(FunctionNode *node, Function function)
     }
     this->functions.push(function);
 }
+
+std::optional<Function> CompilerContext::get_function(std::string name)
+{
+    if (this->global_functions.find(name) != this->global_functions.end())
+    {
+        return this->global_functions[name];
+    }
+    if (this->local_functions.find(name) != this->local_functions.end())
+    {
+        return this->local_functions[name];
+    }
+    return {};
+}
+std::optional<int> CompilerContext::addLocal(Tokens name, Function function)
+{
+    if (this->local_functions.find(name.value) != this->local_functions.end())
+    {
+        local_functions[name.value] = function;
+        return {};
+    }
+    else
+    {
+        local_functions.insert(std::make_pair(name.value, function));
+        return 1;
+    }
+}
+
+Function CompilerContext::get_current_function()
+{
+    return this->current_function;
+}
+
+Function CompilerContext::set_current_function()
+{
+    this->current_function = this->functions.top();
+    this->functions.pop();
+    return this->current_function;
+}
