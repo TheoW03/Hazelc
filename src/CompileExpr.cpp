@@ -205,11 +205,12 @@ llvm::Value *CompileExpr::BoolBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs
 llvm::Value *CompileExpr::NoneBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs, BooleanExprNode *nodE)
 {
     auto BoolType = compiler_context.get_boolean_type();
+    // auto IntType =
     // lhs->getType()->
     // BoolType.type->dump();
     // std::cout
     //     << "expr type: " << get_expr_type(nodE->lhs, program) << std::endl;
-    // std::cout << get_expr_type(nodE->rhs, program) << std::endl;
+    std::cout << get_expr_type(nodE->rhs, program) << std::endl;
 
     auto lhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(lhs->getType(), lhs, 1, "lhs"));
     auto rhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(rhs->getType(), rhs, 1, "rhs"));
@@ -226,16 +227,16 @@ ValueStruct CompileExpr::CompileConditional(ConditionalNode *condition_stmnt)
 
     auto type = compiler_context.get_type(condition_stmnt->type);
     std::vector<std::tuple<llvm::BasicBlock *, llvm::Value *>> phi_nodes;
-    llvm::BasicBlock *endTrue = llvm::BasicBlock::Create(context, "end.true", program.get_current_function().function);
+    llvm::BasicBlock *endTrue = llvm::BasicBlock::Create(context, "end.true", compiler_context.get_current_function().function);
     for (int i = 0; i < condition_stmnt->branches.size(); i++)
     {
         auto condition = Expression(condition_stmnt->branches[i]->condition).value;
-        llvm::BasicBlock *ifTrue = llvm::BasicBlock::Create(context, "if.true", program.get_current_function().function);
+        llvm::BasicBlock *ifTrue = llvm::BasicBlock::Create(context, "if.true", compiler_context.get_current_function().function);
         condition = builder.CreateLoad(builder.getInt1Ty(),
                                        builder.CreateStructGEP(compiler_context.get_boolean_type().type, condition, 0, "str2"));
         if (i < condition_stmnt->branches.size() - 1)
         {
-            llvm::BasicBlock *ElsTrue = llvm::BasicBlock::Create(context, "else.true", program.get_current_function().function);
+            llvm::BasicBlock *ElsTrue = llvm::BasicBlock::Create(context, "else.true", compiler_context.get_current_function().function);
             builder.CreateCondBr(condition, ifTrue, ElsTrue);
             builder.SetInsertPoint(ifTrue);
             this->block = ifTrue;
@@ -434,7 +435,7 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
     else if (dynamic_cast<NoneNode *>(node.get()))
     {
         return {
-            this->block, compiler_context.get_type(program.get_current_function().ret_type).get_none(builder)};
+            this->block, compiler_context.get_type(compiler_context.get_current_function().ret_type).get_none(builder)};
     }
     else if (dynamic_cast<ConditionalNode *>(node.get()))
     {
@@ -486,7 +487,7 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
     {
         auto c = dynamic_cast<FunctionCallNode *>(node.get());
 
-        auto fu = program.get_function(c->hash_name.has_value() ? c->hash_name.value() : c->name.value).value();
+        auto fu = compiler_context.get_function(c->hash_name.has_value() ? c->hash_name.value() : c->name.value).value();
         // std::cout << fu.name.value << std::endl;
 
         // auto v =

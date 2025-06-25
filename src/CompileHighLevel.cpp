@@ -43,27 +43,15 @@ void CompileHighLevel::Visit(FunctionNode *node)
     using std::make_pair;
     std::vector<std::shared_ptr<ASTNode>> filter_functions;
     Function compiled_function = CompileFunctionHeader(node->f);
-
-    if (node->hash_name.has_value())
-    {
-        this->func_map.insert(std::make_pair(node->hash_name.value(), compiled_function));
-    }
-    this->compiled_functions.push(compiled_function);
+    this->compiler_context.add_function(node, compiled_function);
+    // if (node->hash_name.has_value())
+    // {
+    //     this->func_map.insert(std::make_pair(node->hash_name.value(), compiled_function));
+    // }
+    // this->compiled_functions.push(compiled_function);
     // this->functions.push_back()
     node->stmnts->Accept(this);
 }
-
-// void CompileHighLevel::Visit(ModuleNode *node)
-// {
-//     for (int i = 0; i < node->functions.size(); i++)
-//     {
-//         functions.push_back(node->functions[i]);
-//         is_global = true;
-//         node->functions[i]->Accept(this);
-//     }
-//     node->functions = functions;
-//     functions.clear();
-// }
 
 void CompileHighLevel::Visit(BranchNode *node)
 {
