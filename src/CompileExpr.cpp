@@ -205,17 +205,30 @@ llvm::Value *CompileExpr::BoolBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs
 llvm::Value *CompileExpr::NoneBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs, BooleanExprNode *nodE)
 {
     auto BoolType = compiler_context.get_boolean_type();
-    // auto IntType =
-    // lhs->getType()->
-    // BoolType.type->dump();
-    // std::cout
-    //     << "expr type: " << get_expr_type(nodE->lhs, program) << std::endl;
-    std::cout << get_expr_type(nodE->rhs, compiler_context) << std::endl;
+    if (getTypeOfOnSide(nodE->lhs, compiler_context).has_value())
+    {
+        auto lhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(getTypeOfOnSide(nodE->lhs, compiler_context).value().type, lhs, 1, "lhs"));
+        auto rhs_val = builder.getInt1(true);
 
-    auto lhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(lhs->getType(), lhs, 1, "lhs"));
-    auto rhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(rhs->getType(), rhs, 1, "rhs"));
-    auto math = BoolIntMathExpr(lhs_val, op, rhs_val);
-    return BoolType.set_loaded_value(math, builder);
+        auto math = BoolIntMathExpr(lhs_val, op, rhs_val);
+        return BoolType.set_loaded_value(math, builder);
+    }
+    else if (getTypeOfOnSide(nodE->rhs, compiler_context).has_value())
+    {
+        auto rhs_val = builder.CreateLoad(builder.getInt1Ty(),
+                                          builder.CreateStructGEP(getTypeOfOnSide(nodE->rhs, compiler_context).value().type, rhs, 1, "rhs"));
+        auto lhs_val = builder.getInt1(true);
+        auto math = BoolIntMathExpr(lhs_val, op, rhs_val);
+        return BoolType.set_loaded_value(math, builder);
+    }
+    else
+    {
+        auto lhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(getTypeOfOnSide(nodE->lhs, compiler_context).value().type, lhs, 1, "lhs"));
+        auto rhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(getTypeOfOnSide(nodE->rhs, compiler_context).value().type, rhs, 1, "rhs"));
+
+        auto math = BoolIntMathExpr(lhs_val, op, rhs_val);
+        return BoolType.set_loaded_value(math, builder);
+    }
 }
 ValueStruct CompileExpr::CompileBranch(std::shared_ptr<BlockNode> b)
 {
