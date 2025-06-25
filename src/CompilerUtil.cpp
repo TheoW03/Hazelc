@@ -167,6 +167,33 @@ TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n, ProgramScope ctx)
     return TypeOfExpr::Void_Type;
 }
 
+TypeOfExpr getTypeOfOnSide(std::shared_ptr<ASTNode> n, ProgramScope ctx)
+{
+    if (dynamic_cast<IntegerNode *>(n.get()))
+        return TypeOfExpr::Integer_Type;
+    if (dynamic_cast<FunctionCallNode *>(n.get()))
+    {
+        auto d = dynamic_cast<FunctionCallNode *>(n.get());
+        auto f = ctx.get_function(d->hash_name.has_value() ? d->hash_name.value() : d->name.value).value();
+        if (dynamic_cast<IntegerType *>(f.ret_type.get()) || dynamic_cast<ByteType *>(f.ret_type.get()))
+        {
+            return TypeOfExpr::Integer_Type;
+        }
+        else if (dynamic_cast<DecimalType *>(f.ret_type.get()))
+        {
+            return TypeOfExpr::Float_Type;
+        }
+        else if (dynamic_cast<BoolType *>(f.ret_type.get()))
+        {
+            return TypeOfExpr::Boolean_Type;
+        }
+        else if (dynamic_cast<StringType *>(f.ret_type.get()))
+        {
+            return TypeOfExpr::String_Type;
+        }
+    }
+    return Void_Type;
+}
 // optional type. since in hazel all types are optional
 // it compies as a structure
 //  the actual valye

@@ -205,11 +205,12 @@ llvm::Value *CompileExpr::BoolBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs
 llvm::Value *CompileExpr::NoneBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs, BooleanExprNode *nodE)
 {
     auto BoolType = compiler_context.get_boolean_type();
+    // auto IntType =
     // lhs->getType()->
     // BoolType.type->dump();
     // std::cout
     //     << "expr type: " << get_expr_type(nodE->lhs, program) << std::endl;
-    // std::cout << get_expr_type(nodE->rhs, program) << std::endl;
+    std::cout << get_expr_type(nodE->rhs, program) << std::endl;
 
     auto lhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(lhs->getType(), lhs, 1, "lhs"));
     auto rhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(rhs->getType(), rhs, 1, "rhs"));

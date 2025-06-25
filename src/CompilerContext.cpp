@@ -154,3 +154,12 @@ OptionalType CompilerContext::get_type(std::shared_ptr<Type> type)
 {
     return compile_Type_Optional(type);
 }
+
+void CompilerContext::add_function(FunctionNode *node, Function function)
+{
+    if (node->hash_name.has_value())
+    {
+        this->global_functions.insert(std::make_pair(node->hash_name.value(), function));
+    }
+    this->functions.push(function);
+}
