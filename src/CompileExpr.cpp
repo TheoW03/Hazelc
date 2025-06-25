@@ -210,7 +210,7 @@ llvm::Value *CompileExpr::NoneBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs
     // BoolType.type->dump();
     // std::cout
     //     << "expr type: " << get_expr_type(nodE->lhs, program) << std::endl;
-    std::cout << get_expr_type(nodE->rhs, program) << std::endl;
+    std::cout << get_expr_type(nodE->rhs, compiler_context) << std::endl;
 
     auto lhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(lhs->getType(), lhs, 1, "lhs"));
     auto rhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(rhs->getType(), rhs, 1, "rhs"));
@@ -517,7 +517,7 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         auto lhs = Expression(c->lhs);
 
         auto rhs = Expression(c->rhs);
-        auto get_type = get_expr_type(node, this->program);
+        auto get_type = get_expr_type(node, this->compiler_context);
 
         switch (get_type)
         {
@@ -543,7 +543,7 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         auto lhs = Expression(c->lhs);
         auto rhs = Expression(c->rhs);
 
-        auto get_type = get_bool_expr_type(node, this->program);
+        auto get_type = get_bool_expr_type(node, this->compiler_context);
         std::cout << get_type << std::endl;
         switch (get_type)
         {

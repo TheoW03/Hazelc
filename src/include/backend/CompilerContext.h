@@ -81,6 +81,6 @@ public:
 };
 #endif
 
-TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n, ProgramScope ctx);
-TypeOfExpr get_bool_expr_type(std::shared_ptr<ASTNode> n, ProgramScope ctx);
-TypeOfExpr getTypeOfOnSide(std::shared_ptr<ASTNode> n, ProgramScope ctx);
+TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx);
+TypeOfExpr get_bool_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx);
+TypeOfExpr getTypeOfOnSide(std::shared_ptr<ASTNode> n, CompilerContext ctx);

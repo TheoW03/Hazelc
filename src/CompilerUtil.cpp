@@ -8,9 +8,9 @@
 
 // these get the type of the expression
 // used because the LLCM has seperation for floats and
-TypeOfExpr get_bool_expr_type(std::shared_ptr<ASTNode> n, ProgramScope ctx)
+TypeOfExpr get_bool_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx)
 {
-    TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n, ProgramScope ctx);
+    TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx);
     auto c = dynamic_cast<BooleanExprNode *>(n.get());
     if (dynamic_cast<IntegerNode *>(c->lhs.get()) && dynamic_cast<IntegerNode *>(c->rhs.get()))
         return TypeOfExpr::Integer_Type;
@@ -98,7 +98,7 @@ TypeOfExpr get_bool_expr_type(std::shared_ptr<ASTNode> n, ProgramScope ctx)
         return get_expr_type(c->lhs, ctx);
     return TypeOfExpr::Void_Type;
 }
-TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n, ProgramScope ctx)
+TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx)
 {
     auto c = dynamic_cast<ExprNode *>(n.get());
     if (dynamic_cast<IntegerNode *>(c->lhs.get()) && dynamic_cast<IntegerNode *>(c->rhs.get()))
