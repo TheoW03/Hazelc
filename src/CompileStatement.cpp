@@ -26,8 +26,8 @@ void CompileStatement::Visit(FunctionNode *node)
     // sees if its a global or local function
     // if local we put it in the local scope. if global we generate it
     auto c = this->compiler_context.set_current_function();
-    // std::cout << c.name.value << std::endl;
-    // std::cout << node->f->FunctionName.value << std::endl;
+    std::cout << "curret:" << c.name.value << std::endl;
+    std::cout << "actual : " << node->f->FunctionName.value << std::endl;
 
     // the anonmoous prevents collisons
     if (c.isAnonymous)
@@ -46,7 +46,7 @@ void CompileStatement::Visit(FunctionNode *node)
     }
     else
     {
-        program_scope.addLocal(c.name, c);
+        compiler_context.addLocal(c.name, c);
         llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, "entry", c.function);
         this->block = EntryBlock;
         builder.SetInsertPoint(EntryBlock);

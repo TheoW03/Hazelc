@@ -499,9 +499,9 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
     else if (dynamic_cast<FunctionCallNode *>(node.get()))
     {
         auto c = dynamic_cast<FunctionCallNode *>(node.get());
-
+        std::cout << c->name.value << std::endl;
+        std::cout << (compiler_context.get_function(c->hash_name.has_value() ? c->hash_name.value() : c->name.value).has_value()) << std::endl;
         auto fu = compiler_context.get_function(c->hash_name.has_value() ? c->hash_name.value() : c->name.value).value();
-        // std::cout << fu.name.value << std::endl;
 
         // auto v =
         llvm::Value *param_ptr = builder.CreateAlloca(this->params);

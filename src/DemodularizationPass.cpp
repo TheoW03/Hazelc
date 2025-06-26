@@ -43,7 +43,11 @@ void DemodularizedVisitor::Visit(ExprNode *node)
 void DemodularizedVisitor::Visit(FunctionNode *node)
 {
     // std::cout << node->f->FunctionName.value << " hash: " << modules.get_global_function_hash(node->f->FunctionName).value() << std::endl;
-    node->hash_name = modules.get_global_function_hash(node->f->FunctionName).value();
+    node->hash_name = modules.get_global_function_hash(node->f->FunctionName);
+    for (int i = 0; i < node->stmnts->functions.size(); i++)
+    {
+        node->stmnts->functions[i]->Accept(this);
+    }
     node->stmnts->exit->Expr->Accept(this);
 }
 void DemodularizedVisitor::Visit(ConditionalNode *node)
@@ -56,6 +60,6 @@ void DemodularizedVisitor::Visit(ConditionalNode *node)
 }
 void DemodularizedVisitor::Visit(FunctionCallNode *node)
 {
-    node->hash_name = modules.get_global_function_hash(node->name).value_or("");
+    node->hash_name = modules.get_global_function_hash(node->name);
     // std::cout << "function call: " << node->hash_name << std::endl;
 }
