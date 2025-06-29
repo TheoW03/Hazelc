@@ -173,7 +173,6 @@ std::optional<std::shared_ptr<ASTNode>> BoolExpr(std::vector<Tokens> &tokens)
 
     if (op.has_value())
     {
-        std::cout << "boolexpr" << std::endl;
 
         auto rhs = factor(tokens);
 

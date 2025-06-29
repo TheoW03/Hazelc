@@ -26,8 +26,6 @@ void CompileStatement::Visit(FunctionNode *node)
     // sees if its a global or local function
     // if local we put it in the local scope. if global we generate it
     auto c = this->compiler_context.set_current_function();
-    std::cout << "curret:" << c.name.value << std::endl;
-    std::cout << "actual : " << node->f->FunctionName.value << std::endl;
 
     // the anonmoous prevents collisons
     if (c.isAnonymous)

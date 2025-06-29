@@ -41,7 +41,6 @@ void CompileHighLevel::Visit(FunctionNode *node)
     // I do plan to build on top of it.
     // so this may be temporary
     using std::make_pair;
-    std::cout << "visited: " << node->f->FunctionName.value << std::endl;
     std::vector<std::shared_ptr<ASTNode>> filter_functions;
     Function compiled_function = CompileFunctionHeader(node->f);
     compiled_function.isAnonymous = node->anonyomous;
@@ -97,7 +96,6 @@ void CompileHighLevel::Visit(DemoduarlizedProgramNode *node)
     for (int i = 0; i < node->functions.size(); i++)
     {
         node->functions[i]->Accept(this);
-        std::cout << node->functions[i]->f->FunctionName.value << std::endl;
     }
 
     // node->functions = this->functions;

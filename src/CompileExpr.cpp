@@ -499,8 +499,6 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
     else if (dynamic_cast<FunctionCallNode *>(node.get()))
     {
         auto c = dynamic_cast<FunctionCallNode *>(node.get());
-        std::cout << c->name.value << std::endl;
-        std::cout << (compiler_context.get_function(c->hash_name.has_value() ? c->hash_name.value() : c->name.value).has_value()) << std::endl;
         auto fu = compiler_context.get_function(c->hash_name.has_value() ? c->hash_name.value() : c->name.value).value();
 
         // auto v =
@@ -557,7 +555,6 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         auto rhs = Expression(c->rhs);
 
         auto get_type = get_bool_expr_type(node, this->compiler_context);
-        std::cout << get_type << std::endl;
         switch (get_type)
         {
         case Integer_Type:
