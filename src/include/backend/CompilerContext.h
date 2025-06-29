@@ -72,6 +72,8 @@ public:
     std::optional<int> addLocal(Tokens name, Function function);
     Function get_current_function();
     Function set_current_function();
+    // Function set_current_function();
+
     // void AddModule(std::string module_name, CompiledModule module);
     // ProgramScope getScope();
     // CompiledModule get_module(Tokens module);

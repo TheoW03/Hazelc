@@ -41,22 +41,18 @@ void CompileHighLevel::Visit(FunctionNode *node)
     // I do plan to build on top of it.
     // so this may be temporary
     using std::make_pair;
+    std::cout << "visited: " << node->f->FunctionName.value << std::endl;
     std::vector<std::shared_ptr<ASTNode>> filter_functions;
     Function compiled_function = CompileFunctionHeader(node->f);
+    compiled_function.isAnonymous = node->anonyomous;
+
     this->compiler_context.add_function(node, compiled_function);
-    // if (node->hash_name.has_value())
-    // {
-    //     this->func_map.insert(std::make_pair(node->hash_name.value(), compiled_function));
-    // }
-    // this->compiled_functions.push(compiled_function);
-    // this->functions.push_back()
-    node->stmnts->Accept(this);
 }
 
 void CompileHighLevel::Visit(BranchNode *node)
 {
     std::vector<std::shared_ptr<ASTNode>> filter_functions;
-    node->stmnts->Accept(this);
+    // node->stmnts->Accept(this);
     // for (int i = 0; i < node->stmnts.size(); i++)
     // {
     // node->stmnts[i]->Accept(this);
@@ -91,25 +87,20 @@ void CompileHighLevel::Visit(FunctionCallNode *node)
 
     for (int i = 0; i < node->param_types.size(); i++)
     {
-        std::vector<std::shared_ptr<FunctionNode>> stmnts;
         auto compiled_function = CompileFunctionHeader(node->param_types[i]);
         compiled_function.isAnonymous = true;
-
         this->compiled_functions.push(compiled_function);
-        auto ret = std::make_shared<ReturnNode>(node->params[i]);
-        auto param_func = std::make_shared<FunctionNode>(false, node->param_types[i], std::make_shared<BlockNode>(stmnts, ret));
-        this->functions.push_back(param_func);
     }
 }
 void CompileHighLevel::Visit(DemoduarlizedProgramNode *node)
 {
-    for (const auto &[key, current_function] : node->global_functions)
+    for (int i = 0; i < node->functions.size(); i++)
     {
-        this->functions.push_back(current_function);
-
-        current_function->Accept(this);
+        node->functions[i]->Accept(this);
+        std::cout << node->functions[i]->f->FunctionName.value << std::endl;
     }
-    node->functions = this->functions;
+
+    // node->functions = this->functions;
 }
 // void CompileHighLevel::Visit(ProgramNode *node)
 // {
@@ -133,11 +124,11 @@ void CompileHighLevel::Visit(ExprNode *node)
 }
 void CompileHighLevel::Visit(BlockNode *node)
 {
-    for (int i = 0; i < node->functions.size(); i++)
-    {
-        node->functions[i]->Accept(this);
-        this->functions.push_back(node->functions[i]);
-    }
+    // for (int i = 0; i < node->functions.size(); i++)
+    // {
+    //     node->functions[i]->Accept(this);
+    //     // this->functions.push_back(node->functions[i]);
+    // }
     node->exit->Accept(this);
 }
 
