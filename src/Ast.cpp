@@ -120,9 +120,9 @@ std::string FunctionRefNode::to_string()
     return std::string();
 }
 
-FunctionNode::FunctionNode(bool can_export, std::shared_ptr<FunctionRefNode> functionHeader, std::shared_ptr<BlockNode> stmnts)
+FunctionNode::FunctionNode(bool can_export, bool anonyomous, std::shared_ptr<FunctionRefNode> functionHeader, std::shared_ptr<BlockNode> stmnts)
 {
-
+    this->anonyomous = anonyomous;
     this->can_export = can_export;
     this->f = functionHeader;
     this->hash_name = {};

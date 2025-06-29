@@ -404,7 +404,7 @@ std::optional<std::shared_ptr<FunctionNode>> parse_function(std::vector<Tokens> 
     auto func = parse_function_ref(tokens);
     std::vector<std::shared_ptr<ASTNode>> ast;
 
-    return std::make_shared<FunctionNode>(is_export, func.value(),
+    return std::make_shared<FunctionNode>(is_export, false, func.value(),
                                           parse_block(tokens));
 }
 std::optional<std::shared_ptr<ASTNode>> parse_return(std::vector<Tokens> &tokens)
