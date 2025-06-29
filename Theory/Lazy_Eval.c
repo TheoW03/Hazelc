@@ -98,7 +98,7 @@ int main(int argc, char const *argv[])
             6,
             NULL,
             1,
-            &p1};
+            p1};
     p1->n = &n;
 
     // struct Params *p = malloc(sizeof(struct Params));

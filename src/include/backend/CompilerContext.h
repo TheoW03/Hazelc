@@ -38,11 +38,15 @@ public:
 class CompilerContext
 {
 public:
-    std::map<std::string, Function> func_map;
+    std::map<std::string, Function> global_functions;
+    std::map<std::string, Function> local_functions;
+
+    std::stack<Function> functions;
     // std::map<std::string, llvm::Function *> CFunctions;
     std::map<TokenType, OptionalType> NativeTypes;
     Tokens current_module;
     CRunTimeFunctions CProcedures;
+    Function current_function;
     // std::map<std::string, llvm::Type *> types;
     // std::map<TokenType, OptionalType> types;
     std::vector<llvm::StructType *> lists;
@@ -50,16 +54,6 @@ public:
     CompilerContext();
 
     CompilerContext(CRunTimeFunctions CProcedures, llvm::LLVMContext &context, llvm::Module &module, llvm::IRBuilder<> &builder);
-    // CompilerContext(
-    //     CRunTimeFunctions CProcedures,
-    //     std::map<TokenType, OptionalType> NativeTypes,
-    //     llvm::StructType *str_type);
-    // Function get_function(Tokens name);
-    // Function get_local_function(Tokens name);
-    // void add_local_function(Tokens name, Function function);
-    // void add_function(Tokens name, Function f);
-    // Function get_current();
-    // void compile_cfunctions(llvm::Module &module, llvm::LLVMContext &context, llvm::IRBuilder<> &builder);
     llvm::StructType *get_string_inner_type();
     llvm::Type *compile_Type(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<Type> ty);
     // llvm::FunctionType *compile_Function_Type(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, llvm::StructType *params, std::shared_ptr<FunctionRefNode> n);
@@ -73,6 +67,12 @@ public:
     OptionalType get_boolean_type();
     OptionalType get_byte_type();
     OptionalType get_type(std::shared_ptr<Type> type);
+    void add_function(FunctionNode *node, Function function);
+    std::optional<Function> get_function(std::string name);
+    std::optional<int> addLocal(Tokens name, Function function);
+    Function get_current_function();
+    Function set_current_function();
+    // Function set_current_function();
 
     // void AddModule(std::string module_name, CompiledModule module);
     // ProgramScope getScope();
@@ -83,5 +83,6 @@ public:
 };
 #endif
 
-TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n, ProgramScope ctx);
-TypeOfExpr get_bool_expr_type(std::shared_ptr<ASTNode> n, ProgramScope ctx);
+TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx);
+TypeOfExpr get_bool_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx);
+std::optional<OptionalType> getTypeOfOnSide(std::shared_ptr<ASTNode> n, CompilerContext ctx);

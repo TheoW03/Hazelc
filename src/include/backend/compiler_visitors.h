@@ -16,7 +16,6 @@ private:
 public:
     llvm::Module &module;
     std::vector<llvm::Type *> params_struct;
-    std::vector<std::shared_ptr<FunctionNode>> functions;
     // llvm::StructType *paramType;
     CompilerContext compiler_context;
     std::map<std::string, Function> func_map;
@@ -100,7 +99,7 @@ private:
     llvm::Value *FloatBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
     llvm::Value *BoolBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
 
-    llvm::Value *NoneBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
+    llvm::Value *NoneBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs, BooleanExprNode *expr);
     ValueStruct CompileBranch(std::shared_ptr<BlockNode> stmnts);
 
     ValueStruct CompileConditional(ConditionalNode *codnition_stmnt);

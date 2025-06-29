@@ -187,6 +187,19 @@ public:
 };
 #endif
 
+#ifndef NONE_TYPE_H
+#define NONE_TYPE_H
+
+class NoneType : public Type
+{
+public:
+    NoneType();
+    std::string get_type_value() override;
+    bool can_accept(Type *type) override;
+
+    std::string to_string();
+};
+#endif
 #ifndef INTNODE_H
 #define INTNODE_H
 class Visitor;
@@ -310,8 +323,11 @@ public:
     std::shared_ptr<FunctionRefNode> f;
     std::shared_ptr<BlockNode> stmnts;
     bool can_export;
+    bool anonyomous;
+
     std::optional<std::string> hash_name;
     FunctionNode(bool can_export,
+                 bool anonymous,
                  std::shared_ptr<FunctionRefNode> functionHeader,
                  std::shared_ptr<BlockNode>);
     void Accept(Visitor *v) override;

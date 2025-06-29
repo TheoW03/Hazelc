@@ -10,11 +10,16 @@ class DemodularizedVisitor : public Visitor
 public:
     DemoduarlizedProgramNode program;
     IntermediateScope modules;
+    std::vector<std::shared_ptr<FunctionNode>> functions;
     DemodularizedVisitor(IntermediateScope s);
     void Visit(FunctionNode *node) override;
     void Visit(ModuleNode *node) override;
     void Visit(ProgramNode *node) override;
     // void Visit(ProgramNode *node) override;
+    void Visit(ExprNode *node) override;
+    void Visit(BooleanExprNode *node) override;
+    void Visit(ConditionalNode *node) override;
+    void Visit(BlockNode *node) override;
 
     void Visit(FunctionCallNode *node) override;
 };

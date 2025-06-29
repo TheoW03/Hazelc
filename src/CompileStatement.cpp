@@ -25,9 +25,7 @@ void CompileStatement::Visit(FunctionNode *node)
     // all functions are stored in a stack. the compiler pulls a function from the stack
     // sees if its a global or local function
     // if local we put it in the local scope. if global we generate it
-    auto c = this->program_scope.set_current_function();
-    // std::cout << c.name.value << std::endl;
-    // std::cout << node->f->FunctionName.value << std::endl;
+    auto c = this->compiler_context.set_current_function();
 
     // the anonmoous prevents collisons
     if (c.isAnonymous)
@@ -38,7 +36,7 @@ void CompileStatement::Visit(FunctionNode *node)
     }
     else if (node->hash_name.has_value())
     {
-        auto func = program_scope.get_function(node->hash_name.value()).value();
+        auto func = this->compiler_context.get_function(node->hash_name.value()).value();
         llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, "entry", func.function);
         this->block = EntryBlock;
 
@@ -46,7 +44,7 @@ void CompileStatement::Visit(FunctionNode *node)
     }
     else
     {
-        program_scope.addLocal(c.name, c);
+        compiler_context.addLocal(c.name, c);
         llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, "entry", c.function);
         this->block = EntryBlock;
         builder.SetInsertPoint(EntryBlock);
@@ -92,16 +90,16 @@ void CompileStatement::Visit(ReturnNode *node)
 
     CompileExpr c(module, builder, context, compiler_context, this->program_scope, this->block, this->params);
 
-    auto ty = compiler_context.get_type(program_scope.get_current_function().ret_type);
+    auto ty = compiler_context.get_type(compiler_context.get_current_function().ret_type);
     // auto value = builder.CreateLoad(ty.get_type(), c.Expression(node->Expr));
     // program_scope.get_current_function().function->viewCFGOnly();
     llvm::raw_ostream *output = &llvm::outs();
 
     auto value = c.Expression(node->Expr);
     this->block = value.block;
-    auto f = program_scope.get_current_function().function;
+    auto f = compiler_context.get_current_function().function;
     llvm::Argument *ret_ptr = f->getArg(1);
-    if (program_scope.get_current_function().name.value != "main")
+    if (compiler_context.get_current_function().name.value != "main")
     {
 
         // llvm::Function *MemcpyFunc = llvm::Intrinsic::getDeclaration(

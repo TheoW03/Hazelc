@@ -8,9 +8,9 @@
 
 // these get the type of the expression
 // used because the LLCM has seperation for floats and
-TypeOfExpr get_bool_expr_type(std::shared_ptr<ASTNode> n, ProgramScope ctx)
+TypeOfExpr get_bool_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx)
 {
-    TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n, ProgramScope ctx);
+    TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx);
     auto c = dynamic_cast<BooleanExprNode *>(n.get());
     if (dynamic_cast<IntegerNode *>(c->lhs.get()) && dynamic_cast<IntegerNode *>(c->rhs.get()))
         return TypeOfExpr::Integer_Type;
@@ -98,7 +98,7 @@ TypeOfExpr get_bool_expr_type(std::shared_ptr<ASTNode> n, ProgramScope ctx)
         return get_expr_type(c->lhs, ctx);
     return TypeOfExpr::Void_Type;
 }
-TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n, ProgramScope ctx)
+TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx)
 {
     auto c = dynamic_cast<ExprNode *>(n.get());
     if (dynamic_cast<IntegerNode *>(c->lhs.get()) && dynamic_cast<IntegerNode *>(c->rhs.get()))
@@ -167,6 +167,34 @@ TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n, ProgramScope ctx)
     return TypeOfExpr::Void_Type;
 }
 
+std::optional<OptionalType> getTypeOfOnSide(std::shared_ptr<ASTNode> n, CompilerContext ctx)
+{
+    if (dynamic_cast<IntegerNode *>(n.get()))
+        return ctx.get_integer_type();
+    if (dynamic_cast<FunctionCallNode *>(n.get()))
+    {
+        auto d = dynamic_cast<FunctionCallNode *>(n.get());
+        auto f = ctx.get_function(d->hash_name.has_value() ? d->hash_name.value() : d->name.value).value();
+
+        if (dynamic_cast<IntegerType *>(f.ret_type.get()) || dynamic_cast<ByteType *>(f.ret_type.get()))
+        {
+            return ctx.get_integer_type();
+        }
+        else if (dynamic_cast<DecimalType *>(f.ret_type.get()))
+        {
+            return ctx.get_float_type();
+        }
+        else if (dynamic_cast<BoolType *>(f.ret_type.get()))
+        {
+            return ctx.get_boolean_type();
+        }
+        else if (dynamic_cast<StringType *>(f.ret_type.get()))
+        {
+            return ctx.get_string_type();
+        }
+    }
+    return {};
+}
 // optional type. since in hazel all types are optional
 // it compies as a structure
 //  the actual valye
@@ -221,11 +249,17 @@ llvm::Value *OptionalType::get_value(llvm::IRBuilder<> &builder)
 llvm::Value *OptionalType::get_none(llvm::IRBuilder<> &builder)
 {
     llvm::Value *structPtr = builder.CreateAlloca(this->type);
-    auto destField1ptr = builder.CreateStructGEP(this->type, structPtr, 1, "OptionalStructPtr1");
+    auto destField0ptr = builder.CreateStructGEP(this->type, structPtr, 0, "OptionalStructPtr0.Value");
+
+    builder.CreateStore(llvm::Constant::getNullValue(inner), destField0ptr);
+    auto destField1ptr = builder.CreateStructGEP(this->type, structPtr, 1, "OptionalStructPtr1.isNone");
     auto isNone = llvm::ConstantInt::get(builder.getInt1Ty(), 1);
     builder.CreateStore(isNone, destField1ptr);
-
     return structPtr;
+    // llvm::Value *structPtr = builder.CreateAlloca(this->type);
+    // auto destField1ptr = builder.CreateStructGEP(this->type, structPtr, 1, "OptionalStructPtr1");
+    // auto isNone = llvm::ConstantInt::get(builder.getInt1Ty(), 1);
+    // builder.CreateStore(isNone, destField1ptr);
 }
 
 llvm::Type *OptionalType::get_type()

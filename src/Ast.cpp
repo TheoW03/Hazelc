@@ -120,9 +120,9 @@ std::string FunctionRefNode::to_string()
     return std::string();
 }
 
-FunctionNode::FunctionNode(bool can_export, std::shared_ptr<FunctionRefNode> functionHeader, std::shared_ptr<BlockNode> stmnts)
+FunctionNode::FunctionNode(bool can_export, bool anonyomous, std::shared_ptr<FunctionRefNode> functionHeader, std::shared_ptr<BlockNode> stmnts)
 {
-
+    this->anonyomous = anonyomous;
     this->can_export = can_export;
     this->f = functionHeader;
     this->hash_name = {};
@@ -173,6 +173,8 @@ std::string IntegerType::get_type_value()
 }
 bool IntegerType::can_accept(Type *type)
 {
+    if (dynamic_cast<NoneType *>(type))
+        return true;
     if (dynamic_cast<IntegerType *>(type))
     {
         auto f = dynamic_cast<IntegerType *>(type);
@@ -192,6 +194,8 @@ std::string ByteType::get_type_value()
 }
 bool ByteType::can_accept(Type *type)
 {
+    if (dynamic_cast<NoneType *>(type))
+        return true;
     if (dynamic_cast<ByteType *>(type))
     {
         auto f = dynamic_cast<ByteType *>(type);
@@ -209,6 +213,8 @@ std::string CharacterType::get_type_value()
 }
 bool CharacterType::can_accept(Type *type)
 {
+    if (dynamic_cast<NoneType *>(type))
+        return true;
     return dynamic_cast<CharacterType *>(type);
 }
 BoolType::BoolType()
@@ -221,6 +227,8 @@ std::string BoolType::get_type_value()
 
 bool BoolType::can_accept(Type *type)
 {
+    if (dynamic_cast<NoneType *>(type))
+        return true;
     return dynamic_cast<BoolType *>(type);
 }
 // bool NativeType::can_accept(Type *type)
@@ -328,6 +336,8 @@ std::string DecimalType::get_type_value()
 }
 bool DecimalType::can_accept(Type *type)
 {
+    if (dynamic_cast<NoneType *>(type))
+        return true;
     return dynamic_cast<DecimalType *>(type);
 }
 
@@ -336,6 +346,8 @@ StringType::StringType()
 }
 bool StringType::can_accept(Type *type)
 {
+    if (dynamic_cast<NoneType *>(type))
+        return true;
     return dynamic_cast<StringType *>(type);
 }
 std::string StringType::get_type_value()
@@ -349,6 +361,7 @@ ListType::ListType(std::shared_ptr<Type> inner)
 }
 
 std::string ListType::get_type_value()
+
 {
     return "List inner=" + inner_type->get_type_value();
 }
@@ -361,6 +374,21 @@ std::string ListType::to_string()
     return std::string();
 }
 
+NoneType::NoneType()
+{
+}
+bool NoneType::can_accept(Type *type)
+{
+    return true;
+}
+std::string NoneType::get_type_value()
+{
+    return "none";
+}
+std::string NoneType::to_string()
+{
+    return std::string();
+}
 ModuleNode::ModuleNode(std::vector<std::shared_ptr<FunctionNode>> functions, Tokens name, std::vector<Tokens> imports)
 {
     this->functions = functions;

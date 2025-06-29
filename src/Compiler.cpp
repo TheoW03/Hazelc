@@ -37,7 +37,6 @@ void InitCompiler(Output output, std::shared_ptr<DemoduarlizedProgramNode> node)
     std::cout << "hazelc: compiled functions" << std::endl;
     compile_top->params->setBody(compile_top->params_struct);
     CompileStatement *compile_statement = new CompileStatement(module, builder, context, compile_top->compiler_context, compile_top->params, compile_top->getProgramScope());
-
     node->Accept(compile_statement);
     delete compile_top;
 
