@@ -41,7 +41,7 @@ void TypeCheckerVistor::Visit(FunctionNode *node)
     }
     for (int i = 0; i < node->f->params.size(); i++)
     {
-        add_local_function(node->f->FunctionName, node->f);
+        add_local_function(node->f->params[i]->FunctionName, node->f->params[i]);
     }
     for (int i = 0; i < node->stmnts->functions.size(); i++)
     {

@@ -29,7 +29,7 @@ public:
     ConstantFoldingVisitor();
     void Visit(ASTNode *node) override;
     void Visit(FunctionNode *node) override;
-    void Visit(ModuleNode *node) override;
+    // void Visit(ModuleNode *node) override;
     void Visit(ReturnNode *node) override;
     void Visit(FunctionCallNode *node) override;
     void Visit(ConditionalNode *node) override;
@@ -37,7 +37,9 @@ public:
 
     void Visit(ExprNode *node) override;
 
-    void Visit(ProgramNode *node) override;
+    // void Visit(ProgramNode *node) override;
+    void Visit(DemoduarlizedProgramNode *node) override;
+
     void Visit(BlockNode *node) override;
 };
 #endif
