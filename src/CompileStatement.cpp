@@ -32,6 +32,7 @@ void CompileStatement::Visit(FunctionNode *node)
     {
         llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, "entry", c.function);
         this->block = EntryBlock;
+
         builder.SetInsertPoint(EntryBlock);
     }
     else if (node->hash_name.has_value())
@@ -49,11 +50,15 @@ void CompileStatement::Visit(FunctionNode *node)
         this->block = EntryBlock;
         builder.SetInsertPoint(EntryBlock);
     }
-    node->stmnts->exit->Accept(this);
+    for (int i = 0; i < c.params.size(); i++)
+    {
+        compiler_context.addLocal(c.params[i].name, c.params[i]);
+    }
     // for (int i = 0; i < node->stmnts.size(); i++)
     // {
     //     node->stmnts[i]->Accept(this);
     // }
+    node->stmnts->exit->Accept(this);
 }
 
 // void CompileStatement::Visit(ModuleNode *node)

@@ -25,19 +25,19 @@ void ConstantFoldingVisitor::Visit(FunctionNode *node)
 }
 void ConstantFoldingVisitor::Visit(BlockNode *node)
 {
-    for (int i = 0; i < node->functions.size(); i++)
-    {
-        node->functions[i]->Accept(this);
-    }
+    // for (int i = 0; i < node->functions.size(); i++)
+    // {
+    //     node->functions[i]->Accept(this);
+    // }
     node->exit->Accept(this);
 }
-void ConstantFoldingVisitor::Visit(ModuleNode *node)
-{
-    for (int i = 0; i < node->functions.size(); i++)
-    {
-        node->functions[i]->Accept(this);
-    }
-}
+// void ConstantFoldingVisitor::Visit(ModuleNode *node)
+// {
+//     for (int i = 0; i < node->functions.size(); i++)
+//     {
+//         node->functions[i]->Accept(this);
+//     }
+// }
 void ConstantFoldingVisitor::Visit(ReturnNode *node)
 {
     FoldExpr expr;
@@ -72,14 +72,21 @@ void ConstantFoldingVisitor::Visit(ExprNode *node)
     node->lhs->Accept(this);
     node->rhs->Accept(this);
 }
-void ConstantFoldingVisitor::Visit(ProgramNode *node)
+// void ConstantFoldingVisitor::Visit(ProgramNode *node)
+// {
+//     for (const auto &[key, current_module] : node->avail_modules)
+//     {
+//         current_module->Accept(this);
+//     }
+// }
+
+void ConstantFoldingVisitor::Visit(DemoduarlizedProgramNode *node)
 {
-    for (const auto &[key, current_module] : node->avail_modules)
+    for (int i = 0; i < node->functions.size(); i++)
     {
-        current_module->Accept(this);
+        node->functions[i]->Accept(this);
     }
 }
-
 FoldExpr::FoldExpr()
 {
 }

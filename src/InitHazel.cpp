@@ -137,9 +137,10 @@ void runPasses(std::shared_ptr<ProgramNode> node, Output cli)
     demoddlarize->program.Accept(typechecker.get());
     std::cout << "hazelc: checking types" << std::endl; // /
 
-    node->Accept(std::make_shared<ConstantFoldingVisitor>().get()); // aa
-
-    std::cout << "hazelc: constant folding" << std::endl;
+    // node->Accept(std::make_shared<ConstantFoldingVisitor>().get()); // aa
+    demoddlarize->program.Accept(std::make_shared<ConstantFoldingVisitor>().get());
+    std::cout
+        << "hazelc: constant folding" << std::endl;
     auto mainModule = node->getMainModule();
 
     if (mainModule.has_value())

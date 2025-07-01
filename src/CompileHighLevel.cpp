@@ -136,12 +136,12 @@ Function CompileHighLevel::CompileFunctionHeader(std::shared_ptr<FunctionRefNode
 
     std::vector<Function> f;
     std::vector<llvm::Type *> a;
-    // for (int i = 0; i < n->params.size(); i++)
-    // {
-    //     auto c = CompileFunctionHeader(n->params[i]);
-    //     f.push_back(c);
-    //     a.push_back(c.function->getType());
-    // }
+    for (int i = 0; i < n->params.size(); i++)
+    {
+        auto c = CompileFunctionHeader(n->params[i]);
+        f.push_back(c);
+        a.push_back(c.function->getType());
+    }
     auto functype = this->compile_Function_Type(n);
     llvm::Function *function = llvm::Function::Create(
         std::get<0>(functype), llvm::Function::ExternalLinkage, n->FunctionName.value, module);
@@ -167,7 +167,7 @@ std::tuple<llvm::FunctionType *, std::vector<Thunks>> CompileHighLevel::compile_
     {
         auto funct = compile_Function_Type(n->params[i]);
         auto p = get_thunk_types(n->params[i]);
-        p.gep_loc = params_struct.size() + 1;
+        p.gep_loc = params_struct.size();
         params_struct.push_back(p.thunk_type);
         thunks.push_back(p);
         // this->params->
