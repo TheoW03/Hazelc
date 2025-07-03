@@ -106,6 +106,17 @@ std::optional<bool> SemanticLocalScopeVisitor::find_function(Tokens name)
     return {}; // return std::optional<int>();
 }
 
+bool SemanticLocalScopeVisitor::function_is_param(Tokens name)
+{
+    for (int i = 0; i < scope.size(); i++)
+    {
+        if (scope[i].params.find(name.value) != scope[i].params.end())
+        {
+            return true;
+        }
+    }
+    return false;
+}
 void SemanticLocalScopeVisitor::Visit(ASTNode *node)
 {
 }
@@ -131,6 +142,8 @@ void SemanticLocalScopeVisitor::Visit(FunctionNode *node)
     {
         scope[scope.size() - 1].functions.insert(std::make_pair(node->f->params[i]->FunctionName.value,
                                                                 (node->f->params[i])));
+        scope[scope.size() - 1].params.insert(std::make_pair(node->f->params[i]->FunctionName.value,
+                                                             (node->f->params[i])));
     }
 
     // for (int i = 0; i < node->stmnts.size(); i++)
@@ -159,6 +172,7 @@ void SemanticLocalScopeVisitor::Visit(FunctionCallNode *node)
     {
         error("undefined function call," + node->name.value, node->name);
     }
+    node->param = function_is_param(node->name);
     for (int i = 0; i < node->params.size(); i++)
     {
         node->params[i]->Accept(this);

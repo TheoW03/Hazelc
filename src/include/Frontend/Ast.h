@@ -342,6 +342,7 @@ class FunctionCallNode : public ASTNode
 {
 public:
     Tokens name;
+    bool param;
     std::optional<std::string> hash_name;
     std::vector<std::shared_ptr<FunctionRefNode>> param_types;
     std::vector<std::shared_ptr<ASTNode>> params;

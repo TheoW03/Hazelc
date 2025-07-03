@@ -10,13 +10,11 @@ CompileExpr::CompileExpr(llvm::Module &module,
                          llvm::IRBuilder<> &builder,
                          llvm::LLVMContext &context,
                          CompilerContext compiler_context,
-                         ProgramScope program,
                          llvm::BasicBlock *block, llvm::StructType *params) : module(module),
                                                                               builder(builder),
                                                                               context(context)
 {
     this->compiler_context = compiler_context;
-    this->program = program;
     this->block = block;
     this->params = params;
 
@@ -500,8 +498,8 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
     {
         auto c = dynamic_cast<FunctionCallNode *>(node.get());
         auto fu = compiler_context.get_function(c->hash_name.has_value() ? c->hash_name.value() : c->name.value).value();
-
         // auto v =
+
         llvm::Value *param_ptr = builder.CreateAlloca(this->params);
         OptionalType type_of_func = compiler_context.get_type(fu.ret_type);
         auto retTy = builder.CreateAlloca(type_of_func.get_type());

@@ -74,6 +74,8 @@ public:
 #define FUNCTION_LOCAL_SCOPE_H
 struct FunctionLocalScope
 {
+    std::map<std::string, std::shared_ptr<FunctionRefNode>> params;
+
     std::map<std::string, std::shared_ptr<FunctionRefNode>> functions;
 };
 #endif
@@ -88,6 +90,7 @@ private:
     std::optional<bool> find_function_global(Tokens name);
     std::optional<bool> find_function_local(Tokens name);
     std::optional<bool> find_function(Tokens name);
+    bool function_is_param(Tokens name);
 
     std::optional<std::shared_ptr<FunctionRefNode>> get_local_function(Tokens name);
     std::optional<std::shared_ptr<FunctionRefNode>> get_function(Tokens name);

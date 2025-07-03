@@ -7,11 +7,9 @@
 // compiles the lower level (so return statements and expressions)
 // this is the final stage
 CompileStatement::CompileStatement(llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context,
-                                   CompilerContext compiler_context, llvm::StructType *params, ProgramScope program) : module(module), builder(builder), context(context)
+                                   CompilerContext compiler_context, llvm::StructType *params) : module(module), builder(builder), context(context)
 {
     this->compiler_context = compiler_context;
-    // this->program_scope = compiler_context.getScope();
-    this->program_scope = program;
     this->params = params;
 }
 
@@ -93,7 +91,7 @@ void CompileStatement::Visit(DemoduarlizedProgramNode *node)
 void CompileStatement::Visit(ReturnNode *node)
 {
 
-    CompileExpr c(module, builder, context, compiler_context, this->program_scope, this->block, this->params);
+    CompileExpr c(module, builder, context, compiler_context, this->block, this->params);
 
     auto ty = compiler_context.get_type(compiler_context.get_current_function().ret_type);
     // auto value = builder.CreateLoad(ty.get_type(), c.Expression(node->Expr));
