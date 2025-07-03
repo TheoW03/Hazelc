@@ -5,9 +5,9 @@
 #include <iostream>
 #include <queue>
 #include "llvm/IR/LLVMContext.h"
-#include <backend/Scope.h>
 #include <Frontend/Token.h>
 #include <Frontend/Ast.h>
+#include <backend/CompilerUtil.h>
 
 #ifndef OPTIONAL_TYPE_H
 #define OPTIONAL_TYPE_H

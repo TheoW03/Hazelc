@@ -155,10 +155,6 @@ Function CompileHighLevel::CompileFunctionHeader(std::shared_ptr<FunctionRefNode
     return {function, f, n->RetType, n->FunctionName, std::get<1>(functype), false};
 }
 
-ProgramScope CompileHighLevel::getProgramScope()
-{
-    return ProgramScope(this->func_map, this->compiled_functions);
-}
 std::tuple<llvm::FunctionType *, std::vector<Thunks>> CompileHighLevel::compile_Function_Type(std::shared_ptr<FunctionRefNode> n)
 {
     auto c = n->RetType;
