@@ -45,6 +45,50 @@ struct Thunks
 };
 #endif
 
+#ifndef FUNCTION_COMPILED_H
+#define FUNCTION_COMPILED_H
+
+class Compiled_Function
+{
+public:
+    Compiled_Function();
+    virtual llvm::Value *compile(CompilerContext ctx);
+};
+#endif
+
+#ifndef FUNCTION_H
+#define FUNCTION_H
+
+class NonAnonFunction : public Compiled_Function
+{
+public:
+    llvm::Function *function;
+    std::shared_ptr<Type> ret_type;
+    Tokens name;
+    std::vector<Thunks> params;
+    bool isAnonymous;
+    NonAnonFunction();
+    NonAnonFunction(llvm::Function *function, std::vector<Thunks> params, std::shared_ptr<Type> ret_type, Tokens name);
+    llvm::Value *compile(CompilerContext ctx) override;
+};
+#endif
+
+#ifndef Param_Function_H
+#define Param_Function_H
+
+class ParamFunction : public Compiled_Function
+{
+public:
+    llvm::Function *function;
+    std::shared_ptr<Type> ret_type;
+    Tokens name;
+    std::vector<Thunks> params;
+    bool isAnonymous;
+    ParamFunction();
+    llvm::Value *compile(CompilerContext ctx) override;
+};
+#endif
+
 #ifndef COMPILED_FUNCTION_H
 #define COMPILED_FUNCTION_H
 struct Function
