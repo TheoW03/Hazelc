@@ -86,9 +86,9 @@ void CompileHighLevel::Visit(FunctionCallNode *node)
 
     for (int i = 0; i < node->param_types.size(); i++)
     {
-        auto compiled_function = CompileFunctionHeader(node->param_types[i]);
-        compiled_function.isAnonymous = true;
-        this->compiled_functions.push(compiled_function);
+        // auto compiled_function = CompileFunctionHeader(node->param_types[i]);
+        // compiled_function.isAnonymous = true;
+        // this->compiled_functions.push(compiled_function);
     }
 }
 void CompileHighLevel::Visit(DemoduarlizedProgramNode *node)
@@ -130,17 +130,17 @@ void CompileHighLevel::Visit(BlockNode *node)
     node->exit->Accept(this);
 }
 
-Function CompileHighLevel::CompileFunctionHeader(std::shared_ptr<FunctionRefNode> n)
+std::shared_ptr<CompiledFunction> CompileHighLevel::CompileFunctionHeader(std::shared_ptr<FunctionRefNode> n)
 {
     auto c = n->RetType;
 
-    std::vector<Function> f;
+    std::vector<std::shared_ptr<CompiledFunction>> f;
     std::vector<llvm::Type *> a;
     for (int i = 0; i < n->params.size(); i++)
     {
         auto c = CompileFunctionHeader(n->params[i]);
         f.push_back(c);
-        a.push_back(c.function->getType());
+        a.push_back(c->get_type());
     }
     auto functype = this->compile_Function_Type(n);
     llvm::Function *function = llvm::Function::Create(
@@ -151,8 +151,8 @@ Function CompileHighLevel::CompileFunctionHeader(std::shared_ptr<FunctionRefNode
     // since all types in hazel ae infact functions. sret makes the most sense
     function->getArg(1)->addAttr(llvm::Attribute::getWithStructRetType(context, retty));
     function->getArg(1)->setName("ret");
-
-    return {function, f, n->RetType, n->FunctionName, std::get<1>(functype), false};
+    return std::make_shared<Function>(function, f, n->RetType, n->FunctionName, std::get<1>(functype), false);
+    // return {function, f, n->RetType, n->FunctionName, std::get<1>(functype), false};
 }
 
 std::tuple<llvm::FunctionType *, std::vector<Thunks>> CompileHighLevel::compile_Function_Type(std::shared_ptr<FunctionRefNode> n)

@@ -44,19 +44,66 @@ struct Thunks
     size_t gep_loc;
 };
 #endif
-
 #ifndef COMPILED_FUNCTION_H
 #define COMPILED_FUNCTION_H
-struct Function
+
+class CompiledFunction
 {
+public:
+    CompiledFunction();
+    virtual llvm::Value *compile(CompilerContext ctx) = 0;
+    virtual llvm::Type *get_type() = 0;
+};
+
+#endif
+
+#ifndef FUNCTION_H
+#define FUNCTION_H
+
+class Function : public CompiledFunction
+{
+public:
     llvm::Function *function;
-    std::vector<Function> params;
+    std::vector<std::shared_ptr<CompiledFunction>> params;
     std::shared_ptr<Type> ret_type;
     Tokens name;
     std::vector<Thunks> thunks;
     bool isAnonymous;
+    Function();
+    Function(llvm::Function *function, std::vector<std::shared_ptr<CompiledFunction>> params, std::shared_ptr<Type> ret_type, Tokens name, bool isAnonymous);
+    llvm::Value *compile(CompilerContext ctx) override;
+    llvm::Type *get_type() override;
 };
 #endif
+
+#ifndef PARAM_H
+#define PARAM_H
+
+class CompiledPram : public CompiledFunction
+{
+public:
+    // llvm::Function *function;
+    // std::vector<CompiledFunction> params;
+    // std::shared_ptr<Type> ret_type;
+    // Tokens name;
+    // std::vector<Thunks> thunks;
+    // bool isAnonymous;
+    CompiledPram();
+    llvm::Value *compile(CompilerContext ctx) override;
+};
+#endif
+// #ifndef COMPILED_FUNCTION_H
+// #define COMPILED_FUNCTION_H
+// struct Function
+// {
+//     llvm::Function *function;
+//     std::vector<Function> params;
+//     std::shared_ptr<Type> ret_type;
+//     Tokens name;
+//     std::vector<Thunks> thunks;
+//     bool isAnonymous;
+// };
+// #endif
 
 #ifndef COMPILED_MODULE_H
 #define COMPILED_MODULE_H

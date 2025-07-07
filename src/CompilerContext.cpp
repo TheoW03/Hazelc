@@ -8,6 +8,7 @@
 CompilerContext::CompilerContext()
 {
 }
+
 CompilerContext::CompilerContext(CRunTimeFunctions CProcedures, llvm::LLVMContext &context, llvm::Module &module, llvm::IRBuilder<> &builder)
 {
     auto string_type = llvm::StructType::create(context, "string");

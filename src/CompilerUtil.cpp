@@ -5,6 +5,7 @@
 #include <memory>
 #include <backend/CompilerContext.h>
 #include "llvm/IR/Intrinsics.h"
+#include "CompilerUtil.h"
 
 // these get the type of the expression
 // used because the LLCM has seperation for floats and
@@ -294,4 +295,40 @@ llvm::Value *ValueOrLoad(llvm::IRBuilder<> &builder, llvm::Value *value, llvm::T
     if (value->getType()->isPointerTy())
         value = builder.CreateLoad(type, value, "ValueOrLoad");
     return value;
+}
+
+Function::Function()
+{
+}
+
+Function::Function(llvm::Function *function, std::vector<CompiledFunction> params, std::shared_ptr<Type> ret_type, Tokens name, bool isAnonymous)
+{
+    this->function = function;
+    this->params = params;
+
+    this->ret_type = ret_type;
+    this->isAnonymous = isAnonymous;
+}
+
+CompiledFunction::CompiledFunction()
+{
+}
+
+llvm::Value *Function::compile(CompilerContext ctx)
+{
+    return nullptr;
+}
+
+llvm::Type *Function::get_type()
+{
+    return this->function->getType();
+}
+
+CompiledPram::CompiledPram()
+{
+}
+
+llvm::Value *CompiledPram::compile(CompilerContext ctx)
+{
+    return nullptr;
 }
