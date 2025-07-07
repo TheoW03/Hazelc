@@ -16,3 +16,6 @@ hazelc
 *.ll
 Theory/test.c
 Theory/test2.c
+/Docs/HazelDocs.aux
+/Docs/HazelDocs.log
+/Docs/HazelDocs.pdf
