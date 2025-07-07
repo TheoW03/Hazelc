@@ -81,8 +81,6 @@ void CompileHighLevel::Visit(ReturnNode *node)
 
 void CompileHighLevel::Visit(FunctionCallNode *node)
 {
-    // std::cout << node->name.value << std::endl;
-    // std::cout << node->param_types.size() << std::endl;
 
     for (int i = 0; i < node->param_types.size(); i++)
     {
@@ -136,12 +134,12 @@ Function CompileHighLevel::CompileFunctionHeader(std::shared_ptr<FunctionRefNode
 
     std::vector<Function> f;
     std::vector<llvm::Type *> a;
-    for (int i = 0; i < n->params.size(); i++)
-    {
-        auto c = CompileFunctionHeader(n->params[i]);
-        f.push_back(c);
-        a.push_back(c.function->getType());
-    }
+    // for (int i = 0; i < n->params.size(); i++)
+    // {
+    //     auto c = CompileFunctionHeader(n->params[i]);
+    //     f.push_back(c);
+    //     a.push_back(c.function->getType());
+    // }
     auto functype = this->compile_Function_Type(n);
     llvm::Function *function = llvm::Function::Create(
         std::get<0>(functype), llvm::Function::ExternalLinkage, n->FunctionName.value, module);
@@ -155,6 +153,37 @@ Function CompileHighLevel::CompileFunctionHeader(std::shared_ptr<FunctionRefNode
     return {function, f, n->RetType, n->FunctionName, std::get<1>(functype), false};
 }
 
+std::shared_ptr<Compiled_Function> CompileHighLevel::CompileFunctionHeader(FunctionNode *n, bool is_anonymous)
+{
+    auto c = n->f->RetType;
+
+    std::vector<Function> f;
+    std::vector<llvm::Type *> a;
+    // for (int i = 0; i < n->params.size(); i++)
+    // {
+    //     auto c = CompileFunctionHeader(n->params[i]);
+    //     f.push_back(c);
+    //     a.push_back(c.function->getType());
+    // }
+    auto functype = this->compile_Function_Type(n->f);
+    llvm::Function *function = llvm::Function::Create(
+        std::get<0>(functype), llvm::Function::ExternalLinkage, n->f->FunctionName.value, module);
+    auto retty = compiler_context.compile_Type_Optional(c).type;
+
+    // to be more safer I end up using sret for return types.
+    // since all types in hazel ae infact functions. sret makes the most sense
+    function->getArg(1)->addAttr(llvm::Attribute::getWithStructRetType(context, retty));
+    function->getArg(1)->setName("ret");
+    if (n->is_param)
+    {
+        return std::make_shared<ParamFunction>();
+    }
+    else
+    {
+
+        return std::make_shared<NonAnonFunction>(function, std::get<1>(functype), n->f->FunctionName, c, n->anonyomous);
+    }
+}
 std::tuple<llvm::FunctionType *, std::vector<Thunks>> CompileHighLevel::compile_Function_Type(std::shared_ptr<FunctionRefNode> n)
 {
     auto c = n->RetType;
@@ -166,6 +195,7 @@ std::tuple<llvm::FunctionType *, std::vector<Thunks>> CompileHighLevel::compile_
         p.gep_loc = params_struct.size();
         params_struct.push_back(p.thunk_type);
         thunks.push_back(p);
+
         // this->params->
         // a.push_back(get_thunk_types(builder, context, n->params[i]).thunk_type);
     }
@@ -190,5 +220,5 @@ Thunks CompileHighLevel::get_thunk_types(std::shared_ptr<FunctionRefNode> n)
     std::vector<llvm::Type *> elements = {compiler_context.compile_Type_Optional(n->RetType).type,
                                           llvm::PointerType::getUnqual(std::get<0>(funct)), builder.getInt1Ty()};
     thunk->setBody(elements);
-    return {thunk, nullptr};
+    return {n->FunctionName, thunk, nullptr, std::get<0>(funct), 1999};
 }

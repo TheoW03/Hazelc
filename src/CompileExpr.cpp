@@ -497,10 +497,30 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
     else if (dynamic_cast<FunctionCallNode *>(node.get()))
     {
         auto c = dynamic_cast<FunctionCallNode *>(node.get());
+        llvm::Value *param_ptr = builder.CreateAlloca(this->params);
+
+        if (c->param)
+        {
+            auto a = compiler_context.get_parameter(c->name);
+
+            auto destField0ptr = builder.CreateStructGEP(this->params, param_ptr, a.gep_loc, "destStructPtrF0");
+
+            // Access field: struct { value, function_ptr, isComputed }
+            auto actualVal = builder.CreateStructGEP(a.thunk_type, destField0ptr, 0, "actualVal");
+            auto functionPtrField = builder.CreateStructGEP(a.thunk_type, destField0ptr, 1, "functionPtr");
+            auto isComputed = builder.CreateStructGEP(a.thunk_type, destField0ptr, 2, "isComputed");
+
+            // Load the function pointer from the struct field
+            auto functionPtr = builder.CreateLoad(functionPtrField->getType(), functionPtrField, "loadedFuncPtr");
+            auto retTy = builder.CreateAlloca(a.thunk_type);
+
+            // Call it (make sure you pass correct arguments matching function type)
+            builder.CreateCall(a.type, functionPtr, {param_ptr, retTy});
+            return {this->block, retTy};
+        }
         auto fu = compiler_context.get_function(c->hash_name.has_value() ? c->hash_name.value() : c->name.value).value();
         // auto v =
 
-        llvm::Value *param_ptr = builder.CreateAlloca(this->params);
         OptionalType type_of_func = compiler_context.get_type(fu.ret_type);
         auto retTy = builder.CreateAlloca(type_of_func.get_type());
         auto function_call = builder.CreateCall(fu.function, {param_ptr, retTy});

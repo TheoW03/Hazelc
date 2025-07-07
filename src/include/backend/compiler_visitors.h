@@ -41,6 +41,8 @@ public:
     void Visit(BlockNode *node) override;
 
     Function CompileFunctionHeader(std::shared_ptr<FunctionRefNode> n);
+    std::shared_ptr<Compiled_Function> CompileFunctionHeader(FunctionNode *n, bool is_anonymous);
+
     std::tuple<llvm::FunctionType *, std::vector<Thunks>> compile_Function_Type(std::shared_ptr<FunctionRefNode> n);
     Thunks get_thunk_types(std::shared_ptr<FunctionRefNode> n);
 };

@@ -324,10 +324,12 @@ public:
     std::shared_ptr<BlockNode> stmnts;
     bool can_export;
     bool anonyomous;
-
-    std::optional<std::string> hash_name;
+    bool is_param;
+    std::optional<std::string>
+        hash_name;
     FunctionNode(bool can_export,
                  bool anonymous,
+                 bool is_param,
                  std::shared_ptr<FunctionRefNode> functionHeader,
                  std::shared_ptr<BlockNode>);
     void Accept(Visitor *v) override;

@@ -351,7 +351,7 @@ std::optional<std::shared_ptr<Type>> parse_type(std::vector<Tokens> &tokens)
         {
             return std::make_shared<IntegerType>(true);
         }
-        else if (ty.value().type == TokenType::Decimal)
+        else if (ty.value().type == TokenType::Decimal) //
         {
             return std::make_shared<DecimalType>();
         }
@@ -403,7 +403,7 @@ std::optional<std::shared_ptr<FunctionNode>> parse_function(std::vector<Tokens> 
     auto func = parse_function_ref(tokens);
     std::vector<std::shared_ptr<ASTNode>> ast;
 
-    return std::make_shared<FunctionNode>(is_export, false, func.value(),
+    return std::make_shared<FunctionNode>(is_export, false, false, func.value(),
                                           parse_block(tokens));
 }
 std::optional<std::shared_ptr<ASTNode>> parse_return(std::vector<Tokens> &tokens)

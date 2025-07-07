@@ -201,3 +201,42 @@ Function CompilerContext::set_current_function()
     this->functions.pop();
     return this->current_function;
 }
+
+void CompilerContext::add_parameter(Tokens name, Thunks function)
+{
+    if (this->param_functions.find(name.value) != this->param_functions.end())
+    {
+        param_functions[name.value] = function;
+    }
+    else
+    {
+        param_functions.insert(std::make_pair(name.value, function));
+    }
+}
+Thunks CompilerContext::get_parameter(Tokens name)
+{
+    return this->param_functions[name.value];
+}
+Compiled_Function::Compiled_Function()
+{
+}
+NonAnonFunction::NonAnonFunction()
+{
+}
+NonAnonFunction::NonAnonFunction(llvm::Function *function, std::vector<Thunks> params, Tokens name, std::shared_ptr<Type> ret_type, bool isAnonymous)
+{
+}
+llvm::Value *NonAnonFunction::compile(CompilerContext ctx)
+
+{
+    return nullptr;
+}
+
+ParamFunction::ParamFunction()
+{
+}
+
+llvm::Value *ParamFunction::compile(CompilerContext ctx)
+{
+    return nullptr;
+}

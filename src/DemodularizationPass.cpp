@@ -73,7 +73,7 @@ void DemodularizedVisitor::Visit(FunctionCallNode *node)
         auto ret = std::make_shared<ReturnNode>(node->params[i]);
         auto block = std::make_shared<BlockNode>(stmnts, ret);
         block->Accept(this);
-        auto param_func = std::make_shared<FunctionNode>(false, true, node->param_types[i], block);
+        auto param_func = std::make_shared<FunctionNode>(false, true, true, node->param_types[i], block);
         program.functions.push_back(param_func);
     }
     node->hash_name = modules.get_global_function_hash(node->name);

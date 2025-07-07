@@ -41,6 +41,8 @@ public:
     std::map<std::string, Function> global_functions;
     std::map<std::string, Function> local_functions;
 
+    std::map<std::string, Thunks> param_functions;
+
     std::stack<Function> functions;
     // std::map<std::string, llvm::Function *> CFunctions;
     std::map<TokenType, OptionalType> NativeTypes;
@@ -72,6 +74,9 @@ public:
     std::optional<int> addLocal(Tokens name, Function function);
     Function get_current_function();
     Function set_current_function();
+
+    void add_parameter(Tokens name, Thunks function);
+    Thunks get_parameter(Tokens name);
     // Function set_current_function();
 
     // void AddModule(std::string module_name, CompiledModule module);
@@ -86,3 +91,47 @@ public:
 TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx);
 TypeOfExpr get_bool_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx);
 std::optional<OptionalType> getTypeOfOnSide(std::shared_ptr<ASTNode> n, CompilerContext ctx);
+
+#ifndef FUNCTION_COMPILED_H
+#define FUNCTION_COMPILED_H
+
+class Compiled_Function
+{
+public:
+    Compiled_Function();
+    virtual llvm::Value *compile(CompilerContext ctx) = 0;
+};
+#endif
+
+#ifndef FUNCTION_H
+#define FUNCTION_H
+
+class NonAnonFunction : public Compiled_Function
+{
+public:
+    llvm::Function *function;
+    std::shared_ptr<Type> ret_type;
+    Tokens name;
+    std::vector<Thunks> params;
+    bool isAnonymous;
+    NonAnonFunction();
+    NonAnonFunction(llvm::Function *function, std::vector<Thunks> params, Tokens name, std::shared_ptr<Type> ret_type, bool isAnonymous);
+    llvm::Value *compile(CompilerContext ctx) override;
+};
+#endif
+
+#ifndef Param_Function_H
+#define Param_Function_H
+
+class ParamFunction : public Compiled_Function
+{
+public:
+    llvm::Function *function;
+    std::shared_ptr<Type> ret_type;
+    Tokens name;
+    std::vector<Thunks> params;
+    bool isAnonymous;
+    ParamFunction();
+    llvm::Value *compile(CompilerContext ctx) override;
+};
+#endif

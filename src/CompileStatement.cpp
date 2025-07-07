@@ -28,7 +28,7 @@ void CompileStatement::Visit(FunctionNode *node)
     // the anonmoous prevents collisons
     if (c.isAnonymous)
     {
-        llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, "entry", c.function);
+        llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, node->f->FunctionName.value + " entry", c.function);
         this->block = EntryBlock;
 
         builder.SetInsertPoint(EntryBlock);
@@ -36,7 +36,7 @@ void CompileStatement::Visit(FunctionNode *node)
     else if (node->hash_name.has_value())
     {
         auto func = this->compiler_context.get_function(node->hash_name.value()).value();
-        llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, "entry", func.function);
+        llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, node->f->FunctionName.value + " entry", func.function);
         this->block = EntryBlock;
 
         builder.SetInsertPoint(EntryBlock);
@@ -44,13 +44,13 @@ void CompileStatement::Visit(FunctionNode *node)
     else
     {
         compiler_context.addLocal(c.name, c);
-        llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, "entry", c.function);
+        llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, node->f->FunctionName.value + " entry", c.function);
         this->block = EntryBlock;
         builder.SetInsertPoint(EntryBlock);
     }
-    for (int i = 0; i < c.params.size(); i++)
+    for (int i = 0; i < c.thunks.size(); i++)
     {
-        compiler_context.addLocal(c.params[i].name, c.params[i]);
+        compiler_context.add_parameter(c.thunks[i].name, c.thunks[i]);
     }
     // for (int i = 0; i < node->stmnts.size(); i++)
     // {
