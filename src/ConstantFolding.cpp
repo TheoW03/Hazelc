@@ -15,29 +15,12 @@ void ConstantFoldingVisitor::Visit(ASTNode *node)
 void ConstantFoldingVisitor::Visit(FunctionNode *node)
 {
     node->stmnts->Accept(this);
-    // node->stmnts->exit->Accept(this);
-    // node->stmnts->exit->Accept(this);
-
-    // for (int i = 0; i < node->stmnts.size(); i++)
-    // {
-    //     node->stmnts[i]->Accept(this);
-    // }
 }
 void ConstantFoldingVisitor::Visit(BlockNode *node)
 {
-    // for (int i = 0; i < node->functions.size(); i++)
-    // {
-    //     node->functions[i]->Accept(this);
-    // }
     node->exit->Accept(this);
 }
-// void ConstantFoldingVisitor::Visit(ModuleNode *node)
-// {
-//     for (int i = 0; i < node->functions.size(); i++)
-//     {
-//         node->functions[i]->Accept(this);
-//     }
-// }
+
 void ConstantFoldingVisitor::Visit(ReturnNode *node)
 {
     FoldExpr expr;
@@ -72,13 +55,6 @@ void ConstantFoldingVisitor::Visit(ExprNode *node)
     node->lhs->Accept(this);
     node->rhs->Accept(this);
 }
-// void ConstantFoldingVisitor::Visit(ProgramNode *node)
-// {
-//     for (const auto &[key, current_module] : node->avail_modules)
-//     {
-//         current_module->Accept(this);
-//     }
-// }
 
 void ConstantFoldingVisitor::Visit(DemoduarlizedProgramNode *node)
 {

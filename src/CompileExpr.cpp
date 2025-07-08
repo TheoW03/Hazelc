@@ -515,6 +515,7 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
             auto retTy = builder.CreateAlloca(a.thunk_type);
 
             // Call it (make sure you pass correct arguments matching function type)
+
             builder.CreateCall(a.type, functionPtr, {param_ptr, retTy});
             return {this->block, retTy};
         }

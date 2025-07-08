@@ -59,32 +59,14 @@ void CompileStatement::Visit(FunctionNode *node)
     node->stmnts->exit->Accept(this);
 }
 
-// void CompileStatement::Visit(ModuleNode *node)
-// {
-//     auto functions = node->functions;
-//     std::reverse(functions.begin(), functions.end());
-//     for (int i = 0; i < node->functions.size(); i++)
-//     {
-//         // program_scope.set_current(node->name);
-//         functions[i]->Accept(this);
-//     }
-// }
-
 void CompileStatement::Visit(DemoduarlizedProgramNode *node)
 {
-    // for (const auto &[key, current_function] : node->global_functions)
-    // {
-    //     current_function->Accept(this);
-    // }
-    // std::cout << node->functions.size() << std::endl;
-    // std::cout << node->global_functions.size() << std::endl;
 
     auto functions = node->functions;
     std::reverse(functions.begin(), functions.end());
     for (int i = 0; i < node->functions.size(); i++)
     {
         functions[i]->Accept(this);
-        // std::cout <<
     }
 }
 
@@ -145,12 +127,3 @@ void CompileStatement::Visit(ReturnNode *node)
     builder.CreateRetVoid();
     auto error = llvm::verifyFunction(*(f), output);
 }
-
-// void CompileStatement::Visit(ProgramNode *node)
-// {
-//     for (const auto &[key, current_module] : node->avail_modules)
-//     {
-//         program_scope.set_current(current_module->name);
-//         current_module->Accept(this);
-//     }
-// }

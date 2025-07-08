@@ -5,23 +5,7 @@ TypeCheckerVistor::TypeCheckerVistor(IntermediateScope modules)
 {
     this->modules = modules;
 }
-// void TypeCheckerVistor::Visit(ProgramNode *node)
-// {
-//     for (const auto &pair : node->avail_modules)
-//     {
-//         // this->current_AST_module = this->modules.modules[pair.first];
-//         modules.set_current_module(pair.first);
-//         pair.second->Accept(this);
-//     }
-// }
 
-// void TypeCheckerVistor::Visit(ModuleNode *node)
-// {
-//     for (int i = 0; i < node->functions.size(); i++)
-//     {
-//         node->functions[i]->Accept(this);
-//     }
-// }
 void TypeCheckerVistor::add_local_function(Tokens name, std::shared_ptr<FunctionRefNode> value)
 {
     if (this->local_functions.find(name.value) != this->local_functions.end())

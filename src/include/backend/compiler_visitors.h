@@ -62,16 +62,12 @@ public:
     CompilerContext compiler_context;
     llvm::IRBuilder<> &builder;
     llvm::LLVMContext &context;
-    // ProgramScope program_scope;
     llvm::StructType *params;
     CompileStatement(llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context, CompilerContext compiler_context, llvm::StructType *params);
     void Visit(ASTNode *node) override;
     void Visit(FunctionNode *node) override;
-    // void Visit(ModuleNode *node) override;
     void Visit(DemoduarlizedProgramNode *node) override;
-
     void Visit(ReturnNode *node) override;
-    // void Visit(ProgramNode *node) override;
 };
 
 #endif
