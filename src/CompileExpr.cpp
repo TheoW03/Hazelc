@@ -252,8 +252,6 @@ ValueStruct CompileExpr::CompileConditional(ConditionalNode *condition_stmnt)
             builder.SetInsertPoint(ifTrue);
             this->block = ifTrue;
             auto value = CompileBranch(condition_stmnt->branches[i]->stmnts);
-            // auto value =
-            // auto loaded_val = ValueOrLoad(builder, value.value, type.get_type());
 
             phi_nodes.push_back({value.block, value.value});
             builder.CreateBr(endTrue);
@@ -502,22 +500,37 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         if (c->param)
         {
             auto a = compiler_context.get_parameter(c->name);
-
             auto destField0ptr = builder.CreateStructGEP(this->params, param_ptr, a.gep_loc, "destStructPtrF0");
-
-            // Access field: struct { value, function_ptr, isComputed }
             auto actualVal = builder.CreateStructGEP(a.thunk_type, destField0ptr, 0, "actualVal");
             auto functionPtrField = builder.CreateStructGEP(a.thunk_type, destField0ptr, 1, "functionPtr");
             auto isComputed = builder.CreateStructGEP(a.thunk_type, destField0ptr, 2, "isComputed");
-
-            // Load the function pointer from the struct field
             auto functionPtr = builder.CreateLoad(functionPtrField->getType(), functionPtrField, "loadedFuncPtr");
-            auto retTy = builder.CreateAlloca(a.thunk_type);
+            llvm::BasicBlock *ifTrue = llvm::BasicBlock::Create(context, "if.value.exists", compiler_context.get_current_function().function);
+            llvm::BasicBlock *endTrue = llvm::BasicBlock::Create(context, "end.value.exists", compiler_context.get_current_function().function);
+            builder.CreateCondBr(BoolIntMathExpr(builder.CreateLoad(builder.getInt1Ty(), isComputed), {"", TokenType::EQ}, builder.getInt1(1)), ifTrue, endTrue);
+            builder.SetInsertPoint(ifTrue);
+            OptionalType retType = compiler_context.get_type(a.ret_type);
 
-            // Call it (make sure you pass correct arguments matching function type)
+            auto retTy = builder.CreateAlloca(retType.type);
 
-            builder.CreateCall(a.type, functionPtr, {param_ptr, retTy});
-            return {this->block, retTy};
+            auto v = builder.CreateCall(a.type, functionPtr, {param_ptr, retTy});
+
+            builder.CreateStore(builder.getInt1(1), isComputed);
+            // builder.CreateStore(retTy, actualVal);
+
+            builder.CreateCall(compiler_context.CProcedures.memcpy, {
+                                                                        actualVal,
+                                                                        retTy,
+                                                                        llvm::ConstantInt::get(builder.getInt64Ty(), retType.get_type_size(module)),
+                                                                        llvm::ConstantInt::get(builder.getInt1Ty(), 0),
+
+                                                                    });
+
+            builder.CreateBr(endTrue);
+            builder.SetInsertPoint(endTrue);
+            // builder.CreateCall(a.type, functionPtr, {param_ptr, retTy});
+            this->block = endTrue;
+            return {this->block, actualVal};
         }
         auto fu = compiler_context.get_function(c->hash_name.has_value() ? c->hash_name.value() : c->name.value).value();
         // auto v =

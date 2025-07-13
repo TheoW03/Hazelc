@@ -7,7 +7,7 @@
 #include <Frontend/Token.h>
 #include <Frontend/Ast.h>
 #include "llvm/IR/LLVMContext.h"
-
+// #include <backend/CompilerContext.h>
 // #ifndef OPTIONAL_TYPE_H
 // #define OPTIONAL_TYPE_H
 // class OptionalType
@@ -39,10 +39,12 @@ enum TypeOfExpr
 #define THUNKS_H
 struct Thunks
 {
+
     Tokens name;
     llvm::StructType *thunk_type;
     llvm::Function *eval_func;
     llvm::FunctionType *type;
+    std::shared_ptr<Type> ret_type;
 
     size_t gep_loc;
 };
