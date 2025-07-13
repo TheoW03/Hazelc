@@ -530,7 +530,7 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
             builder.SetInsertPoint(endTrue);
             // builder.CreateCall(a.type, functionPtr, {param_ptr, retTy});
             this->block = endTrue;
-            return {this->block, actualVal};
+            return {this->block, actualVal}; // a
         }
         auto fu = compiler_context.get_function(c->hash_name.has_value() ? c->hash_name.value() : c->name.value).value();
         // auto v =
