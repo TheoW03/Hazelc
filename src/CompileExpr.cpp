@@ -200,29 +200,29 @@ llvm::Value *CompileExpr::BoolBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs
     auto math = BoolIntMathExpr(lhs_val, op, rhs_val);
     return BoolType.set_loaded_value(math, builder);
 }
-llvm::Value *CompileExpr::NoneBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs, BooleanExprNode *nodE)
+llvm::Value *CompileExpr::NoneBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs, BooleanExprNode *node)
 {
     auto BoolType = compiler_context.get_boolean_type();
-    if (getTypeOfOnSide(nodE->lhs, compiler_context).has_value())
+    if (get_type_unary(node->lhs, compiler_context).has_value())
     {
-        auto lhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(getTypeOfOnSide(nodE->lhs, compiler_context).value().type, lhs, 1, "lhs"));
+        auto lhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(get_type_unary(node->lhs, compiler_context).value().type, lhs, 1, "lhs"));
         auto rhs_val = builder.getInt1(true);
 
         auto math = BoolIntMathExpr(lhs_val, op, rhs_val);
         return BoolType.set_loaded_value(math, builder);
     }
-    else if (getTypeOfOnSide(nodE->rhs, compiler_context).has_value())
+    else if (get_type_unary(node->rhs, compiler_context).has_value())
     {
         auto rhs_val = builder.CreateLoad(builder.getInt1Ty(),
-                                          builder.CreateStructGEP(getTypeOfOnSide(nodE->rhs, compiler_context).value().type, rhs, 1, "rhs"));
+                                          builder.CreateStructGEP(get_type_unary(node->rhs, compiler_context).value().type, rhs, 1, "rhs"));
         auto lhs_val = builder.getInt1(true);
         auto math = BoolIntMathExpr(lhs_val, op, rhs_val);
         return BoolType.set_loaded_value(math, builder);
     }
     else
     {
-        auto lhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(getTypeOfOnSide(nodE->lhs, compiler_context).value().type, lhs, 1, "lhs"));
-        auto rhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(getTypeOfOnSide(nodE->rhs, compiler_context).value().type, rhs, 1, "rhs"));
+        auto lhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(get_type_unary(node->lhs, compiler_context).value().type, lhs, 1, "lhs"));
+        auto rhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(get_type_unary(node->rhs, compiler_context).value().type, rhs, 1, "rhs"));
 
         auto math = BoolIntMathExpr(lhs_val, op, rhs_val);
         return BoolType.set_loaded_value(math, builder);
@@ -530,6 +530,7 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
             builder.SetInsertPoint(endTrue);
             // builder.CreateCall(a.type, functionPtr, {param_ptr, retTy});
             this->block = endTrue;
+
             return {this->block, actualVal}; // a
         }
         auto fu = compiler_context.get_function(c->hash_name.has_value() ? c->hash_name.value() : c->name.value).value();
@@ -560,7 +561,8 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         auto lhs = Expression(c->lhs);
 
         auto rhs = Expression(c->rhs);
-        auto get_type = get_expr_type(node, this->compiler_context);
+
+        auto get_type = get_binary_expr_type(node, this->compiler_context);
 
         switch (get_type)
         {
@@ -586,7 +588,7 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         auto lhs = Expression(c->lhs);
         auto rhs = Expression(c->rhs);
 
-        auto get_type = get_bool_expr_type(node, this->compiler_context);
+        auto get_type = get_binary_bool_expr_type(node, this->compiler_context);
         switch (get_type)
         {
         case Integer_Type:

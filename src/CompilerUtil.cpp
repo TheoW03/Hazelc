@@ -8,9 +8,9 @@
 
 // these get the type of the expression
 // used because the LLCM has seperation for floats and
-TypeOfExpr get_bool_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx)
+TypeOfExpr get_binary_bool_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx)
 {
-    TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx);
+    TypeOfExpr get_binary_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx);
     auto c = dynamic_cast<BooleanExprNode *>(n.get());
     if (dynamic_cast<IntegerNode *>(c->lhs.get()) && dynamic_cast<IntegerNode *>(c->rhs.get()))
         return TypeOfExpr::Integer_Type;
@@ -87,18 +87,16 @@ TypeOfExpr get_bool_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx)
         }
     }
     if (dynamic_cast<BooleanExprNode *>(c->lhs.get()))
-        return get_bool_expr_type(c->lhs, ctx);
+        return get_binary_bool_expr_type(c->lhs, ctx);
     if (dynamic_cast<BooleanExprNode *>(c->rhs.get()))
-        return get_bool_expr_type(c->rhs, ctx);
-    if (dynamic_cast<BooleanExprNode *>(c->rhs.get()))
-        return get_bool_expr_type(c->rhs, ctx);
+        return get_binary_bool_expr_type(c->rhs, ctx);
     if (dynamic_cast<ExprNode *>(c->rhs.get()))
-        return get_expr_type(c->rhs, ctx);
+        return get_binary_expr_type(c->rhs, ctx);
     if (dynamic_cast<ExprNode *>(c->lhs.get()))
-        return get_expr_type(c->lhs, ctx);
+        return get_binary_expr_type(c->lhs, ctx);
     return TypeOfExpr::Void_Type;
 }
-TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx)
+TypeOfExpr get_binary_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx)
 {
     auto c = dynamic_cast<ExprNode *>(n.get());
     if (dynamic_cast<IntegerNode *>(c->lhs.get()) && dynamic_cast<IntegerNode *>(c->rhs.get()))
@@ -112,22 +110,46 @@ TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx)
     if (dynamic_cast<FunctionCallNode *>(c->lhs.get()))
     {
         auto d = dynamic_cast<FunctionCallNode *>(c->lhs.get());
-        auto f = ctx.get_function(d->hash_name.has_value() ? d->hash_name.value() : d->name.value).value();
-        if (dynamic_cast<IntegerType *>(f.ret_type.get()) || dynamic_cast<ByteType *>(f.ret_type.get()))
+        auto f = ctx.get_function(d->hash_name.has_value() ? d->hash_name.value() : d->name.value);
+        if (f.has_value())
         {
-            return TypeOfExpr::Integer_Type;
+            if (dynamic_cast<IntegerType *>(f.value().ret_type.get()) || dynamic_cast<ByteType *>(f.value().ret_type.get()))
+            {
+                return TypeOfExpr::Integer_Type;
+            }
+            else if (dynamic_cast<DecimalType *>(f.value().ret_type.get()))
+            {
+                return TypeOfExpr::Float_Type;
+            }
+            else if (dynamic_cast<BoolType *>(f.value().ret_type.get()))
+            {
+                return TypeOfExpr::Boolean_Type;
+            }
+            else if (dynamic_cast<StringType *>(f.value().ret_type.get()))
+            {
+                return TypeOfExpr::String_Type;
+            }
         }
-        else if (dynamic_cast<DecimalType *>(f.ret_type.get()))
+        if (d->param)
         {
-            return TypeOfExpr::Float_Type;
-        }
-        else if (dynamic_cast<BoolType *>(f.ret_type.get()))
-        {
-            return TypeOfExpr::Boolean_Type;
-        }
-        else if (dynamic_cast<StringType *>(f.ret_type.get()))
-        {
-            return TypeOfExpr::String_Type;
+
+            auto param = ctx.get_parameter(d->name);
+            if (dynamic_cast<IntegerType *>(param.ret_type.get()) || dynamic_cast<ByteType *>(param.ret_type.get()))
+            {
+                return TypeOfExpr::Integer_Type;
+            }
+            else if (dynamic_cast<DecimalType *>(param.ret_type.get()))
+            {
+                return TypeOfExpr::Float_Type;
+            }
+            else if (dynamic_cast<BoolType *>(param.ret_type.get()))
+            {
+                return TypeOfExpr::Boolean_Type;
+            }
+            else if (dynamic_cast<StringType *>(param.ret_type.get()))
+            {
+                return TypeOfExpr::String_Type;
+            }
         }
         // if (f.)
         // auto c =
@@ -152,14 +174,35 @@ TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx)
         {
             return TypeOfExpr::String_Type;
         }
+
+        if (d->param)
+        {
+            auto param = ctx.get_parameter(d->name);
+            if (dynamic_cast<IntegerType *>(param.ret_type.get()) || dynamic_cast<ByteType *>(param.ret_type.get()))
+            {
+                return TypeOfExpr::Integer_Type;
+            }
+            else if (dynamic_cast<DecimalType *>(param.ret_type.get()))
+            {
+                return TypeOfExpr::Float_Type;
+            }
+            else if (dynamic_cast<BoolType *>(param.ret_type.get()))
+            {
+                return TypeOfExpr::Boolean_Type;
+            }
+            else if (dynamic_cast<StringType *>(param.ret_type.get()))
+            {
+                return TypeOfExpr::String_Type;
+            }
+        }
         // if (f.)
         // auto c =
     }
 
     if (dynamic_cast<ExprNode *>(c->lhs.get()))
-        return get_expr_type(c->lhs, ctx);
+        return get_binary_expr_type(c->lhs, ctx);
     if (dynamic_cast<ExprNode *>(c->rhs.get()))
-        return get_expr_type(c->rhs, ctx);
+        return get_binary_expr_type(c->rhs, ctx);
     if (dynamic_cast<BooleanExprNode *>(c->rhs.get()))
         return TypeOfExpr::Boolean_Type;
     if (dynamic_cast<BooleanExprNode *>(c->lhs.get()))
@@ -167,10 +210,23 @@ TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx)
     return TypeOfExpr::Void_Type;
 }
 
-std::optional<OptionalType> getTypeOfOnSide(std::shared_ptr<ASTNode> n, CompilerContext ctx)
+std::optional<OptionalType> get_type_unary(std::shared_ptr<ASTNode> n, CompilerContext ctx)
 {
     if (dynamic_cast<IntegerNode *>(n.get()))
         return ctx.get_integer_type();
+    if (dynamic_cast<DecimalNode *>(n.get()))
+        return ctx.get_float_type();
+    if (dynamic_cast<StringNode *>(n.get()))
+        return ctx.get_string_type();
+    if (dynamic_cast<BooleanExprNode *>(n.get()))
+    {
+        return ctx.get_boolean_type();
+    }
+    if (dynamic_cast<ExprNode *>(n.get()))
+    {
+        auto a = dynamic_cast<ExprNode *>(n.get());
+        return get_type_unary(a->rhs, ctx);
+    }
     if (dynamic_cast<FunctionCallNode *>(n.get()))
     {
         auto d = dynamic_cast<FunctionCallNode *>(n.get());
@@ -191,6 +247,27 @@ std::optional<OptionalType> getTypeOfOnSide(std::shared_ptr<ASTNode> n, Compiler
         else if (dynamic_cast<StringType *>(f.ret_type.get()))
         {
             return ctx.get_string_type();
+        }
+
+        if (d->param)
+        {
+            auto param = ctx.get_parameter(d->name);
+            if (dynamic_cast<IntegerType *>(param.ret_type.get()) || dynamic_cast<ByteType *>(param.ret_type.get()))
+            {
+                return ctx.get_integer_type();
+            }
+            else if (dynamic_cast<DecimalType *>(param.ret_type.get()))
+            {
+                return ctx.get_float_type();
+            }
+            else if (dynamic_cast<BoolType *>(param.ret_type.get()))
+            {
+                return ctx.get_boolean_type();
+            }
+            else if (dynamic_cast<StringType *>(param.ret_type.get()))
+            {
+                return ctx.get_string_type();
+            }
         }
     }
     return {};
@@ -256,10 +333,6 @@ llvm::Value *OptionalType::get_none(llvm::IRBuilder<> &builder)
     auto isNone = llvm::ConstantInt::get(builder.getInt1Ty(), 1);
     builder.CreateStore(isNone, destField1ptr);
     return structPtr;
-    // llvm::Value *structPtr = builder.CreateAlloca(this->type);
-    // auto destField1ptr = builder.CreateStructGEP(this->type, structPtr, 1, "OptionalStructPtr1");
-    // auto isNone = llvm::ConstantInt::get(builder.getInt1Ty(), 1);
-    // builder.CreateStore(isNone, destField1ptr);
 }
 
 llvm::Type *OptionalType::get_type()

@@ -88,9 +88,9 @@ public:
 };
 #endif
 
-TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx);
-TypeOfExpr get_bool_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx);
-std::optional<OptionalType> getTypeOfOnSide(std::shared_ptr<ASTNode> n, CompilerContext ctx);
+TypeOfExpr get_binary_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx);
+TypeOfExpr get_binary_bool_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx);
+std::optional<OptionalType> get_type_unary(std::shared_ptr<ASTNode> n, CompilerContext ctx);
 
 #ifndef FUNCTION_COMPILED_H
 #define FUNCTION_COMPILED_H

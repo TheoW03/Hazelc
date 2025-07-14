@@ -120,27 +120,27 @@ void runPasses(std::shared_ptr<ProgramNode> node, Output cli)
     // handy trick i have stolen from my other compiler project :P
 
     node->Accept(std::make_shared<ResolveRecursiveModules>().get());
-    std::cout << "hazelc: resolved recursive imports" << std::endl;
+    std::cout << "hazelc: Resolved Recursive Imports" << std::endl;
     // SemanticGlobalScopeVisitor *semantic =
     // new SemanticGlobalScopeVisitor;
     auto semantic = std::make_shared<SemanticGlobalScopeVisitor>();
     node->Accept(semantic.get());
-    std::cout << "hazelc: resolved Global Scope" << std::endl;
+    std::cout << "hazelc: Resolved Global Scope" << std::endl;
     auto semantic_local = std::make_shared<SemanticLocalScopeVisitor>(semantic->modules);
     node->Accept(semantic_local.get());
-    std::cout << "hazelc: resolved Local scope" << std::endl;
+    std::cout << "hazelc: Resolved Local Scope" << std::endl;
     auto demoddlarize = std::make_shared<DemodularizedVisitor>(IntermediateScope(semantic->modules));
     node->Accept(demoddlarize.get());
-    std::cout << "hazelc: removing modules" << std::endl; // /
+    std::cout << "hazelc: Demodularization" << std::endl; // /
     auto typechecker = std::make_shared<TypeCheckerVistor>(IntermediateScope(demoddlarize->program.global_functions));
     // d->Accept(typechecker.get());
     demoddlarize->program.Accept(typechecker.get());
-    std::cout << "hazelc: checking types" << std::endl; // /
+    std::cout << "hazelc: Checking Types" << std::endl; // /
 
     // node->Accept(std::make_shared<ConstantFoldingVisitor>().get()); // aa
     demoddlarize->program.Accept(std::make_shared<ConstantFoldingVisitor>().get());
     std::cout
-        << "hazelc: constant folding" << std::endl;
+        << "hazelc: Constant Folding" << std::endl;
     auto mainModule = node->getMainModule();
 
     if (mainModule.has_value())
@@ -150,7 +150,7 @@ void runPasses(std::shared_ptr<ProgramNode> node, Output cli)
         std::cout << "hazelc: Treeshake" << std::endl;
         demoddlarize = std::make_shared<DemodularizedVisitor>(IntermediateScope(semantic->modules));
         node->Accept(demoddlarize.get());
-        std::cout << "hazelc: updating Demod for this" << std::endl; // /
+        std::cout << "hazelc: Demodularization" << std::endl; // /
     }
 
     InitCompiler(cli, std::make_shared<DemoduarlizedProgramNode>(demoddlarize->program));
