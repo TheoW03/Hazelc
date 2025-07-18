@@ -218,7 +218,7 @@ Thunks CompileHighLevel::get_thunk_types(std::shared_ptr<FunctionRefNode> n)
     auto funct = compile_Function_Type(n);
 
     std::vector<llvm::Type *> elements = {compiler_context.compile_Type_Optional(n->RetType).type,
-                                          llvm::PointerType::getUnqual(std::get<0>(funct)), builder.getInt1Ty()};
+                                          llvm::PointerType::getUnqual(std::get<0>(funct)), builder.getInt1Ty(), llvm::PointerType::getUnqual(this->params)};
     thunk->setBody(elements);
     return {n->FunctionName, thunk, nullptr, std::get<0>(funct), n->RetType, 1999};
 }

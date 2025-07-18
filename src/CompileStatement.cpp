@@ -23,39 +23,35 @@ void CompileStatement::Visit(FunctionNode *node)
     // all functions are stored in a stack. the compiler pulls a function from the stack
     // sees if its a global or local function
     // if local we put it in the local scope. if global we generate it
-    auto c = this->compiler_context.set_current_function();
+    auto current_function = this->compiler_context.set_current_function();
 
     // the anonmoous prevents collisons
-    if (c.isAnonymous)
+    if (current_function.isAnonymous)
     {
-        llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, node->f->FunctionName.value + " entry", c.function);
+        llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, node->f->FunctionName.value + " entry", current_function.function);
         this->block = EntryBlock;
 
         builder.SetInsertPoint(EntryBlock);
     }
     else if (node->hash_name.has_value())
     {
-        auto func = this->compiler_context.get_function(node->hash_name.value()).value();
-        llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, node->f->FunctionName.value + " entry", func.function);
+        llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, node->f->FunctionName.value + " entry", current_function.function);
         this->block = EntryBlock;
 
         builder.SetInsertPoint(EntryBlock);
     }
     else
     {
-        compiler_context.addLocal(c.name, c);
-        llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, node->f->FunctionName.value + " entry", c.function);
+        compiler_context.addLocal(current_function.name, current_function);
+        llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, node->f->FunctionName.value + " entry", current_function.function);
         this->block = EntryBlock;
         builder.SetInsertPoint(EntryBlock);
     }
-    for (int i = 0; i < c.thunks.size(); i++)
+    for (int i = 0; i < current_function.thunks.size(); i++)
     {
-        compiler_context.add_parameter(c.thunks[i].name, c.thunks[i]);
+        compiler_context.add_parameter(current_function.thunks[i].name, current_function.thunks[i]);
     }
-    // for (int i = 0; i < node->stmnts.size(); i++)
-    // {
-    //     node->stmnts[i]->Accept(this);
-    // }
+
     node->stmnts->exit->Accept(this);
 }
 

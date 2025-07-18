@@ -504,6 +504,8 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
             auto actualVal = builder.CreateStructGEP(a.thunk_type, destField0ptr, 0, "actualVal");
             auto functionPtrField = builder.CreateStructGEP(a.thunk_type, destField0ptr, 1, "functionPtr");
             auto isComputed = builder.CreateStructGEP(a.thunk_type, destField0ptr, 2, "isComputed");
+            auto param_in_thunk = builder.CreateStructGEP(a.thunk_type, destField0ptr, 3, "param_ptr");
+
             auto functionPtr = builder.CreateLoad(functionPtrField->getType(), functionPtrField, "loadedFuncPtr");
             llvm::BasicBlock *ifTrue = llvm::BasicBlock::Create(context, "if.value.exists", compiler_context.get_current_function().function);
             llvm::BasicBlock *endTrue = llvm::BasicBlock::Create(context, "end.value.exists", compiler_context.get_current_function().function);
@@ -513,7 +515,7 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
 
             auto retTy = builder.CreateAlloca(retType.type);
 
-            auto v = builder.CreateCall(a.type, functionPtr, {param_ptr, retTy});
+            auto v = builder.CreateCall(a.type, functionPtr, {param_in_thunk, retTy});
 
             builder.CreateStore(builder.getInt1(1), isComputed);
             // builder.CreateStore(retTy, actualVal);
@@ -538,6 +540,15 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
 
         OptionalType type_of_func = compiler_context.get_type(fu.ret_type);
         auto retTy = builder.CreateAlloca(type_of_func.get_type());
+        // fu.
+        for (int i = 0; i < fu.thunks.size(); i++)
+        {
+            auto destField0ptr = builder.CreateStructGEP(this->params, param_ptr, fu.thunks[i].gep_loc, "destStructPtrF0");
+            llvm::DataLayout datalayout(&module);
+            auto isComputed = builder.CreateStructGEP(fu.thunks[i].thunk_type, destField0ptr, 2, "isComputed");
+            builder.CreateStore(builder.getInt1(0), isComputed);
+        }
+
         auto function_call = builder.CreateCall(fu.function, {param_ptr, retTy});
         function_call->addParamAttr(1, llvm::Attribute::getWithStructRetType(context, type_of_func.get_type()));
         // auto val = builder.CreateStructGEP(type_of_func.type, function_call, 0);
