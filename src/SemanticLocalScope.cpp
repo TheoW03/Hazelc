@@ -188,6 +188,7 @@ void SemanticLocalScopeVisitor::Visit(ProgramNode *node)
         this->current_AST_module = modules[key];
         current_module->Accept(this);
     }
+    std::cout << "hazelc: Resolved Local Scope" << std::endl;
 }
 
 void SemanticLocalScopeVisitor::Visit(ExprNode *node)

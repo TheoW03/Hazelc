@@ -60,6 +60,7 @@ void TypeCheckerVistor::Visit(DemoduarlizedProgramNode *node)
 
         current_function->Accept(this);
     }
+    std::cout << "hazelc: Checking Types" << std::endl;
 }
 void TypeCheckerVistor::Visit(ConditionalNode *node)
 {

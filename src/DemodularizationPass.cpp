@@ -16,6 +16,7 @@ void DemodularizedVisitor::Visit(ProgramNode *node)
         modules.set_current_module(pair.first);
         pair.second->Accept(this);
     }
+    std::cout << "hazelc: Demodularization" << std::endl;
 }
 
 void DemodularizedVisitor::Visit(ModuleNode *node)

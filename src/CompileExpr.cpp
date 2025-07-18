@@ -26,13 +26,13 @@ llvm::Value *CompileExpr::CompileStr(llvm::Value *str, llvm::Value *length, llvm
     // strings are strcutures
     // that conatin  the string and length
 
-    auto c = compiler_context.get_string_inner_type();
-    auto destField0ptr = builder.CreateStructGEP(c, structure, 0, "destStructPtrF0");
+    auto string_inner_type = compiler_context.get_string_inner_type();
+    auto destField0ptr = builder.CreateStructGEP(string_inner_type, structure, 0, "destStructPtrF0");
     builder.CreateStore(str, destField0ptr);
     // structure->getType()->dump();
     // str->getType()->dump();
     // length->getType()->dump();
-    auto destField1ptr = builder.CreateStructGEP(c, structure, 1, "destStructPtrF1");
+    auto destField1ptr = builder.CreateStructGEP(string_inner_type, structure, 1, "destStructPtrF1");
     // length = builder.CreateLoad(builder.getInt64Ty(), length);
     builder.CreateStore(length, destField1ptr);
     // return ValueOrLoad(builder, structure, c);
@@ -94,8 +94,6 @@ llvm::Value *CompileExpr::FloatMath(llvm::Value *lhs, Tokens op, llvm::Value *rh
 
     auto lhs_val = float_type.get_inner_value(builder, lhs, true);
     auto rhs_val = float_type.get_inner_value(builder, rhs, true);
-    // auto lhs_val = builder.CreateLoad(builder.getDoubleTy(), builder.CreateStructGEP(float_type.type, lhs, 0, "float_lhs"));
-    // auto rhs_val = builder.CreateLoad(builder.getDoubleTy(), builder.CreateStructGEP(float_type.type, rhs, 0, "float_rhs"));
     auto math = FloatMathExpression(lhs_val, op, rhs_val);
     return float_type.set_loaded_value(math, builder);
 }

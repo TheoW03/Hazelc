@@ -64,6 +64,7 @@ void CompileStatement::Visit(DemoduarlizedProgramNode *node)
     {
         functions[i]->Accept(this);
     }
+    std::cout << "hazelc: Compiled Expressions" << std::endl;
 }
 
 void CompileStatement::Visit(ReturnNode *node)

@@ -16,6 +16,7 @@ void TreeShake::Visit(ProgramNode *node)
 
     mainModule->Accept(this);
     node->avail_modules = this->used_modules;
+    std::cout << "hazelc: Treeshake" << std::endl;
 }
 void TreeShake::Visit(ModuleNode *node)
 {
@@ -55,6 +56,7 @@ void ResolveRecursiveModules::Visit(ProgramNode *node)
         this->visited_modules.erase(current_module->name.value);
         this->used_modules.clear();
     }
+    std::cout << "hazelc: Resolved Recursive Imports" << std::endl;
 }
 
 void ResolveRecursiveModules::Visit(ModuleNode *node)

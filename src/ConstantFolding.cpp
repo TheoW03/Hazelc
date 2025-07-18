@@ -62,6 +62,7 @@ void ConstantFoldingVisitor::Visit(DemoduarlizedProgramNode *node)
     {
         node->functions[i]->Accept(this);
     }
+    std::cout << "hazelc: Constant Folding" << std::endl;
 }
 FoldExpr::FoldExpr()
 {
