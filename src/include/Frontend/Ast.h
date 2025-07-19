@@ -1,6 +1,7 @@
 #include <Frontend/lexxer.h>
 #include <iostream>
 #include <memory>
+#include <unordered_map>
 #include <map>
 #include <optional>
 #include <error.h>
@@ -505,9 +506,9 @@ class Visitor;
 class DemoduarlizedProgramNode : public ASTNode
 {
 public:
-    std::map<std::string, std::shared_ptr<FunctionNode>> global_functions;
-    std::map<std::string, std::shared_ptr<ModuleNode>> avail_modules;
-    std::map<std::string, std::shared_ptr<ModuleNode>> used_modules;
+    std::unordered_map<std::string, std::shared_ptr<FunctionNode>> global_functions;
+    // std::unordered_map<std::string, std::shared_ptr<ModuleNode>> avail_modules;
+    // std::unordered_map<std::string, std::shared_ptr<ModuleNode>> used_modules;
 
     std::vector<std::shared_ptr<FunctionNode>> functions;
     DemoduarlizedProgramNode();

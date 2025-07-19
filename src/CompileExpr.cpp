@@ -539,12 +539,20 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         OptionalType type_of_func = compiler_context.get_type(fu.ret_type);
         auto retTy = builder.CreateAlloca(type_of_func.get_type());
         // fu.
+
+        llvm::DataLayout datalayout(&module);
+        auto p_size = datalayout.getTypeAllocSize(this->params);
         for (int i = 0; i < fu.thunks.size(); i++)
         {
             auto destField0ptr = builder.CreateStructGEP(this->params, param_ptr, fu.thunks[i].gep_loc, "destStructPtrF0");
-            llvm::DataLayout datalayout(&module);
             auto isComputed = builder.CreateStructGEP(fu.thunks[i].thunk_type, destField0ptr, 2, "isComputed");
             builder.CreateStore(builder.getInt1(0), isComputed);
+            auto params = builder.CreateStructGEP(fu.thunks[i].thunk_type, destField0ptr, 3, "params");
+
+            auto dest = builder.CreateCall(compiler_context.CProcedures.malloc, {builder.getInt64(p_size)});
+
+            builder.CreateCall(compiler_context.CProcedures.memcpy, {dest, param_ptr, builder.getInt64(p_size), builder.getInt1(0)});
+            builder.CreateCall(compiler_context.CProcedures.memcpy, {params, dest, builder.getInt64(p_size), builder.getInt1(0)});
         }
 
         auto function_call = builder.CreateCall(fu.function, {param_ptr, retTy});

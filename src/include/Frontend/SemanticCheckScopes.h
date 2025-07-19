@@ -34,12 +34,12 @@ private:
 
 public:
     std::map<std::string, SemanticModule> modules;
-    std::map<std::string, std::shared_ptr<FunctionNode>> functions;
+    std::unordered_map<std::string, std::shared_ptr<FunctionNode>> functions;
     SemanticModule current;
     IntermediateScope();
 
     IntermediateScope(std::map<std::string, SemanticModule> modules);
-    IntermediateScope(std::map<std::string, std::shared_ptr<FunctionNode>> functions);
+    IntermediateScope(std::unordered_map<std::string, std::shared_ptr<FunctionNode>> functions);
 
     void set_current_module(std::string s);
     std::optional<std::shared_ptr<FunctionRefNode>> get_global_function(Tokens function_name);

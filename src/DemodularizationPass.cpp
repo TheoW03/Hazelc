@@ -9,7 +9,7 @@ DemodularizedVisitor::DemodularizedVisitor(IntermediateScope s)
 void DemodularizedVisitor::Visit(ProgramNode *node)
 {
 
-    this->program.avail_modules = node->avail_modules;
+    // this->program.avail_modules = node->avail_modules;
     for (const auto &pair : node->avail_modules)
     {
         // this->current_AST_module = this->modules.modules[pair.first];

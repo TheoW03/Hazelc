@@ -241,7 +241,7 @@ IntermediateScope::IntermediateScope(std::map<std::string, SemanticModule> modul
 {
     this->modules = modules;
 }
-IntermediateScope::IntermediateScope(std::map<std::string, std::shared_ptr<FunctionNode>> functions)
+IntermediateScope::IntermediateScope(std::unordered_map<std::string, std::shared_ptr<FunctionNode>> functions)
 {
     this->functions = functions;
 }
