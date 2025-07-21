@@ -23,7 +23,6 @@ endif()
 set(EXECUTABLE_NAME hazelc)
 
 # Add your source files to an executable target
-include_directories(${EXECUTABLE_NAME} PRIVATE src/include/)
 
 add_llvm_executable(${EXECUTABLE_NAME} 
    src/main.cpp
@@ -50,5 +49,6 @@ add_llvm_executable(${EXECUTABLE_NAME}
    src/DemodularizationPass.cpp
 
 )
+target_include_directories(${EXECUTABLE_NAME} PRIVATE src/include/)
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/..)

@@ -479,7 +479,6 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
 
         auto a = compiler_context.get_string_inner_type();
         auto str = builder.CreateGlobalString(c->value, c->value + " contents");
-        // auto length = llvm::ConstantInt::get(builder.getInt64Ty(), c->value.size());
         auto length = builder.getInt64(c->value.size());
         llvm::Value *structPtr = builder.CreateAlloca(a);
         auto value = this->CompileStr(str, length, structPtr);
@@ -531,7 +530,7 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
             // builder.CreateCall(a.type, functionPtr, {param_ptr, retTy});
             this->block = endTrue;
 
-            return {this->block, actualVal}; // a
+            return {this->block, actualVal};
         }
         auto fu = compiler_context.get_function(c->hash_name.has_value() ? c->hash_name.value() : c->name.value).value();
         // auto v =
