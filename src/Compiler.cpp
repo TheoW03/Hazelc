@@ -35,6 +35,7 @@ void InitCompiler(Output output, std::shared_ptr<DemoduarlizedProgramNode> node)
     CompileHighLevel *compile_top = new CompileHighLevel(module, builder, context);
     node->Accept(compile_top);
     compile_top->params->setBody(compile_top->params_struct);
+    compile_top->compiler_context.set_params(compile_top->params);
     CompileStatement *compile_statement = new CompileStatement(module, builder, context, compile_top->compiler_context, compile_top->params);
     node->Accept(compile_statement);
     std::cout << "" << std::endl;

@@ -8,6 +8,7 @@
 #include <Frontend/Token.h>
 #include <Frontend/Ast.h>
 #include <backend/CompilerUtil.h>
+// #include "compiler_visitors.h"
 
 #ifndef OPTIONAL_TYPE_H
 #define OPTIONAL_TYPE_H
@@ -40,7 +41,7 @@ class CompilerContext
 public:
     std::map<std::string, Function> global_functions;
     std::map<std::string, Function> local_functions;
-
+    llvm::StructType *params;
     std::map<std::string, Thunks> param_functions;
 
     std::stack<Function> functions;
@@ -74,7 +75,7 @@ public:
     std::optional<int> addLocal(Tokens name, Function function);
     Function get_current_function();
     Function set_current_function();
-
+    void set_params(llvm::StructType *params);
     void add_parameter(Tokens name, Thunks function);
     Thunks get_parameter(Tokens name);
     // Function set_current_function();
@@ -91,47 +92,3 @@ public:
 TypeOfExpr get_binary_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx);
 TypeOfExpr get_binary_bool_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx);
 std::optional<OptionalType> get_type_unary(std::shared_ptr<ASTNode> n, CompilerContext ctx);
-
-#ifndef FUNCTION_COMPILED_H
-#define FUNCTION_COMPILED_H
-
-class Compiled_Function
-{
-public:
-    Compiled_Function();
-    virtual llvm::Value *compile(CompilerContext ctx) = 0;
-};
-#endif
-
-#ifndef FUNCTION_H
-#define FUNCTION_H
-
-class NonAnonFunction : public Compiled_Function
-{
-public:
-    llvm::Function *function;
-    std::shared_ptr<Type> ret_type;
-    Tokens name;
-    std::vector<Thunks> params;
-    bool isAnonymous;
-    NonAnonFunction();
-    NonAnonFunction(llvm::Function *function, std::vector<Thunks> params, Tokens name, std::shared_ptr<Type> ret_type, bool isAnonymous);
-    llvm::Value *compile(CompilerContext ctx) override;
-};
-#endif
-
-#ifndef Param_Function_H
-#define Param_Function_H
-
-class ParamFunction : public Compiled_Function
-{
-public:
-    llvm::Function *function;
-    std::shared_ptr<Type> ret_type;
-    Tokens name;
-    std::vector<Thunks> params;
-    bool isAnonymous;
-    ParamFunction();
-    llvm::Value *compile(CompilerContext ctx) override;
-};
-#endif

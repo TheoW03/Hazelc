@@ -10,13 +10,13 @@ CompileExpr::CompileExpr(llvm::Module &module,
                          llvm::IRBuilder<> &builder,
                          llvm::LLVMContext &context,
                          CompilerContext compiler_context,
-                         llvm::BasicBlock *block, llvm::StructType *params) : module(module),
-                                                                              builder(builder),
-                                                                              context(context)
+                         llvm::BasicBlock *block) : module(module),
+                                                    builder(builder),
+                                                    context(context)
 {
     this->compiler_context = compiler_context;
     this->block = block;
-    this->params = params;
+    // this->params = params;
 
     // this->func_map = func_map;
 }
@@ -492,12 +492,12 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
     else if (dynamic_cast<FunctionCallNode *>(node.get()))
     {
         auto c = dynamic_cast<FunctionCallNode *>(node.get());
-        llvm::Value *param_ptr = builder.CreateAlloca(this->params);
+        llvm::Value *param_ptr = builder.CreateAlloca(compiler_context.params);
 
         if (c->param)
         {
             auto a = compiler_context.get_parameter(c->name);
-            auto destField0ptr = builder.CreateStructGEP(this->params, param_ptr, a.gep_loc, "destStructPtrF0");
+            auto destField0ptr = builder.CreateStructGEP(compiler_context.params, param_ptr, a.gep_loc, "destStructPtrF0");
             auto actualVal = builder.CreateStructGEP(a.thunk_type, destField0ptr, 0, "actualVal");
             auto functionPtrField = builder.CreateStructGEP(a.thunk_type, destField0ptr, 1, "functionPtr");
             auto isComputed = builder.CreateStructGEP(a.thunk_type, destField0ptr, 2, "isComputed");

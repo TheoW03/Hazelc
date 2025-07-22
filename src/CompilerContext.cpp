@@ -202,6 +202,10 @@ Function CompilerContext::set_current_function()
     return this->current_function;
 }
 
+void CompilerContext::set_params(llvm::StructType *params)
+{
+    this->params = params;
+}
 void CompilerContext::add_parameter(Tokens name, Thunks function)
 {
     if (this->param_functions.find(name.value) != this->param_functions.end())
@@ -217,26 +221,26 @@ Thunks CompilerContext::get_parameter(Tokens name)
 {
     return this->param_functions[name.value];
 }
-Compiled_Function::Compiled_Function()
-{
-}
-NonAnonFunction::NonAnonFunction()
-{
-}
-NonAnonFunction::NonAnonFunction(llvm::Function *function, std::vector<Thunks> params, Tokens name, std::shared_ptr<Type> ret_type, bool isAnonymous)
-{
-}
-llvm::Value *NonAnonFunction::compile(CompilerContext ctx)
+// Compiled_Function::Compiled_Function()
+// {
+// }
+// NonAnonFunction::NonAnonFunction()
+// {
+// }
+// NonAnonFunction::NonAnonFunction(llvm::Function *function, std::vector<Thunks> params, Tokens name, std::shared_ptr<Type> ret_type, bool isAnonymous)
+// {
+// }
+// llvm::Value *NonAnonFunction::compile(CompilerContext ctx)
 
-{
-    return nullptr;
-}
+// {
+//     return nullptr;
+// }
 
-ParamFunction::ParamFunction()
-{
-}
+// ParamFunction::ParamFunction()
+// {
+// }
 
-llvm::Value *ParamFunction::compile(CompilerContext ctx)
-{
-    return nullptr;
-}
+// llvm::Value *ParamFunction::compile(CompilerContext ctx)
+// {
+//     return nullptr;
+// }

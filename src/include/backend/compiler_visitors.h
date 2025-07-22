@@ -41,7 +41,7 @@ public:
     void Visit(BlockNode *node) override;
 
     Function CompileFunctionHeader(std::shared_ptr<FunctionRefNode> n);
-    std::shared_ptr<Compiled_Function> CompileFunctionHeader(FunctionNode *n, bool is_anonymous);
+    // std::shared_ptr<Compiled_Function> CompileFunctionHeader(FunctionNode *n, bool is_anonymous);
 
     std::tuple<llvm::FunctionType *, std::vector<Thunks>> compile_Function_Type(std::shared_ptr<FunctionRefNode> n);
     Thunks get_thunk_types(std::shared_ptr<FunctionRefNode> n);
@@ -113,7 +113,7 @@ public:
     CompileExpr(llvm::Module &module,
                 llvm::IRBuilder<> &builder,
                 llvm::LLVMContext &context,
-                CompilerContext compiler_context, llvm::BasicBlock *block, llvm::StructType *params);
+                CompilerContext compiler_context, llvm::BasicBlock *block);
     llvm::Value *IntMathExpression(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
     llvm::Value *FloatMathExpression(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
     llvm::Value *BoolIntMathExpr(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
@@ -123,5 +123,46 @@ public:
     llvm::Value *StringBoolMathExpr(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
 
     ValueStruct Expression(std::shared_ptr<ASTNode> node);
+};
+#endif
+
+#ifndef COMPILED_FUNCTION2_H
+#define COMPILED_FUNCTION2_H
+
+class Compiled_Function
+{
+public:
+    virtual ValueStruct compile(CompilerContext ctx, llvm::BasicBlock *block, llvm::Module &module,
+                                llvm::IRBuilder<> &builder,
+                                llvm::LLVMContext &context) = 0;
+};
+#endif
+
+#ifndef FUNCTION_H
+#define FUNCTION_H
+
+class DefinedFunction : public Compiled_Function
+{
+public:
+    Function function;
+    DefinedFunction();
+    DefinedFunction(Function function);
+    ValueStruct compile(CompilerContext ctx, llvm::BasicBlock *block, llvm::Module &module,
+                        llvm::IRBuilder<> &builder,
+                        llvm::LLVMContext &context) override;
+};
+#endif
+
+#ifndef Param_Function_H
+#define Param_Function_H
+
+class ParamFunction : public Compiled_Function
+{
+public:
+    Thunks thunk;
+    ParamFunction(Thunks thunk);
+    ValueStruct compile(CompilerContext ctx, llvm::BasicBlock *block, llvm::Module &module,
+                        llvm::IRBuilder<> &builder,
+                        llvm::LLVMContext &context) override;
 };
 #endif

@@ -154,37 +154,37 @@ Function CompileHighLevel::CompileFunctionHeader(std::shared_ptr<FunctionRefNode
     return {function, f, n->RetType, n->FunctionName, std::get<1>(functype), false};
 }
 
-std::shared_ptr<Compiled_Function> CompileHighLevel::CompileFunctionHeader(FunctionNode *n, bool is_anonymous)
-{
-    auto c = n->f->RetType;
+// std::shared_ptr<Compiled_Function> CompileHighLevel::CompileFunctionHeader(FunctionNode *n, bool is_anonymous)
+// {
+//     auto c = n->f->RetType;
 
-    std::vector<Function> f;
-    std::vector<llvm::Type *> a;
-    // for (int i = 0; i < n->params.size(); i++)
-    // {
-    //     auto c = CompileFunctionHeader(n->params[i]);
-    //     f.push_back(c);
-    //     a.push_back(c.function->getType());
-    // }
-    auto functype = this->compile_Function_Type(n->f);
-    llvm::Function *function = llvm::Function::Create(
-        std::get<0>(functype), llvm::Function::ExternalLinkage, n->f->FunctionName.value, module);
-    auto retty = compiler_context.compile_Type_Optional(c).type;
+//     std::vector<Function> f;
+//     std::vector<llvm::Type *> a;
+//     // for (int i = 0; i < n->params.size(); i++)
+//     // {
+//     //     auto c = CompileFunctionHeader(n->params[i]);
+//     //     f.push_back(c);
+//     //     a.push_back(c.function->getType());
+//     // }
+//     auto functype = this->compile_Function_Type(n->f);
+//     llvm::Function *function = llvm::Function::Create(
+//         std::get<0>(functype), llvm::Function::ExternalLinkage, n->f->FunctionName.value, module);
+//     auto retty = compiler_context.compile_Type_Optional(c).type;
 
-    // to be more safer I end up using sret for return types.
-    // since all types in hazel ae infact functions. sret makes the most sense
-    function->getArg(1)->addAttr(llvm::Attribute::getWithStructRetType(context, retty));
-    function->getArg(1)->setName("ret");
-    if (n->is_param)
-    {
-        return std::make_shared<ParamFunction>();
-    }
-    else
-    {
+//     // to be more safer I end up using sret for return types.
+//     // since all types in hazel ae infact functions. sret makes the most sense
+//     function->getArg(1)->addAttr(llvm::Attribute::getWithStructRetType(context, retty));
+//     function->getArg(1)->setName("ret");
+//     if (n->is_param)
+//     {
+//         return std::make_shared<ParamFunction>();
+//     }
+//     else
+//     {
 
-        return std::make_shared<NonAnonFunction>(function, std::get<1>(functype), n->f->FunctionName, c, n->anonyomous);
-    }
-}
+//         return std::make_shared<NonAnonFunction>(function, std::get<1>(functype), n->f->FunctionName, c, n->anonyomous);
+//     }
+// }
 std::tuple<llvm::FunctionType *, std::vector<Thunks>> CompileHighLevel::compile_Function_Type(std::shared_ptr<FunctionRefNode> n)
 {
     auto c = n->RetType;

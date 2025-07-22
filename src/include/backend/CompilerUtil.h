@@ -35,6 +35,7 @@ enum TypeOfExpr
 };
 
 #endif
+
 #ifndef THUNKS_H
 #define THUNKS_H
 struct Thunks

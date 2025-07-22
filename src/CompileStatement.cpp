@@ -70,7 +70,7 @@ void CompileStatement::Visit(DemoduarlizedProgramNode *node)
 void CompileStatement::Visit(ReturnNode *node)
 {
 
-    CompileExpr c(module, builder, context, compiler_context, this->block, this->params);
+    CompileExpr c(module, builder, context, compiler_context, this->block);
 
     auto ty = compiler_context.get_type(compiler_context.get_current_function().ret_type);
     // auto value = builder.CreateLoad(ty.get_type(), c.Expression(node->Expr));
