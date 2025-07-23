@@ -540,10 +540,10 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         // fu.
 
         llvm::DataLayout datalayout(&module);
-        auto p_size = datalayout.getTypeAllocSize(this->params);
+        auto p_size = datalayout.getTypeAllocSize(compiler_context.params);
         for (int i = 0; i < fu.thunks.size(); i++)
         {
-            auto destField0ptr = builder.CreateStructGEP(this->params, param_ptr, fu.thunks[i].gep_loc, "destStructPtrF0");
+            auto destField0ptr = builder.CreateStructGEP(compiler_context.params, param_ptr, fu.thunks[i].gep_loc, "destStructPtrF0");
             auto isComputed = builder.CreateStructGEP(fu.thunks[i].thunk_type, destField0ptr, 2, "isComputed");
             builder.CreateStore(builder.getInt1(0), isComputed);
             auto params = builder.CreateStructGEP(fu.thunks[i].thunk_type, destField0ptr, 3, "params");

@@ -105,7 +105,7 @@ private:
 public:
     llvm::Module &module;
     llvm::BasicBlock *block;
-    llvm::StructType *params;
+    // llvm::StructType *params;
     // std::map<std::string, Function> func_map;
     CompilerContext compiler_context;
     llvm::IRBuilder<> &builder;
@@ -160,6 +160,7 @@ class ParamFunction : public Compiled_Function
 {
 public:
     Thunks thunk;
+    ParamFunction();
     ParamFunction(Thunks thunk);
     ValueStruct compile(CompilerContext ctx, llvm::BasicBlock *block, llvm::Module &module,
                         llvm::IRBuilder<> &builder,
