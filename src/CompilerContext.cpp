@@ -175,33 +175,7 @@ std::optional<std::shared_ptr<Compiled_Function>> CompilerContext::get_function(
         return this->local_functions[node->name.value];
     }
 }
-/*
-std::optional<Function> CompilerContext::get_function(std::string name)
-{
-    if (this->global_functions.find(name) != this->global_functions.end())
-    {
-        return this->global_functions[name];
-    }
-    if (this->local_functions.find(name) != this->local_functions.end())
-    {
-        return this->local_functions[name];
-    }
-    return {};
-}*/
 
-// std::optional<int> CompilerContext::addLocal(Tokens name, Function function)
-// {
-//     if (this->local_functions.find(name.value) != this->local_functions.end())
-//     {
-//         local_functions[name.value] = function;
-//         return {};
-//     }
-//     else
-//     {
-//         local_functions.insert(std::make_pair(name.value, function));
-//         return 1;
-//     }
-// }
 std::optional<int> CompilerContext::addLocal(Tokens name, std::shared_ptr<Compiled_Function> function)
 {
     if (this->local_functions.find(name.value) != this->local_functions.end())
@@ -232,43 +206,3 @@ void CompilerContext::set_params(llvm::StructType *params)
 {
     this->params = params;
 }
-/*
-void CompilerContext::add_parameter(Tokens name, Thunks function)
-{
-    if (this->param_functions.find(name.value) != this->param_functions.end())
-    {
-        param_functions[name.value] = function;
-    }
-    else
-    {
-        param_functions.insert(std::make_pair(name.value, function));
-    }
-}
-Thunks CompilerContext::get_parameter(Tokens name)
-{
-    return this->param_functions[name.value];
-}
-    */
-// Compiled_Function::Compiled_Function()
-// {
-// }
-// NonAnonFunction::NonAnonFunction()
-// {
-// }
-// NonAnonFunction::NonAnonFunction(llvm::Function *function, std::vector<Thunks> params, Tokens name, std::shared_ptr<Type> ret_type, bool isAnonymous)
-// {
-// }
-// llvm::Value *NonAnonFunction::compile(CompilerContext ctx)
-
-// {
-//     return nullptr;
-// }
-
-// ParamFunction::ParamFunction()
-// {
-// }
-
-// llvm::Value *ParamFunction::compile(CompilerContext ctx)
-// {
-//     return nullptr;
-// }

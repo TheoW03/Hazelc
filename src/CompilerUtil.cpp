@@ -25,6 +25,7 @@ TypeOfExpr get_type_func_call(std::shared_ptr<Compiled_Function> function)
     {
         return TypeOfExpr::String_Type;
     }
+    return TypeOfExpr::Void_Type;
 }
 
 // these get the type of the expression

@@ -39,22 +39,14 @@ class Compiled_Function;
 class CompilerContext
 {
 public:
-    // std::map<std::string, Function> ;
-    // std::map<std::string, Function> local_functions;
-
     std::map<std::string, std::shared_ptr<Compiled_Function>> global_functions;
     std::map<std::string, std::shared_ptr<Compiled_Function>> local_functions;
     llvm::StructType *params;
-    // std::map<std::string, Thunks> param_functions;
 
     std::stack<Function> functions;
-    // std::map<std::string, llvm::Function *> CFunctions;
     std::map<TokenType, OptionalType> NativeTypes;
-    Tokens current_module;
     CRunTimeFunctions CProcedures;
     Function current_function;
-    // std::map<std::string, llvm::Type *> types;
-    // std::map<TokenType, OptionalType> types;
     std::vector<llvm::StructType *> lists;
     llvm::StructType *string_type;
     CompilerContext();
@@ -62,11 +54,7 @@ public:
     CompilerContext(CRunTimeFunctions CProcedures, llvm::LLVMContext &context, llvm::Module &module, llvm::IRBuilder<> &builder);
     llvm::StructType *get_string_inner_type();
     llvm::Type *compile_Type(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<Type> ty);
-    // llvm::FunctionType *compile_Function_Type(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, llvm::StructType *params, std::shared_ptr<FunctionRefNode> n);
-
     OptionalType compile_Type_Optional(std::shared_ptr<Type> ty);
-    // Thunks get_thunk_types(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<FunctionRefNode> n, llvm::StructType *params);
-
     OptionalType get_integer_type();
     OptionalType get_float_type();
     OptionalType get_string_type();
@@ -79,16 +67,6 @@ public:
     Function get_current_function();
     Function set_current_function();
     void set_params(llvm::StructType *params);
-    // void add_parameter(Tokens name, Thunks function);
-    // Thunks get_parameter(Tokens name);
-    // Function set_current_function();
-
-    // void AddModule(std::string module_name, CompiledModule module);
-    // ProgramScope getScope();
-    // CompiledModule get_module(Tokens module);
-    // CompiledModule get_current_module();
-    // void set_current_module(Tokens module_name);
-    // bool can_get_function(Tokens name);
 };
 #endif
 

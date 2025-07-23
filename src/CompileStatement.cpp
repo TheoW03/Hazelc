@@ -36,9 +36,7 @@ void CompileStatement::Visit(FunctionNode *node)
 
     for (int i = 0; i < current_function.thunks.size(); i++)
     {
-        // compiler_context.add_function();
         compiler_context.addLocal(current_function.thunks[i].name, std::make_shared<ParamFunction>(current_function.thunks[i]));
-        // compiler_context.add_parameter(current_function.thunks[i].name, current_function.thunks[i]);
     }
 
     node->stmnts->exit->Accept(this);
