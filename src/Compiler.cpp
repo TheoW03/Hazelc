@@ -34,10 +34,12 @@ void InitCompiler(Output output, std::shared_ptr<DemoduarlizedProgramNode> node)
     // compiles function body
     CompileHighLevel *compile_top = new CompileHighLevel(module, builder, context);
     node->Accept(compile_top);
-    std::cout << "hazelc: compiled functions" << std::endl;
     compile_top->params->setBody(compile_top->params_struct);
+    compile_top->compiler_context.set_params(compile_top->params);
     CompileStatement *compile_statement = new CompileStatement(module, builder, context, compile_top->compiler_context, compile_top->params);
     node->Accept(compile_statement);
+    std::cout << "" << std::endl;
+
     delete compile_top;
 
     // Initialize the target registry etc.llvm::InitializeAllTargets();

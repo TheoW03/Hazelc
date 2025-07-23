@@ -10,13 +10,13 @@ CompileExpr::CompileExpr(llvm::Module &module,
                          llvm::IRBuilder<> &builder,
                          llvm::LLVMContext &context,
                          CompilerContext compiler_context,
-                         llvm::BasicBlock *block, llvm::StructType *params) : module(module),
-                                                                              builder(builder),
-                                                                              context(context)
+                         llvm::BasicBlock *block) : module(module),
+                                                    builder(builder),
+                                                    context(context)
 {
     this->compiler_context = compiler_context;
     this->block = block;
-    this->params = params;
+    // this->params = params;
 
     // this->func_map = func_map;
 }
@@ -26,13 +26,13 @@ llvm::Value *CompileExpr::CompileStr(llvm::Value *str, llvm::Value *length, llvm
     // strings are strcutures
     // that conatin  the string and length
 
-    auto c = compiler_context.get_string_inner_type();
-    auto destField0ptr = builder.CreateStructGEP(c, structure, 0, "destStructPtrF0");
+    auto string_inner_type = compiler_context.get_string_inner_type();
+    auto destField0ptr = builder.CreateStructGEP(string_inner_type, structure, 0, "destStructPtrF0");
     builder.CreateStore(str, destField0ptr);
     // structure->getType()->dump();
     // str->getType()->dump();
     // length->getType()->dump();
-    auto destField1ptr = builder.CreateStructGEP(c, structure, 1, "destStructPtrF1");
+    auto destField1ptr = builder.CreateStructGEP(string_inner_type, structure, 1, "destStructPtrF1");
     // length = builder.CreateLoad(builder.getInt64Ty(), length);
     builder.CreateStore(length, destField1ptr);
     // return ValueOrLoad(builder, structure, c);
@@ -94,8 +94,6 @@ llvm::Value *CompileExpr::FloatMath(llvm::Value *lhs, Tokens op, llvm::Value *rh
 
     auto lhs_val = float_type.get_inner_value(builder, lhs, true);
     auto rhs_val = float_type.get_inner_value(builder, rhs, true);
-    // auto lhs_val = builder.CreateLoad(builder.getDoubleTy(), builder.CreateStructGEP(float_type.type, lhs, 0, "float_lhs"));
-    // auto rhs_val = builder.CreateLoad(builder.getDoubleTy(), builder.CreateStructGEP(float_type.type, rhs, 0, "float_rhs"));
     auto math = FloatMathExpression(lhs_val, op, rhs_val);
     return float_type.set_loaded_value(math, builder);
 }
@@ -200,29 +198,29 @@ llvm::Value *CompileExpr::BoolBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs
     auto math = BoolIntMathExpr(lhs_val, op, rhs_val);
     return BoolType.set_loaded_value(math, builder);
 }
-llvm::Value *CompileExpr::NoneBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs, BooleanExprNode *nodE)
+llvm::Value *CompileExpr::NoneBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs, BooleanExprNode *node)
 {
     auto BoolType = compiler_context.get_boolean_type();
-    if (getTypeOfOnSide(nodE->lhs, compiler_context).has_value())
+    if (get_type_unary(node->lhs, compiler_context).has_value())
     {
-        auto lhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(getTypeOfOnSide(nodE->lhs, compiler_context).value().type, lhs, 1, "lhs"));
+        auto lhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(get_type_unary(node->lhs, compiler_context).value().type, lhs, 1, "lhs"));
         auto rhs_val = builder.getInt1(true);
 
         auto math = BoolIntMathExpr(lhs_val, op, rhs_val);
         return BoolType.set_loaded_value(math, builder);
     }
-    else if (getTypeOfOnSide(nodE->rhs, compiler_context).has_value())
+    else if (get_type_unary(node->rhs, compiler_context).has_value())
     {
         auto rhs_val = builder.CreateLoad(builder.getInt1Ty(),
-                                          builder.CreateStructGEP(getTypeOfOnSide(nodE->rhs, compiler_context).value().type, rhs, 1, "rhs"));
+                                          builder.CreateStructGEP(get_type_unary(node->rhs, compiler_context).value().type, rhs, 1, "rhs"));
         auto lhs_val = builder.getInt1(true);
         auto math = BoolIntMathExpr(lhs_val, op, rhs_val);
         return BoolType.set_loaded_value(math, builder);
     }
     else
     {
-        auto lhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(getTypeOfOnSide(nodE->lhs, compiler_context).value().type, lhs, 1, "lhs"));
-        auto rhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(getTypeOfOnSide(nodE->rhs, compiler_context).value().type, rhs, 1, "rhs"));
+        auto lhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(get_type_unary(node->lhs, compiler_context).value().type, lhs, 1, "lhs"));
+        auto rhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(get_type_unary(node->rhs, compiler_context).value().type, rhs, 1, "rhs"));
 
         auto math = BoolIntMathExpr(lhs_val, op, rhs_val);
         return BoolType.set_loaded_value(math, builder);
@@ -252,8 +250,6 @@ ValueStruct CompileExpr::CompileConditional(ConditionalNode *condition_stmnt)
             builder.SetInsertPoint(ifTrue);
             this->block = ifTrue;
             auto value = CompileBranch(condition_stmnt->branches[i]->stmnts);
-            // auto value =
-            // auto loaded_val = ValueOrLoad(builder, value.value, type.get_type());
 
             phi_nodes.push_back({value.block, value.value});
             builder.CreateBr(endTrue);
@@ -483,7 +479,6 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
 
         auto a = compiler_context.get_string_inner_type();
         auto str = builder.CreateGlobalString(c->value, c->value + " contents");
-        // auto length = llvm::ConstantInt::get(builder.getInt64Ty(), c->value.size());
         auto length = builder.getInt64(c->value.size());
         llvm::Value *structPtr = builder.CreateAlloca(a);
         auto value = this->CompileStr(str, length, structPtr);
@@ -497,14 +492,75 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
     else if (dynamic_cast<FunctionCallNode *>(node.get()))
     {
         auto c = dynamic_cast<FunctionCallNode *>(node.get());
-        auto fu = compiler_context.get_function(c->hash_name.has_value() ? c->hash_name.value() : c->name.value).value();
-        // auto v =
 
-        llvm::Value *param_ptr = builder.CreateAlloca(this->params);
-        OptionalType type_of_func = compiler_context.get_type(fu.ret_type);
-        auto retTy = builder.CreateAlloca(type_of_func.get_type());
-        auto function_call = builder.CreateCall(fu.function, {param_ptr, retTy});
-        function_call->addParamAttr(1, llvm::Attribute::getWithStructRetType(context, type_of_func.get_type()));
+        auto func = compiler_context.get_function(c);
+        auto value = func.value()->compile(compiler_context, block, module, builder, context);
+        this->block = value.block;
+        return value;
+        // llvm::Value *param_ptr = builder.CreateAlloca(compiler_context.params);
+
+        // if (c->param)
+        // {
+        //     auto a = compiler_context.get_parameter(c->name);
+        //     auto destField0ptr = builder.CreateStructGEP(compiler_context.params, param_ptr, a.gep_loc, "destStructPtrF0");
+        //     auto actualVal = builder.CreateStructGEP(a.thunk_type, destField0ptr, 0, "actualVal");
+        //     auto functionPtrField = builder.CreateStructGEP(a.thunk_type, destField0ptr, 1, "functionPtr");
+        //     auto isComputed = builder.CreateStructGEP(a.thunk_type, destField0ptr, 2, "isComputed");
+        //     auto param_in_thunk = builder.CreateStructGEP(a.thunk_type, destField0ptr, 3, "param_ptr");
+
+        //     auto functionPtr = builder.CreateLoad(functionPtrField->getType(), functionPtrField, "loadedFuncPtr");
+        //     llvm::BasicBlock *ifTrue = llvm::BasicBlock::Create(context, "if.value.exists", compiler_context.get_current_function().function);
+        //     llvm::BasicBlock *endTrue = llvm::BasicBlock::Create(context, "end.value.exists", compiler_context.get_current_function().function);
+        //     builder.CreateCondBr(BoolIntMathExpr(builder.CreateLoad(builder.getInt1Ty(), isComputed), {"", TokenType::EQ}, builder.getInt1(1)), ifTrue, endTrue);
+        //     builder.SetInsertPoint(ifTrue);
+        //     OptionalType retType = compiler_context.get_type(a.ret_type);
+
+        //     auto retTy = builder.CreateAlloca(retType.type);
+
+        //     auto v = builder.CreateCall(a.type, functionPtr, {param_in_thunk, retTy});
+
+        //     builder.CreateStore(builder.getInt1(1), isComputed);
+        //     // builder.CreateStore(retTy, actualVal);
+
+        //     builder.CreateCall(compiler_context.CProcedures.memcpy, {
+        //                                                                 actualVal,
+        //                                                                 retTy,
+        //                                                                 llvm::ConstantInt::get(builder.getInt64Ty(), retType.get_type_size(module)),
+        //                                                                 llvm::ConstantInt::get(builder.getInt1Ty(), 0),
+
+        //                                                             });
+
+        //     builder.CreateBr(endTrue);
+        //     builder.SetInsertPoint(endTrue);
+        //     // builder.CreateCall(a.type, functionPtr, {param_ptr, retTy});
+        //     this->block = endTrue;
+
+        //     return {this->block, actualVal};
+        // }
+        // auto fu = compiler_context.get_function(c->hash_name.has_value() ? c->hash_name.value() : c->name.value).value();
+        // // auto v =
+
+        // OptionalType type_of_func = compiler_context.get_type(fu.ret_type);
+        // auto retTy = builder.CreateAlloca(type_of_func.get_type());
+        // // fu.
+
+        // llvm::DataLayout datalayout(&module);
+        // auto p_size = datalayout.getTypeAllocSize(compiler_context.params);
+        // for (int i = 0; i < fu.thunks.size(); i++)
+        // {
+        //     auto destField0ptr = builder.CreateStructGEP(compiler_context.params, param_ptr, fu.thunks[i].gep_loc, "destStructPtrF0");
+        //     auto isComputed = builder.CreateStructGEP(fu.thunks[i].thunk_type, destField0ptr, 2, "isComputed");
+        //     builder.CreateStore(builder.getInt1(0), isComputed);
+        //     auto params = builder.CreateStructGEP(fu.thunks[i].thunk_type, destField0ptr, 3, "params");
+
+        //     auto dest = builder.CreateCall(compiler_context.CProcedures.malloc, {builder.getInt64(p_size)});
+
+        //     builder.CreateCall(compiler_context.CProcedures.memcpy, {dest, param_ptr, builder.getInt64(p_size), builder.getInt1(0)});
+        //     builder.CreateCall(compiler_context.CProcedures.memcpy, {params, dest, builder.getInt64(p_size), builder.getInt1(0)});
+        // }
+
+        // auto function_call = builder.CreateCall(fu.function, {param_ptr, retTy});
+        // function_call->addParamAttr(1, llvm::Attribute::getWithStructRetType(context, type_of_func.get_type()));
         // auto val = builder.CreateStructGEP(type_of_func.type, function_call, 0);
         // val = ValueOrLoad(builder, val, type_of_func.inner);
         // auto rhs_struct_ptr = builder.Crea(function_call, ptrType);
@@ -516,7 +572,7 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         // type_of_func.type->dump();
         // auto val = builder.CreateStructGEP(type_of_func.type, s, 0);
         // val->getType()->dump();
-        return {this->block, retTy};
+        // return {this->block, retTy};
     }
     else if (dynamic_cast<ExprNode *>(node.get()))
     {
@@ -526,7 +582,8 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         auto lhs = Expression(c->lhs);
 
         auto rhs = Expression(c->rhs);
-        auto get_type = get_expr_type(node, this->compiler_context);
+
+        auto get_type = get_binary_expr_type(node, this->compiler_context);
 
         switch (get_type)
         {
@@ -552,7 +609,7 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         auto lhs = Expression(c->lhs);
         auto rhs = Expression(c->rhs);
 
-        auto get_type = get_bool_expr_type(node, this->compiler_context);
+        auto get_type = get_binary_bool_expr_type(node, this->compiler_context);
         switch (get_type)
         {
         case Integer_Type:

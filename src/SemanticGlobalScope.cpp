@@ -102,6 +102,8 @@ void SemanticGlobalScopeVisitor::Visit(ProgramNode *node)
         this->module_functions.clear();
         this->exported_functions.clear();
     }
+    std::cout << "hazelc: Resolved Global Scope" << std::endl;
+
     // DEBUG
     // for (int i = 0; i < this->modules.size(); i++)
     // {

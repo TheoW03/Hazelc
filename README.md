@@ -31,6 +31,41 @@ cmake --build build --config Release -DPROFILING={ON|OFF}
 
 - [examples]
 
+# Progress
+
+This a list of features I have implemented in the compiler
+
+## Code Structures
+
+- [x] Comments
+- [x] Functions
+- [x] Conditionals
+- [x] Modules and Mdules Imports
+- [ ] Lists
+- [x] Function calls without parameters
+- [ ] Function calls with parameters
+- [ ] Anonmyous Functions
+
+## Types
+
+- [x] Native Types
+- [ ] Struct Types
+- [ ] Generics
+- [ ] Variants (enum)
+- [ ] Function Types
+- [x] None
+
+## Operarors
+
+- [x] Basic Math Operators
+- [x] Boolean operators
+- [ ] String operators(concation done, Substring and charat needs some work)
+- [x] Bitwise operators
+- [ ] list operators
+- [ ] unary operators
+
+
+
 [llvm]: <https://releases.llvm.org/download.html>
 
 [cmake]: <https://cmake.org/download/>

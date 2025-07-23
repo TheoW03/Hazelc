@@ -9,13 +9,14 @@ DemodularizedVisitor::DemodularizedVisitor(IntermediateScope s)
 void DemodularizedVisitor::Visit(ProgramNode *node)
 {
 
-    this->program.avail_modules = node->avail_modules;
+    // this->program.avail_modules = node->avail_modules;
     for (const auto &pair : node->avail_modules)
     {
         // this->current_AST_module = this->modules.modules[pair.first];
         modules.set_current_module(pair.first);
         pair.second->Accept(this);
     }
+    std::cout << "hazelc: Demodularization" << std::endl;
 }
 
 void DemodularizedVisitor::Visit(ModuleNode *node)
@@ -73,7 +74,7 @@ void DemodularizedVisitor::Visit(FunctionCallNode *node)
         auto ret = std::make_shared<ReturnNode>(node->params[i]);
         auto block = std::make_shared<BlockNode>(stmnts, ret);
         block->Accept(this);
-        auto param_func = std::make_shared<FunctionNode>(false, true, node->param_types[i], block);
+        auto param_func = std::make_shared<FunctionNode>(false, true, true, node->param_types[i], block);
         program.functions.push_back(param_func);
     }
     node->hash_name = modules.get_global_function_hash(node->name);

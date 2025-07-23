@@ -41,6 +41,8 @@ public:
     void Visit(BlockNode *node) override;
 
     Function CompileFunctionHeader(std::shared_ptr<FunctionRefNode> n);
+    // std::shared_ptr<Compiled_Function> CompileFunctionHeader(FunctionNode *n, bool is_anonymous);
+
     std::tuple<llvm::FunctionType *, std::vector<Thunks>> compile_Function_Type(std::shared_ptr<FunctionRefNode> n);
     Thunks get_thunk_types(std::shared_ptr<FunctionRefNode> n);
 };
@@ -60,27 +62,14 @@ public:
     CompilerContext compiler_context;
     llvm::IRBuilder<> &builder;
     llvm::LLVMContext &context;
-    // ProgramScope program_scope;
     llvm::StructType *params;
     CompileStatement(llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context, CompilerContext compiler_context, llvm::StructType *params);
     void Visit(ASTNode *node) override;
     void Visit(FunctionNode *node) override;
-    // void Visit(ModuleNode *node) override;
     void Visit(DemoduarlizedProgramNode *node) override;
-
     void Visit(ReturnNode *node) override;
-    // void Visit(ProgramNode *node) override;
 };
 
-#endif
-
-#ifndef PHI_NODE_STRUCTURE
-#define PHI_NODE_STRUCTURE
-struct ValueStruct
-{
-    llvm::BasicBlock *block;
-    llvm::Value *value;
-};
 #endif
 
 #ifndef COMPILE_EXPR_H
@@ -107,7 +96,7 @@ private:
 public:
     llvm::Module &module;
     llvm::BasicBlock *block;
-    llvm::StructType *params;
+    // llvm::StructType *params;
     // std::map<std::string, Function> func_map;
     CompilerContext compiler_context;
     llvm::IRBuilder<> &builder;
@@ -115,7 +104,7 @@ public:
     CompileExpr(llvm::Module &module,
                 llvm::IRBuilder<> &builder,
                 llvm::LLVMContext &context,
-                CompilerContext compiler_context, llvm::BasicBlock *block, llvm::StructType *params);
+                CompilerContext compiler_context, llvm::BasicBlock *block);
     llvm::Value *IntMathExpression(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
     llvm::Value *FloatMathExpression(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
     llvm::Value *BoolIntMathExpr(llvm::Value *lhs, Tokens op, llvm::Value *rhs);

@@ -163,10 +163,8 @@ std::optional<std::shared_ptr<ASTNode>> BoolExpr(std::vector<Tokens> &tokens)
         TokenType::GTE,
         TokenType::EQ,
         TokenType::NE};
-    // print_tokens(tokens);
 
     auto lhs = factor(tokens);
-    // print_tokens(tokens);
 
     auto op = match_and_remove(bool_expr_tokens,
                                tokens);
@@ -188,12 +186,7 @@ std::optional<std::shared_ptr<ASTNode>> term(std::vector<Tokens> &tokens)
         TokenType::Modulas,
 
     };
-    // print_tokens(tokens);
-
-    // std::cout << "term" << std::endl;
-    //
     auto lhs = BoolExpr(tokens);
-    // print_tokens(tokens);
 
     auto op = match_and_remove(term_tokens,
                                tokens);
@@ -201,8 +194,7 @@ std::optional<std::shared_ptr<ASTNode>> term(std::vector<Tokens> &tokens)
     {
         auto rhs = BoolExpr(tokens);
         lhs = std::make_shared<ExprNode>(lhs.value(), op.value(), rhs.value());
-        op = match_and_remove(term_tokens,
-                              tokens);
+        op = match_and_remove(term_tokens, tokens);
     }
     return lhs;
 }
@@ -221,9 +213,6 @@ std::optional<std::shared_ptr<ASTNode>> expression(std::vector<Tokens> &tokens)
         TokenType::Or
 
     };
-    // std::cout << "expr" << std::endl;
-
-    // print_tokens(tokens);
 
     auto op = match_and_remove(expression_tokens, tokens);
     while (op.has_value())
@@ -271,10 +260,6 @@ std::optional<std::shared_ptr<ConditionalNode>> parse_conditional(std::vector<To
     else
     {
         error("conditionals must always have a defualt condition, denoted as $defualt", n);
-
-        // std::cout << "hazelc: conditionals must always have a defualt condition, denoted as $defualt" << std::endl;
-        // std::cout << "hazelc: compilation terminated" << std::endl;
-        // exit(EXIT_FAILURE);
     }
     match_and_remove(TokenType::Dedents, tokens);
     return std::make_shared<ConditionalNode>(c, type.value(), n);
@@ -351,7 +336,7 @@ std::optional<std::shared_ptr<Type>> parse_type(std::vector<Tokens> &tokens)
         {
             return std::make_shared<IntegerType>(true);
         }
-        else if (ty.value().type == TokenType::Decimal)
+        else if (ty.value().type == TokenType::Decimal) //
         {
             return std::make_shared<DecimalType>();
         }
@@ -403,7 +388,7 @@ std::optional<std::shared_ptr<FunctionNode>> parse_function(std::vector<Tokens> 
     auto func = parse_function_ref(tokens);
     std::vector<std::shared_ptr<ASTNode>> ast;
 
-    return std::make_shared<FunctionNode>(is_export, false, func.value(),
+    return std::make_shared<FunctionNode>(is_export, false, false, func.value(),
                                           parse_block(tokens));
 }
 std::optional<std::shared_ptr<ASTNode>> parse_return(std::vector<Tokens> &tokens)
@@ -456,14 +441,8 @@ std::shared_ptr<BlockNode> parse_block(std::vector<Tokens> &tokens)
 
         while (!match_and_remove(TokenType::Dedents, tokens).has_value() && peek(tokens).type != TokenType::EndOfFile)
         {
-            // print_tokens(tokens);
-            //
-            // std::optional<std::shared_ptr<ASTNode>>
-            // parse_stmnts(std::vector<Tokens> & tokens);
 
             std::map<TokenType, parser> parse_map;
-            // parse_map.insert(make_pair(TokenType::Let, (parser)parse_function)); //
-            // parse_map.insert(make_pair(TokenType::Return, (parser)parse_return));
             if (peek(tokens).type == TokenType::Let)
             {
                 ast.push_back(parse_function(tokens).value());
@@ -478,18 +457,13 @@ std::shared_ptr<BlockNode> parse_block(std::vector<Tokens> &tokens)
             else
             {
                 error("invalid identifier", peek(tokens));
-                // std::cout << "" << std::endl;
             }
-            // auto v = parse_stmnts(tokens);
-
-            // ast.push_back(v.value());
         }
     }
     else if (match_and_remove(TokenType::Arrow, tokens).has_value())
     {
         exit_ret = std::make_shared<ReturnNode>(expr_parse(tokens).value());
         return std::make_shared<BlockNode>(ast, exit_ret);
-        // ast.push_back(std::make_shared<ReturnNode>(expr_parse(tokens).value()));
     }
     else
     {

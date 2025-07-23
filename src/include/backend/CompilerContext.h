@@ -8,6 +8,7 @@
 #include <Frontend/Token.h>
 #include <Frontend/Ast.h>
 #include <backend/CompilerUtil.h>
+// #include "compiler_visitors.h"
 
 #ifndef OPTIONAL_TYPE_H
 #define OPTIONAL_TYPE_H
@@ -32,23 +33,20 @@ public:
 
 #ifndef CONTEXT_H
 #define CONTEXT_H
-
+class Compiled_Function;
 // #ifndef CONTEXT_H
 // #define CONTEXT_H
 class CompilerContext
 {
 public:
-    std::map<std::string, Function> global_functions;
-    std::map<std::string, Function> local_functions;
+    std::map<std::string, std::shared_ptr<Compiled_Function>> global_functions;
+    std::map<std::string, std::shared_ptr<Compiled_Function>> local_functions;
+    llvm::StructType *params;
 
     std::stack<Function> functions;
-    // std::map<std::string, llvm::Function *> CFunctions;
     std::map<TokenType, OptionalType> NativeTypes;
-    Tokens current_module;
     CRunTimeFunctions CProcedures;
     Function current_function;
-    // std::map<std::string, llvm::Type *> types;
-    // std::map<TokenType, OptionalType> types;
     std::vector<llvm::StructType *> lists;
     llvm::StructType *string_type;
     CompilerContext();
@@ -56,11 +54,7 @@ public:
     CompilerContext(CRunTimeFunctions CProcedures, llvm::LLVMContext &context, llvm::Module &module, llvm::IRBuilder<> &builder);
     llvm::StructType *get_string_inner_type();
     llvm::Type *compile_Type(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<Type> ty);
-    // llvm::FunctionType *compile_Function_Type(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, llvm::StructType *params, std::shared_ptr<FunctionRefNode> n);
-
     OptionalType compile_Type_Optional(std::shared_ptr<Type> ty);
-    // Thunks get_thunk_types(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, std::shared_ptr<FunctionRefNode> n, llvm::StructType *params);
-
     OptionalType get_integer_type();
     OptionalType get_float_type();
     OptionalType get_string_type();
@@ -68,21 +62,60 @@ public:
     OptionalType get_byte_type();
     OptionalType get_type(std::shared_ptr<Type> type);
     void add_function(FunctionNode *node, Function function);
-    std::optional<Function> get_function(std::string name);
-    std::optional<int> addLocal(Tokens name, Function function);
+    std::optional<std::shared_ptr<Compiled_Function>> get_function(FunctionCallNode *node);
+    std::optional<int> addLocal(Tokens name, std::shared_ptr<Compiled_Function> function);
     Function get_current_function();
     Function set_current_function();
-    // Function set_current_function();
-
-    // void AddModule(std::string module_name, CompiledModule module);
-    // ProgramScope getScope();
-    // CompiledModule get_module(Tokens module);
-    // CompiledModule get_current_module();
-    // void set_current_module(Tokens module_name);
-    // bool can_get_function(Tokens name);
+    void set_params(llvm::StructType *params);
 };
 #endif
 
-TypeOfExpr get_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx);
-TypeOfExpr get_bool_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx);
-std::optional<OptionalType> getTypeOfOnSide(std::shared_ptr<ASTNode> n, CompilerContext ctx);
+TypeOfExpr get_binary_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx);
+TypeOfExpr get_binary_bool_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx);
+std::optional<OptionalType> get_type_unary(std::shared_ptr<ASTNode> n, CompilerContext ctx);
+
+#ifndef COMPILED_FUNCTION2_H
+#define COMPILED_FUNCTION2_H
+
+class Compiled_Function
+{
+public:
+    Compiled_Function();
+    virtual std::shared_ptr<Type> get_ret_type() = 0;
+    virtual ValueStruct compile(CompilerContext ctx, llvm::BasicBlock *block, llvm::Module &module,
+                                llvm::IRBuilder<> &builder,
+                                llvm::LLVMContext &context) = 0;
+};
+#endif
+
+#ifndef FUNCTION_H
+#define FUNCTION_H
+
+class DefinedFunction : public Compiled_Function
+{
+public:
+    Function function;
+    DefinedFunction();
+    DefinedFunction(Function function);
+    std::shared_ptr<Type> get_ret_type() override;
+    ValueStruct compile(CompilerContext ctx, llvm::BasicBlock *block, llvm::Module &module,
+                        llvm::IRBuilder<> &builder,
+                        llvm::LLVMContext &context) override;
+};
+#endif
+
+#ifndef Param_Function_H
+#define Param_Function_H
+
+class ParamFunction : public Compiled_Function
+{
+public:
+    Thunks thunk;
+    ParamFunction();
+    ParamFunction(Thunks thunk);
+    std::shared_ptr<Type> get_ret_type() override;
+    ValueStruct compile(CompilerContext ctx, llvm::BasicBlock *block, llvm::Module &module,
+                        llvm::IRBuilder<> &builder,
+                        llvm::LLVMContext &context) override;
+};
+#endif

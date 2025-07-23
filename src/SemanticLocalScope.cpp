@@ -188,6 +188,7 @@ void SemanticLocalScopeVisitor::Visit(ProgramNode *node)
         this->current_AST_module = modules[key];
         current_module->Accept(this);
     }
+    std::cout << "hazelc: Resolved Local Scope" << std::endl;
 }
 
 void SemanticLocalScopeVisitor::Visit(ExprNode *node)
@@ -240,7 +241,7 @@ IntermediateScope::IntermediateScope(std::map<std::string, SemanticModule> modul
 {
     this->modules = modules;
 }
-IntermediateScope::IntermediateScope(std::map<std::string, std::shared_ptr<FunctionNode>> functions)
+IntermediateScope::IntermediateScope(std::unordered_map<std::string, std::shared_ptr<FunctionNode>> functions)
 {
     this->functions = functions;
 }

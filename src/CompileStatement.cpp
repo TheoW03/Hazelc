@@ -23,75 +23,41 @@ void CompileStatement::Visit(FunctionNode *node)
     // all functions are stored in a stack. the compiler pulls a function from the stack
     // sees if its a global or local function
     // if local we put it in the local scope. if global we generate it
-    auto c = this->compiler_context.set_current_function();
+    auto current_function = this->compiler_context.set_current_function();
+    if (!current_function.isAnonymous && !node->hash_name.has_value())
+    {
+        // compiler_context.addLocal(current_function.name, current_function);
+        compiler_context.addLocal(node->f->FunctionName, std::make_shared<DefinedFunction>(current_function));
+    }
+    llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, node->f->FunctionName.value + " entry", current_function.function);
+    this->block = EntryBlock;
+    builder.SetInsertPoint(EntryBlock);
+    // add the parameters
 
-    // the anonmoous prevents collisons
-    if (c.isAnonymous)
+    for (int i = 0; i < current_function.thunks.size(); i++)
     {
-        llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, "entry", c.function);
-        this->block = EntryBlock;
+        compiler_context.addLocal(current_function.thunks[i].name, std::make_shared<ParamFunction>(current_function.thunks[i]));
+    }
 
-        builder.SetInsertPoint(EntryBlock);
-    }
-    else if (node->hash_name.has_value())
-    {
-        auto func = this->compiler_context.get_function(node->hash_name.value()).value();
-        llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, "entry", func.function);
-        this->block = EntryBlock;
-
-        builder.SetInsertPoint(EntryBlock);
-    }
-    else
-    {
-        compiler_context.addLocal(c.name, c);
-        llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, "entry", c.function);
-        this->block = EntryBlock;
-        builder.SetInsertPoint(EntryBlock);
-    }
-    for (int i = 0; i < c.params.size(); i++)
-    {
-        compiler_context.addLocal(c.params[i].name, c.params[i]);
-    }
-    // for (int i = 0; i < node->stmnts.size(); i++)
-    // {
-    //     node->stmnts[i]->Accept(this);
-    // }
     node->stmnts->exit->Accept(this);
 }
 
-// void CompileStatement::Visit(ModuleNode *node)
-// {
-//     auto functions = node->functions;
-//     std::reverse(functions.begin(), functions.end());
-//     for (int i = 0; i < node->functions.size(); i++)
-//     {
-//         // program_scope.set_current(node->name);
-//         functions[i]->Accept(this);
-//     }
-// }
-
 void CompileStatement::Visit(DemoduarlizedProgramNode *node)
 {
-    // for (const auto &[key, current_function] : node->global_functions)
-    // {
-    //     current_function->Accept(this);
-    // }
-    // std::cout << node->functions.size() << std::endl;
-    // std::cout << node->global_functions.size() << std::endl;
 
     auto functions = node->functions;
     std::reverse(functions.begin(), functions.end());
     for (int i = 0; i < node->functions.size(); i++)
     {
         functions[i]->Accept(this);
-        // std::cout <<
     }
+    std::cout << "hazelc: Compiled Expressions" << std::endl;
 }
 
 void CompileStatement::Visit(ReturnNode *node)
 {
 
-    CompileExpr c(module, builder, context, compiler_context, this->block, this->params);
+    CompileExpr c(module, builder, context, compiler_context, this->block);
 
     auto ty = compiler_context.get_type(compiler_context.get_current_function().ret_type);
     // auto value = builder.CreateLoad(ty.get_type(), c.Expression(node->Expr));
@@ -145,12 +111,3 @@ void CompileStatement::Visit(ReturnNode *node)
     builder.CreateRetVoid();
     auto error = llvm::verifyFunction(*(f), output);
 }
-
-// void CompileStatement::Visit(ProgramNode *node)
-// {
-//     for (const auto &[key, current_module] : node->avail_modules)
-//     {
-//         program_scope.set_current(current_module->name);
-//         current_module->Accept(this);
-//     }
-// }

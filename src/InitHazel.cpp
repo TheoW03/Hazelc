@@ -120,37 +120,23 @@ void runPasses(std::shared_ptr<ProgramNode> node, Output cli)
     // handy trick i have stolen from my other compiler project :P
 
     node->Accept(std::make_shared<ResolveRecursiveModules>().get());
-    std::cout << "hazelc: resolved recursive imports" << std::endl;
-    // SemanticGlobalScopeVisitor *semantic =
-    // new SemanticGlobalScopeVisitor;
     auto semantic = std::make_shared<SemanticGlobalScopeVisitor>();
     node->Accept(semantic.get());
-    std::cout << "hazelc: resolved Global Scope" << std::endl;
     auto semantic_local = std::make_shared<SemanticLocalScopeVisitor>(semantic->modules);
     node->Accept(semantic_local.get());
-    std::cout << "hazelc: resolved Local scope" << std::endl;
     auto demoddlarize = std::make_shared<DemodularizedVisitor>(IntermediateScope(semantic->modules));
     node->Accept(demoddlarize.get());
-    std::cout << "hazelc: removing modules" << std::endl; // /
     auto typechecker = std::make_shared<TypeCheckerVistor>(IntermediateScope(demoddlarize->program.global_functions));
-    // d->Accept(typechecker.get());
     demoddlarize->program.Accept(typechecker.get());
-    std::cout << "hazelc: checking types" << std::endl; // /
-
-    // node->Accept(std::make_shared<ConstantFoldingVisitor>().get()); // aa
     demoddlarize->program.Accept(std::make_shared<ConstantFoldingVisitor>().get());
-    std::cout
-        << "hazelc: constant folding" << std::endl;
     auto mainModule = node->getMainModule();
 
     if (mainModule.has_value())
     {
         std::shared_ptr<TreeShake> shake_imports = std::make_shared<TreeShake>();
         node->Accept(shake_imports.get());
-        std::cout << "hazelc: Treeshake" << std::endl;
         demoddlarize = std::make_shared<DemodularizedVisitor>(IntermediateScope(semantic->modules));
         node->Accept(demoddlarize.get());
-        std::cout << "hazelc: updating Demod for this" << std::endl; // /
     }
 
     InitCompiler(cli, std::make_shared<DemoduarlizedProgramNode>(demoddlarize->program));
@@ -166,9 +152,6 @@ int Init(std::vector<std::string> args)
         std::cout << "compilation termianted" << std::endl;
         return EXIT_FAILURE;
     }
-    // auto lines = get_lines(cli);
-    // std::cout << "" << std::endl;
-
     auto tokens = lex_file(cli);
 
     std::cout << "hazelc: lexxed" << std::endl;

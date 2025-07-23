@@ -159,24 +159,25 @@ void CompilerContext::add_function(FunctionNode *node, Function function)
 {
     if (node->hash_name.has_value())
     {
-        this->global_functions.insert(std::make_pair(node->hash_name.value(), function));
+        this->global_functions.insert(std::make_pair(node->hash_name.value(), std::make_shared<DefinedFunction>(function)));
     }
     this->functions.push(function);
 }
 
-std::optional<Function> CompilerContext::get_function(std::string name)
+std::optional<std::shared_ptr<Compiled_Function>> CompilerContext::get_function(FunctionCallNode *node)
 {
-    if (this->global_functions.find(name) != this->global_functions.end())
+    if (node->hash_name.has_value() && this->global_functions.find(node->hash_name.value()) != this->global_functions.end())
     {
-        return this->global_functions[name];
+        return this->global_functions[node->hash_name.value()];
     }
-    if (this->local_functions.find(name) != this->local_functions.end())
+    if (this->local_functions.find(node->name.value) != this->local_functions.end())
     {
-        return this->local_functions[name];
+        return this->local_functions[node->name.value];
     }
     return {};
 }
-std::optional<int> CompilerContext::addLocal(Tokens name, Function function)
+
+std::optional<int> CompilerContext::addLocal(Tokens name, std::shared_ptr<Compiled_Function> function)
 {
     if (this->local_functions.find(name.value) != this->local_functions.end())
     {
@@ -189,8 +190,8 @@ std::optional<int> CompilerContext::addLocal(Tokens name, Function function)
         return 1;
     }
 }
-
 Function CompilerContext::get_current_function()
+
 {
     return this->current_function;
 }
@@ -200,4 +201,9 @@ Function CompilerContext::set_current_function()
     this->current_function = this->functions.top();
     this->functions.pop();
     return this->current_function;
+}
+
+void CompilerContext::set_params(llvm::StructType *params)
+{
+    this->params = params;
 }
