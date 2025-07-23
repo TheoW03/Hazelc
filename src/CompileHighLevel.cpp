@@ -36,20 +36,14 @@ void CompileHighLevel::Visit(ASTNode *node)
 }
 void CompileHighLevel::Visit(FunctionNode *node)
 {
-    // We are indexing functions via a hash
-    // I do plan to build on top of it.
-    // so this may be temporary
-    using std::make_pair;
-    std::vector<std::shared_ptr<ASTNode>> filter_functions;
     Function compiled_function = CompileFunctionHeader(node->f);
     compiled_function.isAnonymous = node->anonyomous;
-
     this->compiler_context.add_function(node, compiled_function);
 }
 
 void CompileHighLevel::Visit(BranchNode *node)
 {
-    std::vector<std::shared_ptr<ASTNode>> filter_functions;
+    // std::vector<std::shared_ptr<ASTNode>> filter_functions;
     // node->stmnts->Accept(this);
     // for (int i = 0; i < node->stmnts.size(); i++)
     // {
@@ -278,10 +272,9 @@ ValueStruct ParamFunction::compile(CompilerContext ctx, llvm::BasicBlock *block,
     auto functionPtr = builder.CreateLoad(functionPtrField->getType(), functionPtrField, "loadedFuncPtr");
     llvm::BasicBlock *ifTrue = llvm::BasicBlock::Create(context, "if.value.exists", ctx.get_current_function().function);
     llvm::BasicBlock *endTrue = llvm::BasicBlock::Create(context, "end.value.exists", ctx.get_current_function().function);
+    auto cond = builder.CreateICmp(llvm::ICmpInst::ICMP_EQ, builder.CreateLoad(builder.getInt1Ty(), isComputed), builder.getInt1(1));
     // builder.CreateCondBr(BoolIntMathExpr(builder.CreateLoad(builder.getInt1Ty(), isComputed), {"", TokenType::EQ}, builder.getInt1(1)), ifTrue, endTrue);
-    builder.CreateCondBr(builder.CreateICmp(llvm::ICmpInst::ICMP_EQ,
-                                            builder.CreateLoad(builder.getInt1Ty(), isComputed), builder.getInt1(1)),
-                         ifTrue, endTrue);
+    builder.CreateCondBr(cond, ifTrue, endTrue);
     builder.SetInsertPoint(ifTrue);
     OptionalType retType = ctx.get_type(thunk.ret_type);
 

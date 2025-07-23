@@ -24,29 +24,28 @@ void CompileStatement::Visit(FunctionNode *node)
     // sees if its a global or local function
     // if local we put it in the local scope. if global we generate it
     auto current_function = this->compiler_context.set_current_function();
-
-    // the anonmoous prevents collisons
-    if (current_function.isAnonymous)
-    {
-        llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, node->f->FunctionName.value + " entry", current_function.function);
-        this->block = EntryBlock;
-
-        builder.SetInsertPoint(EntryBlock);
-    }
-    else if (node->hash_name.has_value())
-    {
-        llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, node->f->FunctionName.value + " entry", current_function.function);
-        this->block = EntryBlock;
-
-        builder.SetInsertPoint(EntryBlock);
-    }
-    else
+    if (!current_function.isAnonymous && !node->hash_name.has_value())
     {
         compiler_context.addLocal(current_function.name, current_function);
-        llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, node->f->FunctionName.value + " entry", current_function.function);
-        this->block = EntryBlock;
-        builder.SetInsertPoint(EntryBlock);
     }
+    llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, node->f->FunctionName.value + " entry", current_function.function);
+    this->block = EntryBlock;
+    builder.SetInsertPoint(EntryBlock);
+
+    // the anonmoous prevents collisons
+    // if (current_function.isAnonymous || node->hash_name.has_value())
+    // {
+    //     llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, node->f->FunctionName.value + " entry", current_function.function);
+    //     this->block = EntryBlock;
+    //     builder.SetInsertPoint(EntryBlock);
+    // }
+    // else
+    // {
+    //     compiler_context.addLocal(current_function.name, current_function);
+    //     llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, node->f->FunctionName.value + " entry", current_function.function);
+    //     this->block = EntryBlock;
+    //     builder.SetInsertPoint(EntryBlock);
+    // }
     for (int i = 0; i < current_function.thunks.size(); i++)
     {
         compiler_context.add_parameter(current_function.thunks[i].name, current_function.thunks[i]);
