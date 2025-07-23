@@ -6,9 +6,31 @@
 #include <backend/CompilerContext.h>
 #include "llvm/IR/Intrinsics.h"
 
+TypeOfExpr get_type_func_call(std::shared_ptr<Compiled_Function> function)
+{
+    auto f = function->get_ret_type();
+    if (dynamic_cast<IntegerType *>(f.get()) || dynamic_cast<ByteType *>(f.get()))
+    {
+        return TypeOfExpr::Integer_Type;
+    }
+    else if (dynamic_cast<DecimalType *>(f.get()))
+    {
+        return TypeOfExpr::Float_Type;
+    }
+    else if (dynamic_cast<BoolType *>(f.get()))
+    {
+        return TypeOfExpr::Boolean_Type;
+    }
+    else if (dynamic_cast<StringType *>(f.get()))
+    {
+        return TypeOfExpr::String_Type;
+    }
+}
+
 // these get the type of the expression
 // used because the LLCM has seperation for floats and
-TypeOfExpr get_binary_bool_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx)
+TypeOfExpr
+get_binary_bool_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx)
 {
     TypeOfExpr get_binary_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx);
     auto c = dynamic_cast<BooleanExprNode *>(n.get());
@@ -23,69 +45,80 @@ TypeOfExpr get_binary_bool_expr_type(std::shared_ptr<ASTNode> n, CompilerContext
 
     else if (dynamic_cast<NoneNode *>(c->lhs.get()) || dynamic_cast<NoneNode *>(c->rhs.get()))
         return TypeOfExpr::None_Type;
+
     if (dynamic_cast<FunctionCallNode *>(c->lhs.get()))
     {
-        auto d = dynamic_cast<FunctionCallNode *>(c->lhs.get());
-        auto f = ctx.get_function(d->hash_name.has_value() ? d->hash_name.value() : d->name.value).value();
-
-        if (dynamic_cast<IntegerType *>(f.ret_type.get()) || dynamic_cast<ByteType *>(f.ret_type.get()))
-        {
-            return TypeOfExpr::Integer_Type;
-        }
-        else if (dynamic_cast<DecimalType *>(f.ret_type.get()))
-        {
-            return TypeOfExpr::Float_Type;
-        }
-        else if (dynamic_cast<BoolType *>(f.ret_type.get()))
-        {
-            return TypeOfExpr::Boolean_Type;
-        }
-        else if (dynamic_cast<StringType *>(f.ret_type.get()))
-        {
-            return TypeOfExpr::String_Type;
-        }
-        // if (dynamic_cast<NativeType *>(f.ret_type.get()))
-        // {
-        //     auto p = dynamic_cast<NativeType *>(f.ret_type.get());
-        //     if (p->type.type == TokenType::Integer)
-        //     {
-        //         return TypeOfExpr::Integer_Type;
-        //     }
-        //     else if (p->type.type == TokenType::Decimal)
-        //     {
-        //         return TypeOfExpr::Float_Type;
-        //     }
-        //     else if (p->type.type == TokenType::string)
-        //     {
-        //         return TypeOfExpr::String_Type;
-        //     }
-        //     else if (p->type.type == TokenType::boolean)
-        //     {
-        //         return TypeOfExpr::Boolean_Type;
-        //     }
-        // }
+        auto func = dynamic_cast<FunctionCallNode *>(c->lhs.get());
+        auto f = ctx.get_function(func).value();
+        return get_type_func_call(f);
     }
     if (dynamic_cast<FunctionCallNode *>(c->rhs.get()))
     {
-        auto d = dynamic_cast<FunctionCallNode *>(c->rhs.get());
-        auto f = ctx.get_function(d->hash_name.has_value() ? d->hash_name.value() : d->name.value).value();
-        if (dynamic_cast<IntegerType *>(f.ret_type.get()) || dynamic_cast<ByteType *>(f.ret_type.get()))
-        {
-            return TypeOfExpr::Integer_Type;
-        }
-        else if (dynamic_cast<DecimalType *>(f.ret_type.get()))
-        {
-            return TypeOfExpr::Float_Type;
-        }
-        else if (dynamic_cast<BoolType *>(f.ret_type.get()))
-        {
-            return TypeOfExpr::Boolean_Type;
-        }
-        else if (dynamic_cast<StringType *>(f.ret_type.get()))
-        {
-            return TypeOfExpr::String_Type;
-        }
+        auto func = dynamic_cast<FunctionCallNode *>(c->rhs.get());
+        auto f = ctx.get_function(func).value();
+        return get_type_func_call(f);
     }
+    //     auto d = dynamic_cast<FunctionCallNode *>(c->lhs.get());
+    //     auto f = ctx.get_function(d->hash_name.has_value() ? d->hash_name.value() : d->name.value).value();
+
+    //     if (dynamic_cast<IntegerType *>(f.ret_type.get()) || dynamic_cast<ByteType *>(f.ret_type.get()))
+    //     {
+    //         return TypeOfExpr::Integer_Type;
+    //     }
+    //     else if (dynamic_cast<DecimalType *>(f.ret_type.get()))
+    //     {
+    //         return TypeOfExpr::Float_Type;
+    //     }
+    //     else if (dynamic_cast<BoolType *>(f.ret_type.get()))
+    //     {
+    //         return TypeOfExpr::Boolean_Type;
+    //     }
+    //     else if (dynamic_cast<StringType *>(f.ret_type.get()))
+    //     {
+    //         return TypeOfExpr::String_Type;
+    //     }
+    //     // if (dynamic_cast<NativeType *>(f.ret_type.get()))
+    //     // {
+    //     //     auto p = dynamic_cast<NativeType *>(f.ret_type.get());
+    //     //     if (p->type.type == TokenType::Integer)
+    //     //     {
+    //     //         return TypeOfExpr::Integer_Type;
+    //     //     }
+    //     //     else if (p->type.type == TokenType::Decimal)
+    //     //     {
+    //     //         return TypeOfExpr::Float_Type;
+    //     //     }
+    //     //     else if (p->type.type == TokenType::string)
+    //     //     {
+    //     //         return TypeOfExpr::String_Type;
+    //     //     }
+    //     //     else if (p->type.type == TokenType::boolean)
+    //     //     {
+    //     //         return TypeOfExpr::Boolean_Type;
+    //     //     }
+    //     // }
+    // }
+    // if (dynamic_cast<FunctionCallNode *>(c->rhs.get()))
+    // {
+    //     auto d = dynamic_cast<FunctionCallNode *>(c->rhs.get());
+    //     auto f = ctx.get_function(d->hash_name.has_value() ? d->hash_name.value() : d->name.value).value();
+    //     if (dynamic_cast<IntegerType *>(f.ret_type.get()) || dynamic_cast<ByteType *>(f.ret_type.get()))
+    //     {
+    //         return TypeOfExpr::Integer_Type;
+    //     }
+    //     else if (dynamic_cast<DecimalType *>(f.ret_type.get()))
+    //     {
+    //         return TypeOfExpr::Float_Type;
+    //     }
+    //     else if (dynamic_cast<BoolType *>(f.ret_type.get()))
+    //     {
+    //         return TypeOfExpr::Boolean_Type;
+    //     }
+    //     else if (dynamic_cast<StringType *>(f.ret_type.get()))
+    //     {
+    //         return TypeOfExpr::String_Type;
+    //     }
+    // }
     if (dynamic_cast<BooleanExprNode *>(c->lhs.get()))
         return get_binary_bool_expr_type(c->lhs, ctx);
     if (dynamic_cast<BooleanExprNode *>(c->rhs.get()))
@@ -109,92 +142,100 @@ TypeOfExpr get_binary_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx)
         return TypeOfExpr::String_Type;
     if (dynamic_cast<FunctionCallNode *>(c->lhs.get()))
     {
-        auto d = dynamic_cast<FunctionCallNode *>(c->lhs.get());
-        auto f = ctx.get_function(d->hash_name.has_value() ? d->hash_name.value() : d->name.value);
-        if (f.has_value())
-        {
-            if (dynamic_cast<IntegerType *>(f.value().ret_type.get()) || dynamic_cast<ByteType *>(f.value().ret_type.get()))
-            {
-                return TypeOfExpr::Integer_Type;
-            }
-            else if (dynamic_cast<DecimalType *>(f.value().ret_type.get()))
-            {
-                return TypeOfExpr::Float_Type;
-            }
-            else if (dynamic_cast<BoolType *>(f.value().ret_type.get()))
-            {
-                return TypeOfExpr::Boolean_Type;
-            }
-            else if (dynamic_cast<StringType *>(f.value().ret_type.get()))
-            {
-                return TypeOfExpr::String_Type;
-            }
-        }
-        if (d->param)
-        {
+        auto func = dynamic_cast<FunctionCallNode *>(c->lhs.get());
+        auto f = ctx.get_function(func).value();
+        return get_type_func_call(f);
+        // auto d = dynamic_cast<FunctionCallNode *>(c->lhs.get());
+        // auto f = ctx.get_function(d->hash_name.has_value() ? d->hash_name.value() : d->name.value);
+        // if (f.has_value())
+        // {
+        //     if (dynamic_cast<IntegerType *>(f.value().ret_type.get()) || dynamic_cast<ByteType *>(f.value().ret_type.get()))
+        //     {
+        //         return TypeOfExpr::Integer_Type;
+        //     }
+        //     else if (dynamic_cast<DecimalType *>(f.value().ret_type.get()))
+        //     {
+        //         return TypeOfExpr::Float_Type;
+        //     }
+        //     else if (dynamic_cast<BoolType *>(f.value().ret_type.get()))
+        //     {
+        //         return TypeOfExpr::Boolean_Type;
+        //     }
+        //     else if (dynamic_cast<StringType *>(f.value().ret_type.get()))
+        //     {
+        //         return TypeOfExpr::String_Type;
+        //     }
+        // }
+        // if (d->param)
+        // {
 
-            auto param = ctx.get_parameter(d->name);
-            if (dynamic_cast<IntegerType *>(param.ret_type.get()) || dynamic_cast<ByteType *>(param.ret_type.get()))
-            {
-                return TypeOfExpr::Integer_Type;
-            }
-            else if (dynamic_cast<DecimalType *>(param.ret_type.get()))
-            {
-                return TypeOfExpr::Float_Type;
-            }
-            else if (dynamic_cast<BoolType *>(param.ret_type.get()))
-            {
-                return TypeOfExpr::Boolean_Type;
-            }
-            else if (dynamic_cast<StringType *>(param.ret_type.get()))
-            {
-                return TypeOfExpr::String_Type;
-            }
-        }
+        //     auto param = ctx.get_parameter(d->name);
+        //     if (dynamic_cast<IntegerType *>(param.ret_type.get()) || dynamic_cast<ByteType *>(param.ret_type.get()))
+        //     {
+        //         return TypeOfExpr::Integer_Type;
+        //     }
+        //     else if (dynamic_cast<DecimalType *>(param.ret_type.get()))
+        //     {
+        //         return TypeOfExpr::Float_Type;
+        //     }
+        //     else if (dynamic_cast<BoolType *>(param.ret_type.get()))
+        //     {
+        //         return TypeOfExpr::Boolean_Type;
+        //     }
+        //     else if (dynamic_cast<StringType *>(param.ret_type.get()))
+        //     {
+        //         return TypeOfExpr::String_Type;
+        //     }
+        // }
         // if (f.)
         // auto c =
     }
     if (dynamic_cast<FunctionCallNode *>(c->rhs.get()))
     {
-        auto d = dynamic_cast<FunctionCallNode *>(c->rhs.get());
-        auto f = ctx.get_function(d->hash_name.has_value() ? d->hash_name.value() : d->name.value).value();
-        if (dynamic_cast<IntegerType *>(f.ret_type.get()) || dynamic_cast<ByteType *>(f.ret_type.get()))
-        {
-            return TypeOfExpr::Integer_Type;
-        }
-        else if (dynamic_cast<DecimalType *>(f.ret_type.get()))
-        {
-            return TypeOfExpr::Float_Type;
-        }
-        else if (dynamic_cast<BoolType *>(f.ret_type.get()))
-        {
-            return TypeOfExpr::Boolean_Type;
-        }
-        else if (dynamic_cast<StringType *>(f.ret_type.get()))
-        {
-            return TypeOfExpr::String_Type;
-        }
+        auto func = dynamic_cast<FunctionCallNode *>(c->rhs.get());
+        auto f = ctx.get_function(func).value();
+        return get_type_func_call(f);
+        // auto d = dynamic_cast<FunctionCallNode *>(c->rhs.get());
+        // auto f = ctx.get_function(d).value()->get_ret_type().get();
+        // // auto f = ctx.get_function(d->hash_name.has_value() ? d->hash_name.value() : d->name.value).value();
 
-        if (d->param)
-        {
-            auto param = ctx.get_parameter(d->name);
-            if (dynamic_cast<IntegerType *>(param.ret_type.get()) || dynamic_cast<ByteType *>(param.ret_type.get()))
-            {
-                return TypeOfExpr::Integer_Type;
-            }
-            else if (dynamic_cast<DecimalType *>(param.ret_type.get()))
-            {
-                return TypeOfExpr::Float_Type;
-            }
-            else if (dynamic_cast<BoolType *>(param.ret_type.get()))
-            {
-                return TypeOfExpr::Boolean_Type;
-            }
-            else if (dynamic_cast<StringType *>(param.ret_type.get()))
-            {
-                return TypeOfExpr::String_Type;
-            }
-        }
+        // if (dynamic_cast<IntegerType *>(f) || dynamic_cast<ByteType *>(f.ret_type.get()))
+        // {
+        //     return TypeOfExpr::Integer_Type;
+        // }
+        // else if (dynamic_cast<DecimalType *>(f.ret_type.get()))
+        // {
+        //     return TypeOfExpr::Float_Type;
+        // }
+        // else if (dynamic_cast<BoolType *>(f.ret_type.get()))
+        // {
+        //     return TypeOfExpr::Boolean_Type;
+        // }
+        // else if (dynamic_cast<StringType *>(f.ret_type.get()))
+        // {
+        //     return TypeOfExpr::String_Type;
+        // }
+
+        // if (d->param)
+        // {
+        //     auto param = ctx.get_parameter(d->name);
+        //     if (dynamic_cast<IntegerType *>(param.ret_type.get()) || dynamic_cast<ByteType *>(param.ret_type.get()))
+        //     {
+        //         return TypeOfExpr::Integer_Type;
+        //     }
+        //     else if (dynamic_cast<DecimalType *>(param.ret_type.get()))
+        //     {
+        //         return TypeOfExpr::Float_Type;
+        //     }
+        //     else if (dynamic_cast<BoolType *>(param.ret_type.get()))
+        //     {
+        //         return TypeOfExpr::Boolean_Type;
+        //     }
+        //     else if (dynamic_cast<StringType *>(param.ret_type.get()))
+        //     {
+        //         return TypeOfExpr::String_Type;
+        //     }
+        // }
         // if (f.)
         // auto c =
     }
@@ -230,45 +271,46 @@ std::optional<OptionalType> get_type_unary(std::shared_ptr<ASTNode> n, CompilerC
     if (dynamic_cast<FunctionCallNode *>(n.get()))
     {
         auto d = dynamic_cast<FunctionCallNode *>(n.get());
-        auto f = ctx.get_function(d->hash_name.has_value() ? d->hash_name.value() : d->name.value).value();
+        // auto f = ctx.get_function(d->hash_name.has_value() ? d->hash_name.value() : d->name.value).value();
+        auto f = ctx.get_function(d).value()->get_ret_type();
 
-        if (dynamic_cast<IntegerType *>(f.ret_type.get()) || dynamic_cast<ByteType *>(f.ret_type.get()))
+        if (dynamic_cast<IntegerType *>(f.get()) || dynamic_cast<ByteType *>(f.get()))
         {
             return ctx.get_integer_type();
         }
-        else if (dynamic_cast<DecimalType *>(f.ret_type.get()))
+        else if (dynamic_cast<DecimalType *>(f.get()))
         {
             return ctx.get_float_type();
         }
-        else if (dynamic_cast<BoolType *>(f.ret_type.get()))
+        else if (dynamic_cast<BoolType *>(f.get()))
         {
             return ctx.get_boolean_type();
         }
-        else if (dynamic_cast<StringType *>(f.ret_type.get()))
+        else if (dynamic_cast<StringType *>(f.get()))
         {
             return ctx.get_string_type();
         }
 
-        if (d->param)
-        {
-            auto param = ctx.get_parameter(d->name);
-            if (dynamic_cast<IntegerType *>(param.ret_type.get()) || dynamic_cast<ByteType *>(param.ret_type.get()))
-            {
-                return ctx.get_integer_type();
-            }
-            else if (dynamic_cast<DecimalType *>(param.ret_type.get()))
-            {
-                return ctx.get_float_type();
-            }
-            else if (dynamic_cast<BoolType *>(param.ret_type.get()))
-            {
-                return ctx.get_boolean_type();
-            }
-            else if (dynamic_cast<StringType *>(param.ret_type.get()))
-            {
-                return ctx.get_string_type();
-            }
-        }
+        // if (d->param)
+        // {
+        //     auto param = ctx.get_parameter(d->name);
+        //     if (dynamic_cast<IntegerType *>(param.ret_type.get()) || dynamic_cast<ByteType *>(param.ret_type.get()))
+        //     {
+        //         return ctx.get_integer_type();
+        //     }
+        //     else if (dynamic_cast<DecimalType *>(param.ret_type.get()))
+        //     {
+        //         return ctx.get_float_type();
+        //     }
+        //     else if (dynamic_cast<BoolType *>(param.ret_type.get()))
+        //     {
+        //         return ctx.get_boolean_type();
+        //     }
+        //     else if (dynamic_cast<StringType *>(param.ret_type.get()))
+        //     {
+        //         return ctx.get_string_type();
+        //     }
+        // }
     }
     return {};
 }

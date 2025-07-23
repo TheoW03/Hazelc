@@ -492,70 +492,75 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
     else if (dynamic_cast<FunctionCallNode *>(node.get()))
     {
         auto c = dynamic_cast<FunctionCallNode *>(node.get());
-        llvm::Value *param_ptr = builder.CreateAlloca(compiler_context.params);
 
-        if (c->param)
-        {
-            auto a = compiler_context.get_parameter(c->name);
-            auto destField0ptr = builder.CreateStructGEP(compiler_context.params, param_ptr, a.gep_loc, "destStructPtrF0");
-            auto actualVal = builder.CreateStructGEP(a.thunk_type, destField0ptr, 0, "actualVal");
-            auto functionPtrField = builder.CreateStructGEP(a.thunk_type, destField0ptr, 1, "functionPtr");
-            auto isComputed = builder.CreateStructGEP(a.thunk_type, destField0ptr, 2, "isComputed");
-            auto param_in_thunk = builder.CreateStructGEP(a.thunk_type, destField0ptr, 3, "param_ptr");
+        auto func = compiler_context.get_function(c);
+        auto value = func.value()->compile(compiler_context, block, module, builder, context);
+        this->block = value.block;
+        return value;
+        // llvm::Value *param_ptr = builder.CreateAlloca(compiler_context.params);
 
-            auto functionPtr = builder.CreateLoad(functionPtrField->getType(), functionPtrField, "loadedFuncPtr");
-            llvm::BasicBlock *ifTrue = llvm::BasicBlock::Create(context, "if.value.exists", compiler_context.get_current_function().function);
-            llvm::BasicBlock *endTrue = llvm::BasicBlock::Create(context, "end.value.exists", compiler_context.get_current_function().function);
-            builder.CreateCondBr(BoolIntMathExpr(builder.CreateLoad(builder.getInt1Ty(), isComputed), {"", TokenType::EQ}, builder.getInt1(1)), ifTrue, endTrue);
-            builder.SetInsertPoint(ifTrue);
-            OptionalType retType = compiler_context.get_type(a.ret_type);
+        // if (c->param)
+        // {
+        //     auto a = compiler_context.get_parameter(c->name);
+        //     auto destField0ptr = builder.CreateStructGEP(compiler_context.params, param_ptr, a.gep_loc, "destStructPtrF0");
+        //     auto actualVal = builder.CreateStructGEP(a.thunk_type, destField0ptr, 0, "actualVal");
+        //     auto functionPtrField = builder.CreateStructGEP(a.thunk_type, destField0ptr, 1, "functionPtr");
+        //     auto isComputed = builder.CreateStructGEP(a.thunk_type, destField0ptr, 2, "isComputed");
+        //     auto param_in_thunk = builder.CreateStructGEP(a.thunk_type, destField0ptr, 3, "param_ptr");
 
-            auto retTy = builder.CreateAlloca(retType.type);
+        //     auto functionPtr = builder.CreateLoad(functionPtrField->getType(), functionPtrField, "loadedFuncPtr");
+        //     llvm::BasicBlock *ifTrue = llvm::BasicBlock::Create(context, "if.value.exists", compiler_context.get_current_function().function);
+        //     llvm::BasicBlock *endTrue = llvm::BasicBlock::Create(context, "end.value.exists", compiler_context.get_current_function().function);
+        //     builder.CreateCondBr(BoolIntMathExpr(builder.CreateLoad(builder.getInt1Ty(), isComputed), {"", TokenType::EQ}, builder.getInt1(1)), ifTrue, endTrue);
+        //     builder.SetInsertPoint(ifTrue);
+        //     OptionalType retType = compiler_context.get_type(a.ret_type);
 
-            auto v = builder.CreateCall(a.type, functionPtr, {param_in_thunk, retTy});
+        //     auto retTy = builder.CreateAlloca(retType.type);
 
-            builder.CreateStore(builder.getInt1(1), isComputed);
-            // builder.CreateStore(retTy, actualVal);
+        //     auto v = builder.CreateCall(a.type, functionPtr, {param_in_thunk, retTy});
 
-            builder.CreateCall(compiler_context.CProcedures.memcpy, {
-                                                                        actualVal,
-                                                                        retTy,
-                                                                        llvm::ConstantInt::get(builder.getInt64Ty(), retType.get_type_size(module)),
-                                                                        llvm::ConstantInt::get(builder.getInt1Ty(), 0),
+        //     builder.CreateStore(builder.getInt1(1), isComputed);
+        //     // builder.CreateStore(retTy, actualVal);
 
-                                                                    });
+        //     builder.CreateCall(compiler_context.CProcedures.memcpy, {
+        //                                                                 actualVal,
+        //                                                                 retTy,
+        //                                                                 llvm::ConstantInt::get(builder.getInt64Ty(), retType.get_type_size(module)),
+        //                                                                 llvm::ConstantInt::get(builder.getInt1Ty(), 0),
 
-            builder.CreateBr(endTrue);
-            builder.SetInsertPoint(endTrue);
-            // builder.CreateCall(a.type, functionPtr, {param_ptr, retTy});
-            this->block = endTrue;
+        //                                                             });
 
-            return {this->block, actualVal};
-        }
-        auto fu = compiler_context.get_function(c->hash_name.has_value() ? c->hash_name.value() : c->name.value).value();
-        // auto v =
+        //     builder.CreateBr(endTrue);
+        //     builder.SetInsertPoint(endTrue);
+        //     // builder.CreateCall(a.type, functionPtr, {param_ptr, retTy});
+        //     this->block = endTrue;
 
-        OptionalType type_of_func = compiler_context.get_type(fu.ret_type);
-        auto retTy = builder.CreateAlloca(type_of_func.get_type());
-        // fu.
+        //     return {this->block, actualVal};
+        // }
+        // auto fu = compiler_context.get_function(c->hash_name.has_value() ? c->hash_name.value() : c->name.value).value();
+        // // auto v =
 
-        llvm::DataLayout datalayout(&module);
-        auto p_size = datalayout.getTypeAllocSize(compiler_context.params);
-        for (int i = 0; i < fu.thunks.size(); i++)
-        {
-            auto destField0ptr = builder.CreateStructGEP(compiler_context.params, param_ptr, fu.thunks[i].gep_loc, "destStructPtrF0");
-            auto isComputed = builder.CreateStructGEP(fu.thunks[i].thunk_type, destField0ptr, 2, "isComputed");
-            builder.CreateStore(builder.getInt1(0), isComputed);
-            auto params = builder.CreateStructGEP(fu.thunks[i].thunk_type, destField0ptr, 3, "params");
+        // OptionalType type_of_func = compiler_context.get_type(fu.ret_type);
+        // auto retTy = builder.CreateAlloca(type_of_func.get_type());
+        // // fu.
 
-            auto dest = builder.CreateCall(compiler_context.CProcedures.malloc, {builder.getInt64(p_size)});
+        // llvm::DataLayout datalayout(&module);
+        // auto p_size = datalayout.getTypeAllocSize(compiler_context.params);
+        // for (int i = 0; i < fu.thunks.size(); i++)
+        // {
+        //     auto destField0ptr = builder.CreateStructGEP(compiler_context.params, param_ptr, fu.thunks[i].gep_loc, "destStructPtrF0");
+        //     auto isComputed = builder.CreateStructGEP(fu.thunks[i].thunk_type, destField0ptr, 2, "isComputed");
+        //     builder.CreateStore(builder.getInt1(0), isComputed);
+        //     auto params = builder.CreateStructGEP(fu.thunks[i].thunk_type, destField0ptr, 3, "params");
 
-            builder.CreateCall(compiler_context.CProcedures.memcpy, {dest, param_ptr, builder.getInt64(p_size), builder.getInt1(0)});
-            builder.CreateCall(compiler_context.CProcedures.memcpy, {params, dest, builder.getInt64(p_size), builder.getInt1(0)});
-        }
+        //     auto dest = builder.CreateCall(compiler_context.CProcedures.malloc, {builder.getInt64(p_size)});
 
-        auto function_call = builder.CreateCall(fu.function, {param_ptr, retTy});
-        function_call->addParamAttr(1, llvm::Attribute::getWithStructRetType(context, type_of_func.get_type()));
+        //     builder.CreateCall(compiler_context.CProcedures.memcpy, {dest, param_ptr, builder.getInt64(p_size), builder.getInt1(0)});
+        //     builder.CreateCall(compiler_context.CProcedures.memcpy, {params, dest, builder.getInt64(p_size), builder.getInt1(0)});
+        // }
+
+        // auto function_call = builder.CreateCall(fu.function, {param_ptr, retTy});
+        // function_call->addParamAttr(1, llvm::Attribute::getWithStructRetType(context, type_of_func.get_type()));
         // auto val = builder.CreateStructGEP(type_of_func.type, function_call, 0);
         // val = ValueOrLoad(builder, val, type_of_func.inner);
         // auto rhs_struct_ptr = builder.Crea(function_call, ptrType);
@@ -567,7 +572,7 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         // type_of_func.type->dump();
         // auto val = builder.CreateStructGEP(type_of_func.type, s, 0);
         // val->getType()->dump();
-        return {this->block, retTy};
+        // return {this->block, retTy};
     }
     else if (dynamic_cast<ExprNode *>(node.get()))
     {

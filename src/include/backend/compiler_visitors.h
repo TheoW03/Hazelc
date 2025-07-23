@@ -72,15 +72,6 @@ public:
 
 #endif
 
-#ifndef PHI_NODE_STRUCTURE
-#define PHI_NODE_STRUCTURE
-struct ValueStruct
-{
-    llvm::BasicBlock *block;
-    llvm::Value *value;
-};
-#endif
-
 #ifndef COMPILE_EXPR_H
 #define COMPILE_EXPR_H
 class CompileExpr
@@ -123,47 +114,5 @@ public:
     llvm::Value *StringBoolMathExpr(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
 
     ValueStruct Expression(std::shared_ptr<ASTNode> node);
-};
-#endif
-
-#ifndef COMPILED_FUNCTION2_H
-#define COMPILED_FUNCTION2_H
-
-class Compiled_Function
-{
-public:
-    virtual ValueStruct compile(CompilerContext ctx, llvm::BasicBlock *block, llvm::Module &module,
-                                llvm::IRBuilder<> &builder,
-                                llvm::LLVMContext &context) = 0;
-};
-#endif
-
-#ifndef FUNCTION_H
-#define FUNCTION_H
-
-class DefinedFunction : public Compiled_Function
-{
-public:
-    Function function;
-    DefinedFunction();
-    DefinedFunction(Function function);
-    ValueStruct compile(CompilerContext ctx, llvm::BasicBlock *block, llvm::Module &module,
-                        llvm::IRBuilder<> &builder,
-                        llvm::LLVMContext &context) override;
-};
-#endif
-
-#ifndef Param_Function_H
-#define Param_Function_H
-
-class ParamFunction : public Compiled_Function
-{
-public:
-    Thunks thunk;
-    ParamFunction();
-    ParamFunction(Thunks thunk);
-    ValueStruct compile(CompilerContext ctx, llvm::BasicBlock *block, llvm::Module &module,
-                        llvm::IRBuilder<> &builder,
-                        llvm::LLVMContext &context) override;
 };
 #endif

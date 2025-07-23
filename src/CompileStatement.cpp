@@ -26,7 +26,8 @@ void CompileStatement::Visit(FunctionNode *node)
     auto current_function = this->compiler_context.set_current_function();
     if (!current_function.isAnonymous && !node->hash_name.has_value())
     {
-        compiler_context.addLocal(current_function.name, current_function);
+        // compiler_context.addLocal(current_function.name, current_function);
+        compiler_context.addLocal(node->f->FunctionName, std::make_shared<DefinedFunction>(current_function));
     }
     llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, node->f->FunctionName.value + " entry", current_function.function);
     this->block = EntryBlock;
@@ -35,7 +36,9 @@ void CompileStatement::Visit(FunctionNode *node)
 
     for (int i = 0; i < current_function.thunks.size(); i++)
     {
-        compiler_context.add_parameter(current_function.thunks[i].name, current_function.thunks[i]);
+        // compiler_context.add_function();
+        compiler_context.addLocal(current_function.thunks[i].name, std::make_shared<ParamFunction>(current_function.thunks[i]));
+        // compiler_context.add_parameter(current_function.thunks[i].name, current_function.thunks[i]);
     }
 
     node->stmnts->exit->Accept(this);
