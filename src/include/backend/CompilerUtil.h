@@ -35,6 +35,14 @@ enum TypeOfExpr
 };
 
 #endif
+#ifndef PHI_NODE_STRUCTURE
+#define PHI_NODE_STRUCTURE
+struct ValueStruct
+{
+    llvm::BasicBlock *block;
+    llvm::Value *value;
+};
+#endif
 
 #ifndef THUNKS_H
 #define THUNKS_H

@@ -223,7 +223,12 @@ DefinedFunction::DefinedFunction(Function function)
 {
     this->function = function;
 }
+std::shared_ptr<Type> DefinedFunction::get_ret_type()
+{
+    return function.ret_type;
+}
 ValueStruct DefinedFunction::compile(CompilerContext ctx, llvm::BasicBlock *block, llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context)
+
 {
     llvm::Value *param_ptr = builder.CreateAlloca(ctx.params);
 
@@ -259,6 +264,10 @@ ParamFunction::ParamFunction(Thunks thunk)
     this->thunk = thunk;
 }
 
+std::shared_ptr<Type> ParamFunction::get_ret_type()
+{
+    return this->thunk.ret_type;
+}
 ValueStruct ParamFunction::compile(CompilerContext ctx, llvm::BasicBlock *block, llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context)
 {
     llvm::Value *param_ptr = builder.CreateAlloca(ctx.params);
@@ -299,4 +308,7 @@ ValueStruct ParamFunction::compile(CompilerContext ctx, llvm::BasicBlock *block,
     // this->block = endTrue;
 
     return {endTrue, actualVal};
+}
+Compiled_Function::Compiled_Function()
+{
 }
