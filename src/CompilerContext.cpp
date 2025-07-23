@@ -174,6 +174,7 @@ std::optional<std::shared_ptr<Compiled_Function>> CompilerContext::get_function(
     {
         return this->local_functions[node->name.value];
     }
+    return {};
 }
 
 std::optional<int> CompilerContext::addLocal(Tokens name, std::shared_ptr<Compiled_Function> function)
