@@ -31,21 +31,8 @@ void CompileStatement::Visit(FunctionNode *node)
     llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, node->f->FunctionName.value + " entry", current_function.function);
     this->block = EntryBlock;
     builder.SetInsertPoint(EntryBlock);
+    // add the parameters
 
-    // the anonmoous prevents collisons
-    // if (current_function.isAnonymous || node->hash_name.has_value())
-    // {
-    //     llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, node->f->FunctionName.value + " entry", current_function.function);
-    //     this->block = EntryBlock;
-    //     builder.SetInsertPoint(EntryBlock);
-    // }
-    // else
-    // {
-    //     compiler_context.addLocal(current_function.name, current_function);
-    //     llvm::BasicBlock *EntryBlock = llvm::BasicBlock::Create(context, node->f->FunctionName.value + " entry", current_function.function);
-    //     this->block = EntryBlock;
-    //     builder.SetInsertPoint(EntryBlock);
-    // }
     for (int i = 0; i < current_function.thunks.size(); i++)
     {
         compiler_context.add_parameter(current_function.thunks[i].name, current_function.thunks[i]);

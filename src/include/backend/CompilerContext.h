@@ -39,6 +39,9 @@ public:
 class CompilerContext
 {
 public:
+    // std::map<std::string, Function> ;
+    // std::map<std::string, Function> local_functions;
+
     std::map<std::string, Function> global_functions;
     std::map<std::string, Function> local_functions;
     llvm::StructType *params;
