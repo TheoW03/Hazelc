@@ -46,7 +46,7 @@ ValueStruct DefinedFunction::compile(CompilerContext ctx, llvm::BasicBlock *bloc
 ParamFunction::ParamFunction()
 {
 }
-ParamFunction::ParamFunction(Thunks thunk)
+ParamFunction::ParamFunction(FunctionParam thunk)
 {
     this->thunk = thunk;
 }

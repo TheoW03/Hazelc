@@ -2,9 +2,9 @@
 #include "llvm/IR/IRBuilder.h"
 #include <backend/CompilerUtil.h>
 
-#ifndef THUNKS_H
-#define THUNKS_H
-struct Thunks
+#ifndef FUNCTION_PARAM_H
+#define FUNCTION_PARAM_H
+struct FunctionParam
 {
 
     Tokens name;
@@ -23,7 +23,7 @@ struct Function
     std::vector<Function> params;
     std::shared_ptr<Type> ret_type;
     Tokens name;
-    std::vector<Thunks> thunks;
+    std::vector<FunctionParam> thunks;
     bool isAnonymous;
 };
 #endif
@@ -67,9 +67,9 @@ class CompilerContext;
 class ParamFunction : public Compiled_Function
 {
 public:
-    Thunks thunk;
+    FunctionParam thunk;
     ParamFunction();
-    ParamFunction(Thunks thunk);
+    ParamFunction(FunctionParam thunk);
     std::shared_ptr<Type> get_ret_type() override;
     ValueStruct compile(CompilerContext ctx, llvm::BasicBlock *block, llvm::Module &module,
                         llvm::IRBuilder<> &builder,

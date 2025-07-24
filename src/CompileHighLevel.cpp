@@ -55,10 +55,10 @@ Function CompileHighLevel::CompileFunctionHeader(std::shared_ptr<FunctionRefNode
     return {function, f, n->RetType, n->FunctionName, std::get<1>(functype), false};
 }
 
-std::tuple<llvm::FunctionType *, std::vector<Thunks>> CompileHighLevel::compile_Function_Type(std::shared_ptr<FunctionRefNode> n)
+std::tuple<llvm::FunctionType *, std::vector<FunctionParam>> CompileHighLevel::compile_Function_Type(std::shared_ptr<FunctionRefNode> n)
 {
     auto c = n->RetType;
-    std::vector<Thunks> thunks;
+    std::vector<FunctionParam> thunks;
     for (int i = 0; i < n->params.size(); i++)
     {
         auto funct = compile_Function_Type(n->params[i]);
@@ -81,7 +81,7 @@ std::tuple<llvm::FunctionType *, std::vector<Thunks>> CompileHighLevel::compile_
 
     return {functype, thunks};
 }
-Thunks CompileHighLevel::get_thunk_types(std::shared_ptr<FunctionRefNode> n)
+FunctionParam CompileHighLevel::get_thunk_types(std::shared_ptr<FunctionRefNode> n)
 {
     auto thunk = llvm::StructType::create(context, "Thunk");
     auto funct = compile_Function_Type(n);

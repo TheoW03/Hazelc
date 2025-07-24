@@ -4,7 +4,7 @@
 #include <Frontend/Ast.h>
 #include "llvm/IR/LLVMContext.h"
 #include <memory>
-#include <backend/CompilerContext.h>
+#include <backend/Compiled_Types.h>
 #include "llvm/IR/Intrinsics.h"
 
 // optional type. since in hazel all types are optional
