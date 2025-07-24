@@ -26,20 +26,20 @@ set(EXECUTABLE_NAME hazelc)
 
 add_llvm_executable(${EXECUTABLE_NAME} 
    src/main.cpp
-   src/lexxer.cpp
-   src/parser.cpp
-   src/Ast.cpp
+   src/Lexxer.cpp
+   src/Parser.cpp
+   src/AstNodes.cpp
    src/InitHazel.cpp
    src/Compiler.cpp
    src/ConstantFolding.cpp
-   src/visitor.cpp
+   src/Visitor.cpp
    src/CompileStatement.cpp
-   src/CompileExpr.cpp
-   src/cli.cpp
+   src/CompileExpressions.cpp
+   src/CommandLineArguments.cpp
    src/CompileHighLevel.cpp
    src/CompilerUtil.cpp
-   src/Compiled_Types.cpp
-   src/Compiled_Functions.cpp
+   src/CompiledTypes.cpp
+   src/CompiledFunctions.cpp
    src/CompilerContext.cpp
    src/SemanticGlobalScope.cpp
    src/TreeShake.cpp
@@ -47,7 +47,7 @@ add_llvm_executable(${EXECUTABLE_NAME}
    src/DeadCodeElim.cpp
    src/TypeChecker.cpp
    src/CRuntimeProcudures.cpp
-   src/error.cpp
+   src/Error.cpp
    src/DemodularizationPass.cpp
 
 )

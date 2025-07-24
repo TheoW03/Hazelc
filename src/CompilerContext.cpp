@@ -1,6 +1,5 @@
 #include <backend/CompilerUtil.h>
 #include "llvm/IR/Module.h"
-#include <backend/Scope.h>
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/LLVMContext.h"
 #include <backend/CompilerContext.h>
