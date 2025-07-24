@@ -1,0 +1,99 @@
+#include <backend/compiler_visitors.h>
+#include <backend/CompilerUtil.h>
+
+DefinedFunction::DefinedFunction()
+{
+}
+DefinedFunction::DefinedFunction(Function function)
+{
+    this->function = function;
+}
+std::shared_ptr<Type> DefinedFunction::get_ret_type()
+{
+    return function.ret_type;
+}
+ValueStruct DefinedFunction::compile(CompilerContext ctx, llvm::BasicBlock *block, llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context)
+
+{
+    llvm::Value *param_ptr = builder.CreateAlloca(ctx.params);
+
+    OptionalType type_of_func = ctx.get_type(this->function.ret_type);
+    auto retTy = builder.CreateAlloca(type_of_func.get_type());
+    // fu.
+
+    llvm::DataLayout datalayout(&module);
+    auto p_size = datalayout.getTypeAllocSize(ctx.params);
+    for (int i = 0; i < this->function.thunks.size(); i++)
+    {
+        auto destField0ptr = builder.CreateStructGEP(ctx.params, param_ptr, this->function.thunks[i].gep_loc, "destStructPtrF0");
+        auto isComputed = builder.CreateStructGEP(this->function.thunks[i].thunk_type, destField0ptr, 2, "isComputed");
+        builder.CreateStore(builder.getInt1(0), isComputed);
+        auto params = builder.CreateStructGEP(this->function.thunks[i].thunk_type, destField0ptr, 3, "params");
+
+        auto dest = builder.CreateCall(ctx.CProcedures.malloc, {builder.getInt64(p_size)});
+
+        builder.CreateCall(ctx.CProcedures.memcpy, {dest, param_ptr, builder.getInt64(p_size), builder.getInt1(0)});
+        builder.CreateCall(ctx.CProcedures.memcpy, {params, dest, builder.getInt64(p_size), builder.getInt1(0)});
+    }
+
+    auto function_call = builder.CreateCall(this->function.function, {param_ptr, retTy});
+    function_call->addParamAttr(1, llvm::Attribute::getWithStructRetType(context, type_of_func.get_type()));
+    return {block, retTy};
+}
+
+ParamFunction::ParamFunction()
+{
+}
+ParamFunction::ParamFunction(Thunks thunk)
+{
+    this->thunk = thunk;
+}
+
+std::shared_ptr<Type> ParamFunction::get_ret_type()
+{
+    return this->thunk.ret_type;
+}
+ValueStruct ParamFunction::compile(CompilerContext ctx, llvm::BasicBlock *block, llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context)
+{
+    llvm::Value *param_ptr = builder.CreateAlloca(ctx.params);
+
+    auto destField0ptr = builder.CreateStructGEP(ctx.params, param_ptr, thunk.gep_loc, "destStructPtrF0");
+    auto actualVal = builder.CreateStructGEP(thunk.thunk_type, destField0ptr, 0, "actualVal");
+    auto functionPtrField = builder.CreateStructGEP(thunk.thunk_type, destField0ptr, 1, "functionPtr");
+    auto isComputed = builder.CreateStructGEP(thunk.thunk_type, destField0ptr, 2, "isComputed");
+    auto param_in_thunk = builder.CreateStructGEP(thunk.thunk_type, destField0ptr, 3, "param_ptr");
+
+    auto functionPtr = builder.CreateLoad(functionPtrField->getType(), functionPtrField, "loadedFuncPtr");
+    llvm::BasicBlock *ifTrue = llvm::BasicBlock::Create(context, "if.value.exists", ctx.get_current_function().function);
+    llvm::BasicBlock *endTrue = llvm::BasicBlock::Create(context, "end.value.exists", ctx.get_current_function().function);
+    auto cond = builder.CreateICmp(llvm::ICmpInst::ICMP_EQ, builder.CreateLoad(builder.getInt1Ty(), isComputed), builder.getInt1(1));
+    // builder.CreateCondBr(BoolIntMathExpr(builder.CreateLoad(builder.getInt1Ty(), isComputed), {"", TokenType::EQ}, builder.getInt1(1)), ifTrue, endTrue);
+    builder.CreateCondBr(cond, ifTrue, endTrue);
+    builder.SetInsertPoint(ifTrue);
+    OptionalType retType = ctx.get_type(thunk.ret_type);
+
+    auto retTy = builder.CreateAlloca(retType.type);
+
+    auto v = builder.CreateCall(thunk.type, functionPtr, {param_in_thunk, retTy});
+
+    builder.CreateStore(builder.getInt1(1), isComputed);
+    // builder.CreateStore(retTy, actualVal);
+
+    builder.CreateCall(ctx.CProcedures.memcpy, {
+                                                   actualVal,
+                                                   retTy,
+                                                   llvm::ConstantInt::get(builder.getInt64Ty(), retType.get_type_size(module)),
+                                                   llvm::ConstantInt::get(builder.getInt1Ty(), 0),
+
+                                               });
+
+    builder.CreateBr(endTrue);
+    builder.SetInsertPoint(endTrue);
+    // builder.CreateCall(a.type, functionPtr, {param_ptr, retTy});
+    // this->block = endTrue;
+
+    return {endTrue, actualVal};
+}
+Compiled_Function::Compiled_Function()
+{
+}

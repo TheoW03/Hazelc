@@ -71,6 +71,19 @@ public:
 };
 
 #endif
+#ifndef TYPE_OF_EXPR_H
+#define TYPE_OF_EXPR_H
+enum TypeOfExpr
+{
+    Boolean_Type,
+    Integer_Type,
+    Float_Type,
+    String_Type,
+    None_Type,
+    Void_Type
+};
+
+#endif
 
 #ifndef COMPILE_EXPR_H
 #define COMPILE_EXPR_H
@@ -91,6 +104,11 @@ private:
     ValueStruct CompileBranch(std::shared_ptr<BlockNode> stmnts);
 
     ValueStruct CompileConditional(ConditionalNode *codnition_stmnt);
+
+    TypeOfExpr get_binary_expr_type(std::shared_ptr<ASTNode> n);
+    TypeOfExpr get_binary_bool_expr_type(std::shared_ptr<ASTNode> n);
+    std::optional<OptionalType> get_type_unary(std::shared_ptr<ASTNode> n);
+    TypeOfExpr get_type_func_call(std::shared_ptr<Compiled_Function> function);
     // PhiNodeStruct HandleConditional(std::shared_ptr<ASTNode> node);
 
 public:

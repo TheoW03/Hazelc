@@ -201,26 +201,26 @@ llvm::Value *CompileExpr::BoolBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs
 llvm::Value *CompileExpr::NoneBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs, BooleanExprNode *node)
 {
     auto BoolType = compiler_context.get_boolean_type();
-    if (get_type_unary(node->lhs, compiler_context).has_value())
+    if (get_type_unary(node->lhs).has_value())
     {
-        auto lhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(get_type_unary(node->lhs, compiler_context).value().type, lhs, 1, "lhs"));
+        auto lhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(get_type_unary(node->lhs).value().type, lhs, 1, "lhs"));
         auto rhs_val = builder.getInt1(true);
 
         auto math = BoolIntMathExpr(lhs_val, op, rhs_val);
         return BoolType.set_loaded_value(math, builder);
     }
-    else if (get_type_unary(node->rhs, compiler_context).has_value())
+    else if (get_type_unary(node->rhs).has_value())
     {
         auto rhs_val = builder.CreateLoad(builder.getInt1Ty(),
-                                          builder.CreateStructGEP(get_type_unary(node->rhs, compiler_context).value().type, rhs, 1, "rhs"));
+                                          builder.CreateStructGEP(get_type_unary(node->rhs).value().type, rhs, 1, "rhs"));
         auto lhs_val = builder.getInt1(true);
         auto math = BoolIntMathExpr(lhs_val, op, rhs_val);
         return BoolType.set_loaded_value(math, builder);
     }
     else
     {
-        auto lhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(get_type_unary(node->lhs, compiler_context).value().type, lhs, 1, "lhs"));
-        auto rhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(get_type_unary(node->rhs, compiler_context).value().type, rhs, 1, "rhs"));
+        auto lhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(get_type_unary(node->lhs).value().type, lhs, 1, "lhs"));
+        auto rhs_val = builder.CreateLoad(builder.getInt1Ty(), builder.CreateStructGEP(get_type_unary(node->rhs).value().type, rhs, 1, "rhs"));
 
         auto math = BoolIntMathExpr(lhs_val, op, rhs_val);
         return BoolType.set_loaded_value(math, builder);
@@ -276,6 +276,145 @@ ValueStruct CompileExpr::CompileConditional(ConditionalNode *condition_stmnt)
     }
     return {endTrue, phi};
     // return ;
+}
+
+TypeOfExpr CompileExpr::get_binary_expr_type(std::shared_ptr<ASTNode> n)
+{
+    auto c = dynamic_cast<ExprNode *>(n.get());
+    if (dynamic_cast<IntegerNode *>(c->lhs.get()) && dynamic_cast<IntegerNode *>(c->rhs.get()))
+        return TypeOfExpr::Integer_Type;
+    else if (dynamic_cast<DecimalNode *>(c->lhs.get()) && dynamic_cast<DecimalNode *>(c->rhs.get()))
+        return TypeOfExpr::Float_Type;
+    else if (dynamic_cast<BooleanConstNode *>(c->lhs.get()) && dynamic_cast<BooleanConstNode *>(c->rhs.get()))
+        return TypeOfExpr::Integer_Type;
+    else if (dynamic_cast<StringNode *>(c->lhs.get()) && dynamic_cast<StringNode *>(c->rhs.get()))
+        return TypeOfExpr::String_Type;
+    if (dynamic_cast<FunctionCallNode *>(c->lhs.get()))
+    {
+        auto func = dynamic_cast<FunctionCallNode *>(c->lhs.get());
+        auto f = compiler_context.get_function(func).value();
+        return get_type_func_call(f);
+    }
+    if (dynamic_cast<FunctionCallNode *>(c->rhs.get()))
+    {
+        auto func = dynamic_cast<FunctionCallNode *>(c->rhs.get());
+        auto f = compiler_context.get_function(func).value();
+        return get_type_func_call(f);
+    }
+
+    if (dynamic_cast<ExprNode *>(c->lhs.get()))
+        return get_binary_expr_type(c->lhs);
+    if (dynamic_cast<ExprNode *>(c->rhs.get()))
+        return get_binary_expr_type(c->rhs);
+    if (dynamic_cast<BooleanExprNode *>(c->rhs.get()))
+        return TypeOfExpr::Boolean_Type;
+    if (dynamic_cast<BooleanExprNode *>(c->lhs.get()))
+        return TypeOfExpr::Boolean_Type;
+    return TypeOfExpr::Void_Type;
+}
+
+TypeOfExpr CompileExpr::get_binary_bool_expr_type(std::shared_ptr<ASTNode> n)
+{
+    auto c = dynamic_cast<BooleanExprNode *>(n.get());
+    if (dynamic_cast<IntegerNode *>(c->lhs.get()) && dynamic_cast<IntegerNode *>(c->rhs.get()))
+        return TypeOfExpr::Integer_Type;
+    else if (dynamic_cast<DecimalNode *>(c->lhs.get()) && dynamic_cast<DecimalNode *>(c->rhs.get()))
+        return TypeOfExpr::Float_Type;
+    else if (dynamic_cast<BooleanConstNode *>(c->lhs.get()) && dynamic_cast<BooleanConstNode *>(c->rhs.get()))
+        return TypeOfExpr::Boolean_Type;
+    else if (dynamic_cast<StringNode *>(c->lhs.get()) && dynamic_cast<StringNode *>(c->rhs.get()))
+        return TypeOfExpr::String_Type;
+
+    else if (dynamic_cast<NoneNode *>(c->lhs.get()) || dynamic_cast<NoneNode *>(c->rhs.get()))
+        return TypeOfExpr::None_Type;
+
+    if (dynamic_cast<FunctionCallNode *>(c->lhs.get()))
+    {
+        auto func = dynamic_cast<FunctionCallNode *>(c->lhs.get());
+        auto f = compiler_context.get_function(func).value();
+        return get_type_func_call(f);
+    }
+    if (dynamic_cast<FunctionCallNode *>(c->rhs.get()))
+    {
+        auto func = dynamic_cast<FunctionCallNode *>(c->rhs.get());
+        auto f = compiler_context.get_function(func).value();
+        return get_type_func_call(f);
+    }
+
+    if (dynamic_cast<BooleanExprNode *>(c->lhs.get()))
+        return get_binary_bool_expr_type(c->lhs);
+    if (dynamic_cast<BooleanExprNode *>(c->rhs.get()))
+        return get_binary_bool_expr_type(c->rhs);
+    if (dynamic_cast<ExprNode *>(c->rhs.get()))
+        return get_binary_expr_type(c->rhs);
+    if (dynamic_cast<ExprNode *>(c->lhs.get()))
+        return get_binary_expr_type(c->lhs);
+    return TypeOfExpr::Void_Type;
+}
+
+std::optional<OptionalType> CompileExpr::get_type_unary(std::shared_ptr<ASTNode> n)
+{
+    if (dynamic_cast<IntegerNode *>(n.get()))
+        return this->compiler_context.get_integer_type();
+    if (dynamic_cast<DecimalNode *>(n.get()))
+        return this->compiler_context.get_float_type();
+    if (dynamic_cast<StringNode *>(n.get()))
+        return this->compiler_context.get_string_type();
+    if (dynamic_cast<BooleanExprNode *>(n.get()))
+    {
+        return this->compiler_context.get_boolean_type();
+    }
+    if (dynamic_cast<ExprNode *>(n.get()))
+    {
+        auto a = dynamic_cast<ExprNode *>(n.get());
+        return get_type_unary(a->rhs);
+    }
+    if (dynamic_cast<FunctionCallNode *>(n.get()))
+    {
+        auto d = dynamic_cast<FunctionCallNode *>(n.get());
+        // auto f = ctx.get_function(d->hash_name.has_value() ? d->hash_name.value() : d->name.value).value();
+        auto f = this->compiler_context.get_function(d).value()->get_ret_type();
+
+        if (dynamic_cast<IntegerType *>(f.get()) || dynamic_cast<ByteType *>(f.get()))
+        {
+            return this->compiler_context.get_integer_type();
+        }
+        else if (dynamic_cast<DecimalType *>(f.get()))
+        {
+            return this->compiler_context.get_float_type();
+        }
+        else if (dynamic_cast<BoolType *>(f.get()))
+        {
+            return this->compiler_context.get_boolean_type();
+        }
+        else if (dynamic_cast<StringType *>(f.get()))
+        {
+            return this->compiler_context.get_string_type();
+        }
+    }
+    return {};
+}
+
+TypeOfExpr CompileExpr::get_type_func_call(std::shared_ptr<Compiled_Function> function)
+{
+    auto f = function->get_ret_type();
+    if (dynamic_cast<IntegerType *>(f.get()) || dynamic_cast<ByteType *>(f.get()))
+    {
+        return TypeOfExpr::Integer_Type;
+    }
+    else if (dynamic_cast<DecimalType *>(f.get()))
+    {
+        return TypeOfExpr::Float_Type;
+    }
+    else if (dynamic_cast<BoolType *>(f.get()))
+    {
+        return TypeOfExpr::Boolean_Type;
+    }
+    else if (dynamic_cast<StringType *>(f.get()))
+    {
+        return TypeOfExpr::String_Type;
+    }
+    return TypeOfExpr::Void_Type;
 }
 
 llvm::Value *CompileExpr::FloatMathExpression(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
@@ -507,7 +646,7 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
 
         auto rhs = Expression(c->rhs);
 
-        auto get_type = get_binary_expr_type(node, this->compiler_context);
+        auto get_type = get_binary_expr_type(node);
 
         switch (get_type)
         {
@@ -533,7 +672,7 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         auto lhs = Expression(c->lhs);
         auto rhs = Expression(c->rhs);
 
-        auto get_type = get_binary_bool_expr_type(node, this->compiler_context);
+        auto get_type = get_binary_bool_expr_type(node);
         switch (get_type)
         {
         case Integer_Type:

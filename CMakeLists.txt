@@ -38,6 +38,8 @@ add_llvm_executable(${EXECUTABLE_NAME}
    src/cli.cpp
    src/CompileHighLevel.cpp
    src/CompilerUtil.cpp
+   src/Compiled_Types.cpp
+   src/Compiled_Functions.cpp
    src/CompilerContext.cpp
    src/SemanticGlobalScope.cpp
    src/TreeShake.cpp

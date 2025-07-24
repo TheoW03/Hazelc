@@ -34,8 +34,6 @@ public:
 #ifndef CONTEXT_H
 #define CONTEXT_H
 class Compiled_Function;
-// #ifndef CONTEXT_H
-// #define CONTEXT_H
 class CompilerContext
 {
 public:
@@ -69,10 +67,6 @@ public:
     void set_params(llvm::StructType *params);
 };
 #endif
-
-TypeOfExpr get_binary_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx);
-TypeOfExpr get_binary_bool_expr_type(std::shared_ptr<ASTNode> n, CompilerContext ctx);
-std::optional<OptionalType> get_type_unary(std::shared_ptr<ASTNode> n, CompilerContext ctx);
 
 #ifndef COMPILED_FUNCTION2_H
 #define COMPILED_FUNCTION2_H

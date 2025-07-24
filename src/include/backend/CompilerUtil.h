@@ -22,19 +22,19 @@
 //     llvm::Value *get_none(llvm::IRBuilder<> &builder);
 // };
 // #endif
-#ifndef TYPE_OF_EXPR_H
-#define TYPE_OF_EXPR_H
-enum TypeOfExpr
-{
-    Boolean_Type,
-    Integer_Type,
-    Float_Type,
-    String_Type,
-    None_Type,
-    Void_Type
-};
+// #ifndef TYPE_OF_EXPR_H
+// #define TYPE_OF_EXPR_H
+// enum TypeOfExpr
+// {
+//     Boolean_Type,
+//     Integer_Type,
+//     Float_Type,
+//     String_Type,
+//     None_Type,
+//     Void_Type
+// };
 
-#endif
+// #endif
 #ifndef PHI_NODE_STRUCTURE
 #define PHI_NODE_STRUCTURE
 struct ValueStruct
