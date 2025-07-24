@@ -1,3 +1,3 @@
 
 cmake -S  . -B build -DPROFILING=OFF 
-cmake --build build --config Release -j8
+cmake --build build --config Release -j32

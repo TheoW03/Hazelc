@@ -26,29 +26,34 @@ set(EXECUTABLE_NAME hazelc)
 
 add_llvm_executable(${EXECUTABLE_NAME} 
    src/main.cpp
-   src/Lexxer.cpp
-   src/Parser.cpp
-   src/AstNodes.cpp
    src/InitHazel.cpp
-   src/Compiler.cpp
-   src/ConstantFolding.cpp
-   src/Visitor.cpp
-   src/CompileStatement.cpp
-   src/CompileExpressions.cpp
-   src/CommandLineArguments.cpp
-   src/CompileHighLevel.cpp
-   src/CompilerUtil.cpp
-   src/CompiledTypes.cpp
-   src/CompiledFunctions.cpp
-   src/CompilerContext.cpp
-   src/SemanticGlobalScope.cpp
-   src/TreeShake.cpp
-   src/SemanticLocalScope.cpp
-   src/DeadCodeElim.cpp
-   src/TypeChecker.cpp
-   src/CRuntimeProcudures.cpp
-   src/Error.cpp
-   src/DemodularizationPass.cpp
+
+   src/Util/Visitor.cpp
+   src/Util/Error.cpp
+   src/Util/CommandLineArguments.cpp
+   
+   src/Frontend/Lexxer.cpp
+   src/Frontend/Parser.cpp
+   src/Frontend/AstNodes.cpp
+
+   src/IntermediatePasses/ConstantFolding.cpp
+   src/IntermediatePasses/SemanticGlobalScope.cpp
+   src/IntermediatePasses/TreeShake.cpp
+   src/IntermediatePasses/SemanticLocalScope.cpp
+   src/IntermediatePasses/DeadCodeElim.cpp
+   src/IntermediatePasses/TypeChecker.cpp
+   src/IntermediatePasses/DemodularizationPass.cpp
+
+   src/LLVMBackend/Compiler.cpp
+   src/LLVMBackend/CompileStatement.cpp
+   src/LLVMBackend/CompileExpressions.cpp
+   src/LLVMBackend/CompileHighLevel.cpp
+   src/LLVMBackend/CompilerUtil.cpp
+   src/LLVMBackend/CompiledTypes.cpp
+   src/LLVMBackend/CompiledFunctions.cpp
+   src/LLVMBackend/CompilerContext.cpp
+   src/LLVMBackend/CRuntimeProcudures.cpp
+   
 
 )
 target_include_directories(${EXECUTABLE_NAME} PRIVATE src/include/)
