@@ -8,6 +8,8 @@
 #include <Frontend/Token.h>
 #include <Frontend/Ast.h>
 #include <backend/CompilerUtil.h>
+#include <backend/Compiled_Functions.h>
+
 // #include "compiler_visitors.h"
 
 #ifndef OPTIONAL_TYPE_H
@@ -33,7 +35,6 @@ public:
 
 #ifndef CONTEXT_H
 #define CONTEXT_H
-class Compiled_Function;
 class CompilerContext
 {
 public:
@@ -65,51 +66,5 @@ public:
     Function get_current_function();
     Function set_current_function();
     void set_params(llvm::StructType *params);
-};
-#endif
-
-#ifndef COMPILED_FUNCTION2_H
-#define COMPILED_FUNCTION2_H
-
-class Compiled_Function
-{
-public:
-    Compiled_Function();
-    virtual std::shared_ptr<Type> get_ret_type() = 0;
-    virtual ValueStruct compile(CompilerContext ctx, llvm::BasicBlock *block, llvm::Module &module,
-                                llvm::IRBuilder<> &builder,
-                                llvm::LLVMContext &context) = 0;
-};
-#endif
-
-#ifndef FUNCTION_H
-#define FUNCTION_H
-
-class DefinedFunction : public Compiled_Function
-{
-public:
-    Function function;
-    DefinedFunction();
-    DefinedFunction(Function function);
-    std::shared_ptr<Type> get_ret_type() override;
-    ValueStruct compile(CompilerContext ctx, llvm::BasicBlock *block, llvm::Module &module,
-                        llvm::IRBuilder<> &builder,
-                        llvm::LLVMContext &context) override;
-};
-#endif
-
-#ifndef Param_Function_H
-#define Param_Function_H
-
-class ParamFunction : public Compiled_Function
-{
-public:
-    Thunks thunk;
-    ParamFunction();
-    ParamFunction(Thunks thunk);
-    std::shared_ptr<Type> get_ret_type() override;
-    ValueStruct compile(CompilerContext ctx, llvm::BasicBlock *block, llvm::Module &module,
-                        llvm::IRBuilder<> &builder,
-                        llvm::LLVMContext &context) override;
 };
 #endif

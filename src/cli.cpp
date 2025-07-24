@@ -92,9 +92,10 @@ Output parse_cmd(std::vector<std::string> args)
     {
         if (!current.has_value() && args[i].size() < 2)
         {
-            std::cout << "hazelc: arguement has to little characters to count as an option (they must be atleast 2 characters in length)" << std::endl;
+            error("arguement has to little characters to count as an option (they must be atleast 2 characters in length)");
+            // std::cout << "hazelc: arguement has to little characters to count as an option (they must be atleast 2 characters in length)" << std::endl;
             // error("arguement has to little characters to count as an option (they must be atleast 2 characters in length)")
-            exit(EXIT_FAILURE);
+            // exit(EXIT_FAILURE);
         }
         if (args[i].at(0) == '-' && args[i].at(1) != '-')
         {

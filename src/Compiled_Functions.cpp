@@ -1,6 +1,8 @@
-#include <backend/compiler_visitors.h>
-#include <backend/CompilerUtil.h>
-
+#include <backend/Compiled_Functions.h>
+#include <backend/CompilerContext.h>
+Compiled_Function::Compiled_Function()
+{
+}
 DefinedFunction::DefinedFunction()
 {
 }
@@ -93,7 +95,4 @@ ValueStruct ParamFunction::compile(CompilerContext ctx, llvm::BasicBlock *block,
     // this->block = endTrue;
 
     return {endTrue, actualVal};
-}
-Compiled_Function::Compiled_Function()
-{
 }

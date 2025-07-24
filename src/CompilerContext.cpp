@@ -4,6 +4,7 @@
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/LLVMContext.h"
 #include <backend/CompilerContext.h>
+#include <backend/Compiled_Functions.h>
 
 CompilerContext::CompilerContext()
 {

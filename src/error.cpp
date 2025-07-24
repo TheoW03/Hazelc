@@ -14,10 +14,10 @@ void error(std::string message, NodeLocation error_token)
 }
 void error(std::string message)
 {
-    std::cout << "\033[31mhazelc: : " << "unknown option \"" << message << " run -h or --help for a list of commands" << "\033[30m" << std::endl;
+    std::cout << "\033[31mhazelc: " << "unknown option \"" << message << " run -h or --help for a list of commands" << "\033[30m" << std::endl;
     exit(EXIT_FAILURE);
 }
 void status(std::string message)
 {
-    std::cout << "hazelc: " << message << std::endl;
+    std::cout << "\033[31mhazelc: " << message << "\033[30m" << std::endl;
 }

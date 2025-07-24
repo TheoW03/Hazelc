@@ -1,6 +1,7 @@
 #include <backend/compiler_visitors.h>
 #include <backend/CompilerUtil.h>
 #include <backend/CompilerContext.h>
+#include <backend/Compiled_Functions.h>
 
 // This compiles expresssions
 // it doesnt use the visitor pattern as thats cursed so

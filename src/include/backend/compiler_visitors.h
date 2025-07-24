@@ -2,9 +2,9 @@
 #include <visitor.h>
 #include "llvm/IR/Module.h"
 #include "llvm/IR/IRBuilder.h"
-#include <backend/Scope.h>
 #include <backend/CompilerContext.h>
 #include <backend/CompilerUtil.h>
+#include <backend/Compiled_Functions.h>
 
 #ifndef COMPILER_H
 #define COMPILER_H
@@ -29,20 +29,16 @@ public:
     CompileHighLevel(llvm::Module &module, llvm::IRBuilder<> &builder, llvm::LLVMContext &context);
     void Visit(ASTNode *node) override;
     void Visit(FunctionNode *node) override;
-    // void Visit(ModuleNode *node) override;
-    void Visit(BranchNode *node) override;
-    void Visit(ConditionalNode *node) override;
-    void Visit(ReturnNode *node) override;
-    void Visit(FunctionCallNode *node) override;
-    // void Visit(ProgramNode *node) override;
+    // void Visit(BranchNode *node) override;
+    // void Visit(ConditionalNode *node) override;
+    // void Visit(ReturnNode *node) override;
+    // void Visit(FunctionCallNode *node) override;
     void Visit(DemoduarlizedProgramNode *node) override;
 
-    void Visit(ExprNode *node) override;
-    void Visit(BlockNode *node) override;
+    // void Visit(ExprNode *node) override;
+    // void Visit(BlockNode *node) override;
 
     Function CompileFunctionHeader(std::shared_ptr<FunctionRefNode> n);
-    // std::shared_ptr<Compiled_Function> CompileFunctionHeader(FunctionNode *n, bool is_anonymous);
-
     std::tuple<llvm::FunctionType *, std::vector<Thunks>> compile_Function_Type(std::shared_ptr<FunctionRefNode> n);
     Thunks get_thunk_types(std::shared_ptr<FunctionRefNode> n);
 };
@@ -58,7 +54,6 @@ private:
 
 public:
     llvm::Module &module;
-    CompiledModule current_module;
     CompilerContext compiler_context;
     llvm::IRBuilder<> &builder;
     llvm::LLVMContext &context;
