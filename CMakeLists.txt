@@ -43,7 +43,9 @@ add_llvm_executable(${EXECUTABLE_NAME}
    src/IntermediatePasses/DeadCodeElim.cpp
    src/IntermediatePasses/TypeChecker.cpp
    src/IntermediatePasses/DemodularizationPass.cpp
+   src/IntermediatePasses/RecursiveImports.cpp
 
+   
    src/LLVMBackend/Compiler.cpp
    src/LLVMBackend/CompileStatement.cpp
    src/LLVMBackend/CompileExpressions.cpp
