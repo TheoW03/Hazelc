@@ -1,5 +1,9 @@
 #include <backend/Compiled_Functions.h>
 #include <backend/CompilerContext.h>
+
+// They are 3 types of functions
+// - parameters which are Memoized and are lazy eval. we must handle them differenltly
+// - normal function. we cann call how we call a function typically
 Compiled_Function::Compiled_Function()
 {
 }
@@ -27,15 +31,14 @@ ValueStruct DefinedFunction::compile(CompilerContext ctx, llvm::BasicBlock *bloc
     auto p_size = datalayout.getTypeAllocSize(ctx.params);
     for (int i = 0; i < this->function.thunks.size(); i++)
     {
-        auto destField0ptr = builder.CreateStructGEP(ctx.params, param_ptr, this->function.thunks[i].gep_loc, "destStructPtrF0");
-        auto isComputed = builder.CreateStructGEP(this->function.thunks[i].thunk_type, destField0ptr, 2, "isComputed");
+        auto functionParam = builder.CreateStructGEP(ctx.params, param_ptr, this->function.thunks[i].gep_loc, "destStructPtrF0");
+        auto isComputed = builder.CreateStructGEP(this->function.thunks[i].thunk_type, functionParam, 2, "isComputed");
         builder.CreateStore(builder.getInt1(0), isComputed);
-        auto params = builder.CreateStructGEP(this->function.thunks[i].thunk_type, destField0ptr, 3, "params");
+        auto params = builder.CreateStructGEP(this->function.thunks[i].thunk_type, functionParam, 3, "params");
 
         auto dest = builder.CreateCall(ctx.CProcedures.malloc, {builder.getInt64(p_size)});
-
         builder.CreateCall(ctx.CProcedures.memcpy, {dest, param_ptr, builder.getInt64(p_size), builder.getInt1(0)});
-        builder.CreateCall(ctx.CProcedures.memcpy, {params, dest, builder.getInt64(p_size), builder.getInt1(0)});
+        builder.CreateStore(dest, params);
     }
 
     auto function_call = builder.CreateCall(this->function.function, {param_ptr, retTy});
@@ -68,8 +71,7 @@ ValueStruct ParamFunction::compile(CompilerContext ctx, llvm::BasicBlock *block,
     auto functionPtr = builder.CreateLoad(functionPtrField->getType(), functionPtrField, "loadedFuncPtr");
     llvm::BasicBlock *ifTrue = llvm::BasicBlock::Create(context, "if.value.exists", ctx.get_current_function().function);
     llvm::BasicBlock *endTrue = llvm::BasicBlock::Create(context, "end.value.exists", ctx.get_current_function().function);
-    auto cond = builder.CreateICmp(llvm::ICmpInst::ICMP_EQ, builder.CreateLoad(builder.getInt1Ty(), isComputed), builder.getInt1(1));
-    // builder.CreateCondBr(BoolIntMathExpr(builder.CreateLoad(builder.getInt1Ty(), isComputed), {"", TokenType::EQ}, builder.getInt1(1)), ifTrue, endTrue);
+    auto cond = builder.CreateICmp(llvm::ICmpInst::ICMP_EQ, builder.CreateLoad(builder.getInt1Ty(), isComputed), builder.getInt1(0));
     builder.CreateCondBr(cond, ifTrue, endTrue);
     builder.SetInsertPoint(ifTrue);
     OptionalType retType = ctx.get_type(thunk.ret_type);
@@ -91,8 +93,5 @@ ValueStruct ParamFunction::compile(CompilerContext ctx, llvm::BasicBlock *block,
 
     builder.CreateBr(endTrue);
     builder.SetInsertPoint(endTrue);
-    // builder.CreateCall(a.type, functionPtr, {param_ptr, retTy});
-    // this->block = endTrue;
-
     return {endTrue, actualVal};
 }

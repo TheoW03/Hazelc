@@ -17,11 +17,10 @@ CompileExpr::CompileExpr(llvm::Module &module,
 {
     this->compiler_context = compiler_context;
     this->block = block;
-    // this->params = params;
-
-    // this->func_map = func_map;
 }
+
 llvm::Value *CompileExpr::CompileStr(llvm::Value *str, llvm::Value *length, llvm::Value *structure)
+
 {
 
     // strings are strcutures
@@ -70,34 +69,27 @@ llvm::Value *CompileExpr::IntMathExpression(llvm::Value *lhs, Tokens op, llvm::V
     }
     return nullptr;
 }
-llvm::Value *CompileExpr::IntegerMath(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
-{
-    auto integer_type = compiler_context.get_integer_type();
-    // auto lhs_val = builder.CreateLoad(builder.getInt64Ty(), builder.CreateStructGEP(integer_type.type, lhs, 0, "int_lhs"));
-    // auto rhs_val = builder.CreateLoad(builder.getInt64Ty(), builder.CreateStructGEP(integer_type.type, rhs, 0, "int_rhs"));
-    auto lhs_val = integer_type.get_inner_value(builder, lhs, true);
-    auto rhs_val = integer_type.get_inner_value(builder, rhs, true);
+// llvm::Value *CompileExpr::IntegerMath(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
+// {
+//     auto integer_type = compiler_context.get_integer_type();
+//     auto lhs_val = integer_type.get_inner_value(builder, lhs, true);
+//     auto rhs_val = integer_type.get_inner_value(builder, rhs, true);
+//     auto math = IntMathExpression(lhs_val, op, rhs_val);
+//     // builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: %d \n"),
+//     //    math});
+//     return integer_type.set_loaded_value(math, builder);
+// }
+// llvm::Value *CompileExpr::FloatMath(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
+// {
 
-    // builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: %d \n"),
-    //    rhs_val});
+//     auto float_type = compiler_context.get_float_type();
 
-    // builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: %d \n"),
-    //    lhs_val});
-    auto math = IntMathExpression(lhs_val, op, rhs_val);
-    // builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: %d \n"),
-    //    math});
-    return integer_type.set_loaded_value(math, builder);
-}
-llvm::Value *CompileExpr::FloatMath(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
-{
+//     auto lhs_val = float_type.get_inner_value(builder, lhs, true);
+//     auto rhs_val = float_type.get_inner_value(builder, rhs, true);
+//     auto math = FloatMathExpression(lhs_val, op, rhs_val);
+//     return float_type.set_loaded_value(math, builder);
+// }
 
-    auto float_type = compiler_context.get_float_type();
-
-    auto lhs_val = float_type.get_inner_value(builder, lhs, true);
-    auto rhs_val = float_type.get_inner_value(builder, rhs, true);
-    auto math = FloatMathExpression(lhs_val, op, rhs_val);
-    return float_type.set_loaded_value(math, builder);
-}
 llvm::Value *CompileExpr::StringMath(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
 {
 
@@ -159,7 +151,14 @@ llvm::Value *CompileExpr::StringBoolMath(llvm::Value *lhs, Tokens op, llvm::Valu
     }
     return nullptr;
 }
+llvm::Value *CompileExpr::MathExpr(llvm::Value *lhs, Tokens op, llvm::Value *rhs, std::function<llvm::Value *(llvm::Value *, Tokens, llvm::Value *)> solve, OptionalType type)
+{
 
+    auto lhs_val = type.get_inner_value(builder, lhs, true);
+    auto rhs_val = type.get_inner_value(builder, rhs, true);
+    auto math = solve(lhs_val, op, rhs_val);
+    return type.set_loaded_value(math, builder);
+}
 llvm::Value *CompileExpr::IntegerBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
 {
     auto integer_type = compiler_context.get_integer_type();
@@ -652,13 +651,17 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         switch (get_type)
         {
         case Integer_Type:
-            return {this->block, IntegerMath(lhs.value, c->operation, rhs.value)};
+            return {
+                this->block, MathExpr(lhs.value, c->operation, rhs.value, [&](llvm::Value *lhs, Tokens op, llvm::Value *rhs)
+                                      { return this->IntMathExpression(lhs, op, rhs); }, compiler_context.get_integer_type())};
         case Float_Type:
-            return {this->block, FloatMath(lhs.value, c->operation, rhs.value)};
+            return {this->block, MathExpr(lhs.value, c->operation, rhs.value, [&](llvm::Value *lhs, Tokens op, llvm::Value *rhs)
+                                          { return this->FloatMathExpression(lhs, op, rhs); }, compiler_context.get_float_type())};
         case String_Type:
             return {this->block, StringMath(lhs.value, c->operation, rhs.value)};
         case Boolean_Type:
-            return {this->block, BoolBool(lhs.value, c->operation, rhs.value)};
+            return {this->block, MathExpr(lhs.value, c->operation, rhs.value, [&](llvm::Value *lhs, Tokens op, llvm::Value *rhs)
+                                          { return this->BoolIntMathExpr(lhs, op, rhs); }, compiler_context.get_boolean_type())};
         case None_Type:
             std::cout << "none" << std::endl;
             break;

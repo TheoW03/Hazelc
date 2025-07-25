@@ -79,15 +79,18 @@ enum TypeOfExpr
 };
 
 #endif
+using MathFunc = llvm::Value *(*)(llvm::Value *, Tokens, llvm::Value *);
 
 #ifndef COMPILE_EXPR_H
 #define COMPILE_EXPR_H
 class CompileExpr
 {
 private:
+    llvm::Value *MathExpr(llvm::Value *lhs, Tokens op, llvm::Value *rhs, std::function<llvm::Value *(llvm::Value *, Tokens, llvm::Value *)> solve, OptionalType type);
+
     llvm::Value *CompileStr(llvm::Value *str, llvm::Value *length, llvm::Value *structure);
-    llvm::Value *IntegerMath(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
-    llvm::Value *FloatMath(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
+    // llvm::Value *IntegerMath(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
+    // llvm::Value *FloatMath(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
     llvm::Value *StringMath(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
     llvm::Value *StringBoolMath(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
 
