@@ -8,7 +8,7 @@ SemanticLocalScopeVisitor::SemanticLocalScopeVisitor(std::map<std::string, Seman
 
 // these find functions, optional so we can do more stuff with them
 
-std::optional<bool> SemanticLocalScopeVisitor::find_function_global(Tokens name)
+bool SemanticLocalScopeVisitor::find_function_global(Tokens name)
 {
     auto global_functions = this->current_AST_module.functions;
     if (global_functions.find(name.value) != global_functions.end())
@@ -30,7 +30,7 @@ std::optional<bool> SemanticLocalScopeVisitor::find_function_global(Tokens name)
     return {};
 }
 
-std::optional<bool> SemanticLocalScopeVisitor::find_function_local(Tokens name)
+bool SemanticLocalScopeVisitor::find_function_local(Tokens name)
 {
     for (int i = 0; i < scope.size(); i++)
     {
@@ -58,10 +58,6 @@ std::optional<std::shared_ptr<FunctionRefNode>> SemanticLocalScopeVisitor::get_g
     auto global_functions = this->current_AST_module.functions;
     if (global_functions.find(name.value) != global_functions.end())
     {
-        // FastLookup f = {
-        // current_AST_module.name,
-        // name};
-        // return f;
         return global_functions[name.value];
     }
     else
@@ -89,21 +85,21 @@ std::optional<std::shared_ptr<FunctionRefNode>> SemanticLocalScopeVisitor::get_f
     {
         return function_local;
     }
-    return {}; // return std::optional<int>();
+    return {};
 }
-std::optional<bool> SemanticLocalScopeVisitor::find_function(Tokens name)
+bool SemanticLocalScopeVisitor::find_function(Tokens name)
 {
     auto function_global = find_function_global(name);
-    if (function_global.has_value())
+    if (function_global)
     {
         return function_global;
     }
     auto function_local = find_function_local(name);
-    if (function_local.has_value())
+    if (function_local)
     {
         return function_local;
     }
-    return {}; // return std::optional<int>();
+    return false;
 }
 
 bool SemanticLocalScopeVisitor::function_is_param(Tokens name)
@@ -123,8 +119,8 @@ void SemanticLocalScopeVisitor::Visit(ASTNode *node)
 
 void SemanticLocalScopeVisitor::Visit(FunctionNode *node)
 {
-    if ((find_function_global(node->f->FunctionName).has_value() && scope.size() != 0) //
-        || find_function_local(node->f->FunctionName).has_value())
+    if ((find_function_global(node->f->FunctionName) && scope.size() != 0) //
+        || find_function_local(node->f->FunctionName))
     {
         // std::cout << "there is an already defined function \"" << node->f->FunctionName.value << "\"" << node->f->FunctionName.line_num << std::endl;
         // exit(EXIT_FAILURE);
@@ -168,7 +164,7 @@ void SemanticLocalScopeVisitor::Visit(ReturnNode *node)
 
 void SemanticLocalScopeVisitor::Visit(FunctionCallNode *node)
 {
-    if (!this->find_function(node->name).has_value())
+    if (!this->find_function(node->name))
     {
         error("undefined function call," + node->name.value, node->name);
     }

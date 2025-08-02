@@ -92,7 +92,7 @@ void CompileStatement::Visit(ReturnNode *node)
         // llvm::Value *optionalStructField1 = builder.CreateStructGEP(ty.get_type(), ret_ptr, 1, "OptionalStructPtr1");
 
         // Copy the value (i.e., the %string) into the OptionalType.6's first field
-        // builder.CreateStore(value.value, optionalStructField0);
+        // builder.CreateStore(value.value, optionalStructField0);xz
 
         // Set the "isNone" boolean to false
         // auto isNone = llvm::ConstantInt::get(builder.getInt1Ty(), 0);
