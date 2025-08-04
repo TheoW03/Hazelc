@@ -12,6 +12,7 @@
 #include <filesystem>
 #include <Frontend/SemanticCheckScopes.h>
 #include <optimization/ConstantFolding.h>
+#include <optimization/InliningFunctions.h>
 
 void get_files(std::ifstream &file, std::vector<std::string> &lines)
 {
@@ -138,6 +139,7 @@ void runPasses(std::shared_ptr<ProgramNode> node, Output cli)
         demoddlarize = std::make_shared<DemodularizedVisitor>(IntermediateScope(semantic->modules));
         node->Accept(demoddlarize.get());
     }
+    demoddlarize->program.Accept(std::make_shared<InlineTopLevelVisitor>().get());
 
     InitCompiler(cli, std::make_shared<DemoduarlizedProgramNode>(demoddlarize->program));
 }
