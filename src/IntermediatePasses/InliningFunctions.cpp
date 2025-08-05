@@ -26,15 +26,19 @@ void InlineTopLevelVisitor::Visit(DemoduarlizedProgramNode *node)
     for (const auto &pair : node->global_functions)
     {
         auto function = pair.second;
-        if (check_ret(function->stmnts->exit->Expr) && function->hash_name.has_value())
+        if (check_ret(function->stmnts->exit->Expr))
         {
             this->functions.insert(std::make_pair(function->hash_name.value(), function->stmnts->exit));
         }
     }
     for (int i = 0; i < node->functions.size(); i++)
     {
-        node->functions[i]->Accept(this);
+        if (node->functions[i]->anonyomous || node->functions[i]->hash_name.has_value())
+        {
+            node->functions[i]->Accept(this);
+        }
     }
+    std::cout << "hazelc: Inling Functions" << std::endl;
 }
 
 void InlineTopLevelVisitor::Visit(FunctionNode *node)

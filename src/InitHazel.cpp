@@ -129,7 +129,6 @@ void runPasses(std::shared_ptr<ProgramNode> node, Output cli)
     node->Accept(demoddlarize.get());
     auto typechecker = std::make_shared<TypeCheckerVistor>(IntermediateScope(demoddlarize->program.global_functions));
     demoddlarize->program.Accept(typechecker.get());
-    demoddlarize->program.Accept(std::make_shared<ConstantFoldingVisitor>().get());
     auto mainModule = node->getMainModule();
 
     if (mainModule.has_value())
@@ -139,6 +138,8 @@ void runPasses(std::shared_ptr<ProgramNode> node, Output cli)
         demoddlarize = std::make_shared<DemodularizedVisitor>(IntermediateScope(semantic->modules));
         node->Accept(demoddlarize.get());
     }
+    demoddlarize->program.Accept(std::make_shared<ConstantFoldingVisitor>().get());
+
     demoddlarize->program.Accept(std::make_shared<InlineTopLevelVisitor>().get());
     demoddlarize->program.Accept(std::make_shared<ConstantFoldingVisitor>().get());
 
