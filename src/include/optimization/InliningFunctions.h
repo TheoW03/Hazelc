@@ -11,6 +11,7 @@ private:
 public:
     void Visit(DemoduarlizedProgramNode *node) override;
     void Visit(FunctionNode *node) override;
+    std::shared_ptr<ReturnNode> getFunction(std::shared_ptr<ASTNode>);
 
     std::shared_ptr<ASTNode> substitute(std::shared_ptr<ASTNode>);
 };

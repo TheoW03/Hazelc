@@ -23,19 +23,17 @@ bool check_ret(std::shared_ptr<ASTNode> node)
 
 void InlineTopLevelVisitor::Visit(DemoduarlizedProgramNode *node)
 {
-    auto functions = node->functions;
-    for (int i = 0; i < functions.size(); i++)
+    for (const auto &pair : node->global_functions)
     {
-        auto function = functions[i];
+        auto function = pair.second;
         if (check_ret(function->stmnts->exit->Expr) && function->hash_name.has_value())
         {
             this->functions.insert(std::make_pair(function->hash_name.value(), function->stmnts->exit));
         }
     }
-    for (int i = 0; i < functions.size(); i++)
+    for (int i = 0; i < node->functions.size(); i++)
     {
-        auto function = functions[i];
-        function->Accept(this);
+        node->functions[i]->Accept(this);
     }
 }
 
@@ -52,8 +50,29 @@ void InlineTopLevelVisitor::Visit(FunctionNode *node)
             this->functions.insert(std::make_pair(node->f->FunctionName.value, node->stmnts->exit));
         }
     }
+    for (int i = 0; i < node->stmnts->functions.size(); i++)
+    {
+        node->stmnts->functions[i]->Accept(this);
+    }
+    node->stmnts->exit->Expr = substitute(node->stmnts->exit->Expr);
 }
 
 std::shared_ptr<ASTNode> InlineTopLevelVisitor::substitute(std::shared_ptr<ASTNode> node)
 {
+    if (dynamic_cast<FunctionCallNode *>(node.get()))
+    {
+        auto c = dynamic_cast<FunctionCallNode *>(node.get());
+        if (this->functions.find(c->hash_name.value_or(c->name.value)) != functions.end())
+        {
+            return this->functions[c->hash_name.value_or(c->name.value)]->Expr;
+        }
+    }
+    if (dynamic_cast<ExprNode *>(node.get()))
+    {
+        auto c = dynamic_cast<ExprNode *>(node.get());
+        c->lhs = substitute(c->lhs);
+        c->rhs = substitute(c->rhs);
+        return std::make_shared<ExprNode>(c->lhs, c->operation, c->rhs);
+    }
+    return node;
 }
