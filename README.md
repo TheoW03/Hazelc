@@ -55,7 +55,7 @@ This a list of features I have implemented in the compiler
 - [ ] Function Types
 - [x] None
 
-## Operarors
+## Operators
 
 - [x] Basic Math Operators
 - [x] Boolean operators
