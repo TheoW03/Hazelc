@@ -43,24 +43,40 @@ void InlineTopLevelVisitor::Visit(DemoduarlizedProgramNode *node)
 
 void InlineTopLevelVisitor::Visit(FunctionNode *node)
 {
+    auto name = node->f->FunctionName;
     if (!node->hash_name.has_value() && check_ret(node->stmnts->exit->Expr))
     {
-        if (this->functions.find(node->f->FunctionName.value) != this->functions.end())
+        if (this->functions.find(name.value) != this->functions.end())
         {
-            this->functions[node->f->FunctionName.value] = node->stmnts->exit;
+            this->functions[name.value] = node->stmnts->exit;
         }
         else
         {
             this->functions.insert(std::make_pair(node->f->FunctionName.value, node->stmnts->exit));
         }
     }
-    for (int i = 0; i < node->stmnts->functions.size(); i++)
-    {
-        node->stmnts->functions[i]->Accept(this);
-    }
-    node->stmnts->exit->Expr = substitute(node->stmnts->exit->Expr);
+    node->stmnts->Accept(this);
 }
 
+void InlineTopLevelVisitor::Visit(ConditionalNode *node)
+{
+    for (int i = 0; i < node->branches.size(); i++)
+    {
+        node->branches[i]->condition = substitute(node->branches[i]->condition);
+
+        node->branches[i]->stmnts->Accept(this);
+    }
+}
+
+void InlineTopLevelVisitor::Visit(BlockNode *node)
+{
+    for (int i = 0; i < node->functions.size(); i++)
+    {
+        node->functions[i]->Accept(this);
+    }
+    node->exit->Expr->Accept(this);
+    node->exit->Expr = substitute(node->exit->Expr);
+}
 std::shared_ptr<ASTNode> InlineTopLevelVisitor::substitute(std::shared_ptr<ASTNode> node)
 {
     if (dynamic_cast<FunctionCallNode *>(node.get()))
@@ -77,6 +93,13 @@ std::shared_ptr<ASTNode> InlineTopLevelVisitor::substitute(std::shared_ptr<ASTNo
         c->lhs = substitute(c->lhs);
         c->rhs = substitute(c->rhs);
         return std::make_shared<ExprNode>(c->lhs, c->operation, c->rhs);
+    }
+    if (dynamic_cast<BooleanExprNode *>(node.get()))
+    {
+        auto c = dynamic_cast<BooleanExprNode *>(node.get());
+        c->lhs = substitute(c->lhs);
+        c->rhs = substitute(c->rhs);
+        return std::make_shared<BooleanExprNode>(c->lhs, c->op, c->rhs);
     }
     return node;
 }
