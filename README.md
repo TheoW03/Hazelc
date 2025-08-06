@@ -58,11 +58,11 @@ This a list of features I have implemented in the compiler
 ## Operators
 
 - [x] Basic Math Operators
-- [x] Boolean operators
-- [ ] String operators(concation done, Substring and charat needs some work)
-- [x] Bitwise operators
-- [ ] list operators
-- [ ] unary operators
+- [x] Boolean Operators
+- [ ] String Operators(concation done, Substring and charat needs some work)
+- [x] Bitwise Operators
+- [ ] List Operators
+- [ ] Unary Operators
 
 
 
