@@ -59,6 +59,7 @@ enum TokenType
     Concation,
     Index_In,
     Instance_Function,
+    Xor
 
 };
 #endif

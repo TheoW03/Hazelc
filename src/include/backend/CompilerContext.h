@@ -39,11 +39,10 @@ class CompilerContext
 {
 public:
     std::map<std::string, std::shared_ptr<Compiled_Function>> global_functions;
-    std::map<std::string, std::shared_ptr<Compiled_Function>> local_functions;
     llvm::StructType *params;
+    std::map<TokenType, OptionalType> NativeTypes;
 
     std::stack<Function> functions;
-    std::map<TokenType, OptionalType> NativeTypes;
     CRunTimeFunctions CProcedures;
     Function current_function;
     std::vector<llvm::StructType *> lists;

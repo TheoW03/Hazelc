@@ -170,23 +170,23 @@ std::optional<std::shared_ptr<Compiled_Function>> CompilerContext::get_function(
     {
         return this->global_functions[node->hash_name.value()];
     }
-    if (this->local_functions.find(node->name.value) != this->local_functions.end())
+    if (this->global_functions.find(node->name.value) != this->global_functions.end())
     {
-        return this->local_functions[node->name.value];
+        return this->global_functions[node->name.value];
     }
     return {};
 }
 
 std::optional<int> CompilerContext::addLocal(Tokens name, std::shared_ptr<Compiled_Function> function)
 {
-    if (this->local_functions.find(name.value) != this->local_functions.end())
+    if (this->global_functions.find(name.value) != this->global_functions.end())
     {
-        local_functions[name.value] = function;
+        global_functions[name.value] = function;
         return {};
     }
     else
     {
-        local_functions.insert(std::make_pair(name.value, function));
+        global_functions.insert(std::make_pair(name.value, function));
         return 1;
     }
 }
