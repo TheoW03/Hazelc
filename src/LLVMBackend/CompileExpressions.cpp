@@ -69,26 +69,6 @@ llvm::Value *CompileExpr::IntMathExpression(llvm::Value *lhs, Tokens op, llvm::V
     }
     return nullptr;
 }
-// llvm::Value *CompileExpr::IntegerMath(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
-// {
-//     auto integer_type = compiler_context.get_integer_type();
-//     auto lhs_val = integer_type.get_inner_value(builder, lhs, true);
-//     auto rhs_val = integer_type.get_inner_value(builder, rhs, true);
-//     auto math = IntMathExpression(lhs_val, op, rhs_val);
-//     // builder.CreateCall(compiler_context.CFunctions["printf"], {builder.CreateGlobalString("[HAZELC DEBUG]: %d \n"),
-//     //    math});
-//     return integer_type.set_loaded_value(math, builder);
-// }
-// llvm::Value *CompileExpr::FloatMath(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
-// {
-
-//     auto float_type = compiler_context.get_float_type();
-
-//     auto lhs_val = float_type.get_inner_value(builder, lhs, true);
-//     auto rhs_val = float_type.get_inner_value(builder, rhs, true);
-//     auto math = FloatMathExpression(lhs_val, op, rhs_val);
-//     return float_type.set_loaded_value(math, builder);
-// }
 
 llvm::Value *CompileExpr::StringMath(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
 {
