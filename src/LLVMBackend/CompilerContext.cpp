@@ -199,7 +199,7 @@ Function CompilerContext::get_current_function()
 
 Function CompilerContext::set_current_function()
 {
-    this->current_function = this->functions.top();
+    this->current_function = this->functions.front();
     this->functions.pop();
     return this->current_function;
 }

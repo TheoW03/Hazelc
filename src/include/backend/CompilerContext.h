@@ -42,7 +42,7 @@ public:
     llvm::StructType *params;
     std::map<TokenType, OptionalType> NativeTypes;
 
-    std::stack<Function> functions;
+    std::queue<Function> functions;
     CRunTimeFunctions CProcedures;
     Function current_function;
     std::vector<llvm::StructType *> lists;
