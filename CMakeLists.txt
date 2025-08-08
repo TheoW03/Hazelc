@@ -55,7 +55,7 @@ add_llvm_executable(${EXECUTABLE_NAME}
    src/LLVMBackend/CompiledTypes.cpp
    src/LLVMBackend/CompiledFunctions.cpp
    src/LLVMBackend/CompilerContext.cpp
-   src/LLVMBackend/CRuntimeProcudures.cpp
+   src/LLVMBackend/CRuntimeProcedures.cpp
    
 
 )
