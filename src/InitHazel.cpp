@@ -141,12 +141,12 @@ void runPasses(std::shared_ptr<ProgramNode> node, Output cli)
     }
     demoddlarize->program.Accept(std::make_shared<ConstantFoldingVisitor>().get());
 
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 1; i++)
     {
 
-        demoddlarize->program.Accept(std::make_shared<InlineTopLevelVisitor>().get());
-        demoddlarize->program.Accept(std::make_shared<DeadCode>().get());
-        demoddlarize->program.Accept(std::make_shared<ConstantFoldingVisitor>().get());
+        // demoddlarize->program.Accept(std::make_shared<InlineTopLevelVisitor>().get());
+        // demoddlarize->program.Accept(std::make_shared<DeadCode>().get());
+        // demoddlarize->program.Accept(std::make_shared<ConstantFoldingVisitor>().get());
     }
 
     InitCompiler(cli, std::make_shared<DemoduarlizedProgramNode>(demoddlarize->program));

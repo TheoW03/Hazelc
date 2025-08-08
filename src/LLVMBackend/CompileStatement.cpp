@@ -47,10 +47,13 @@ void CompileStatement::Visit(DemoduarlizedProgramNode *node)
 
     auto functions = node->functions;
     std::reverse(functions.begin(), functions.end());
+
     for (int i = 0; i < node->functions.size(); i++)
     {
+        std::cout << functions[i]->f->FunctionName.value << std::endl;
         functions[i]->Accept(this);
     }
+    // exit(EXIT_FAILURE);
     std::cout << "hazelc: Compiled Expressions" << std::endl;
 }
 

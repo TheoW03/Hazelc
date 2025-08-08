@@ -166,6 +166,7 @@ void CompilerContext::add_function(FunctionNode *node, Function function)
 
 std::optional<std::shared_ptr<Compiled_Function>> CompilerContext::get_function(FunctionCallNode *node)
 {
+    std::cout << "lookup: " << node->name.value << std::endl;
     if (node->hash_name.has_value() && this->global_functions.find(node->hash_name.value()) != this->global_functions.end())
     {
         return this->global_functions[node->hash_name.value()];
