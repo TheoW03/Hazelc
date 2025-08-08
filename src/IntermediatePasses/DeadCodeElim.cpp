@@ -31,9 +31,16 @@ void DeadCode::Visit(DemoduarlizedProgramNode *node)
     {
         auto f = workList.top();
         workList.pop();
+        if (f->hash_name.has_value())
+        {
+
+            this->functions = node->global_functions;
+        }
         if (!isVisited(f))
         {
+
             f->Accept(this);
+
             functions_referenced.push_back(f);
             this->visited.insert(f->hash_name.value_or(f->f->FunctionName.value));
         }
@@ -84,6 +91,7 @@ void DeadCode::Visit(BlockNode *node)
             {
                 this->functions.insert(std::make_pair(name.value, node->functions[i]));
             }
+            this->visited.erase(name.value);
         }
     }
     node->exit->Accept(this);
