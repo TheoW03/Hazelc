@@ -40,7 +40,7 @@ add_llvm_executable(${EXECUTABLE_NAME}
    src/IntermediatePasses/SemanticGlobalScope.cpp
    src/IntermediatePasses/TreeShake.cpp
    src/IntermediatePasses/SemanticLocalScope.cpp
-   src/IntermediatePasses/DeadCodeElim.cpp
+   src/IntermediatePasses/DeadCodeElimination.cpp
    src/IntermediatePasses/TypeChecker.cpp
    src/IntermediatePasses/DemodularizationPass.cpp
    src/IntermediatePasses/RecursiveImports.cpp
