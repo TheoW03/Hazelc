@@ -140,7 +140,6 @@ void runPasses(std::shared_ptr<ProgramNode> node, Output cli)
         node->Accept(demoddlarize.get());
     }
     demoddlarize->program.Accept(std::make_shared<ConstantFoldingVisitor>().get());
-
     for (int i = 0; i < 3; i++)
     {
 
