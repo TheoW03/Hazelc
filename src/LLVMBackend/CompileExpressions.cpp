@@ -565,6 +565,7 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
     }
     else if (dynamic_cast<ConditionalNode *>(node.get()))
     {
+
         auto condition_stmnt = dynamic_cast<ConditionalNode *>(node.get());
         return CompileConditional(condition_stmnt);
     }

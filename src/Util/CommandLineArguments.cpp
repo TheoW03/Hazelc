@@ -87,7 +87,7 @@ Output parse_cmd(std::vector<std::string> args)
                                    {
                                        if (value == "none")
                                        {
-                                           o.optimze_level = OptimizeLevel::None;
+                                           o.optimze_level = OptimizeLevel::No_Optimize;
                                        }
                                        else if (value == "0")
                                        {

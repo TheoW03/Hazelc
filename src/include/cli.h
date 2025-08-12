@@ -15,7 +15,7 @@ struct Option
 #define OPTIMIZE_LEVEL_H
 enum OptimizeLevel
 {
-    None,
+    No_Optimize,
     level_0,
     level_1,
     level_2,
