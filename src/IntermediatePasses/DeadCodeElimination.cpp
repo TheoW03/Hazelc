@@ -81,22 +81,32 @@ void DeadCode::Visit(BlockNode *node)
     {
         auto name = node->functions[i]->f->FunctionName;
 
-        if (!node->functions[i]->hash_name.has_value())
+        if (this->functions.find(name.value) != this->functions.end())
         {
-            if (this->functions.find(name.value) != this->functions.end())
-            {
-                this->functions[name.value] = node->functions[i];
-            }
-            else
-            {
-                this->functions.insert(std::make_pair(name.value, node->functions[i]));
-            }
-            this->visited.erase(name.value);
+            this->functions[name.value] = node->functions[i];
         }
+        else
+        {
+            this->functions.insert(std::make_pair(name.value, node->functions[i]));
+        }
+        this->visited.erase(name.value);
     }
     node->exit->Accept(this);
 }
 
+void DeadCode::Visit(ConditionalNode *node)
+{
+    for (int i = 0; i < node->branches.size(); i++)
+    {
+        node->branches[i]->condition->Accept(this);
+        node->branches[i]->stmnts->Accept(this);
+    }
+}
+void DeadCode::Visit(BooleanExprNode *node)
+{
+    node->lhs->Accept(this);
+    node->rhs->Accept(this);
+}
 void DeadCode::Visit(ReturnNode *node)
 {
     node->Expr->Accept(this);

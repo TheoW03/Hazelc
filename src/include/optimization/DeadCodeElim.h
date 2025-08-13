@@ -27,6 +27,8 @@ public:
     void Visit(ExprNode *node) override;
     void Visit(FunctionCallNode *node) override;
     void Visit(BlockNode *node) override;
+    void Visit(ConditionalNode *node) override;
+    void Visit(BooleanExprNode *node) override;
 
     void Visit(ReturnNode *node) override;
 };
