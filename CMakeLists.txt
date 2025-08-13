@@ -44,6 +44,7 @@ add_llvm_executable(${EXECUTABLE_NAME}
    src/IntermediatePasses/TypeChecker.cpp
    src/IntermediatePasses/DemodularizationPass.cpp
    src/IntermediatePasses/RecursiveImports.cpp
+   src/IntermediatePasses/BranchSimplfy.cpp
    src/IntermediatePasses/InliningFunctions.cpp
 
    

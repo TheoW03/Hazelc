@@ -14,6 +14,7 @@
 #include <optimization/ConstantFolding.h>
 #include <optimization/InliningFunctions.h>
 #include <optimization/DeadCodeElim.h>
+#include <optimization/BranchSimplfy.h>
 
 void get_files(std::ifstream &file, std::vector<std::string> &lines)
 {
@@ -144,7 +145,10 @@ void runPasses(std::shared_ptr<ProgramNode> node, Output cli)
     {
 
         demoddlarize->program.Accept(std::make_shared<InlineFunctionsVisitor>().get());
+        demoddlarize->program.Accept(std::make_shared<BranchSimplfyVisitor>().get());
+
         demoddlarize->program.Accept(std::make_shared<DeadCode>().get());
+
         demoddlarize->program.Accept(std::make_shared<ConstantFoldingVisitor>().get());
     }
 
