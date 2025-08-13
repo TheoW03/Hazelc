@@ -122,15 +122,12 @@ void SemanticLocalScopeVisitor::Visit(FunctionNode *node)
     if ((find_function_global(node->f->FunctionName) && scope.size() != 0) //
         || find_function_local(node->f->FunctionName))
     {
-        // std::cout << "there is an already defined function \"" << node->f->FunctionName.value << "\"" << node->f->FunctionName.line_num << std::endl;
-        // exit(EXIT_FAILURE);
 
-        error("repeating function name, " + node->f->FunctionName.value, node->f->FunctionName);
+        error("function " + node->f->FunctionName.value + " is already defined", node->f->FunctionName);
     }
     if (scope.size() >= 1)
     {
         scope[scope.size() - 1].functions.insert(std::make_pair(node->f->FunctionName.value, (node->f)));
-        // scope[scope.size() - 1].functions.insert(node->f->FunctionName.value);
     }
     FunctionLocalScope f;
     scope.push_back(f);
@@ -141,11 +138,6 @@ void SemanticLocalScopeVisitor::Visit(FunctionNode *node)
         scope[scope.size() - 1].params.insert(std::make_pair(node->f->params[i]->FunctionName.value,
                                                              (node->f->params[i])));
     }
-
-    // for (int i = 0; i < node->stmnts.size(); i++)
-    // {
-    //     node->stmnts[i]->Accept(this);
-    // }
     node->stmnts->Accept(this);
     scope.erase(scope.end() - 1);
 }
@@ -166,7 +158,7 @@ void SemanticLocalScopeVisitor::Visit(FunctionCallNode *node)
 {
     if (!this->find_function(node->name))
     {
-        error("undefined function call," + node->name.value, node->name);
+        error("undefined function call \"" + node->name.value + "\"", node->name);
     }
     node->param = function_is_param(node->name);
     for (int i = 0; i < node->params.size(); i++)

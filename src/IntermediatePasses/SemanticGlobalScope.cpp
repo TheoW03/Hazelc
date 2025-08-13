@@ -49,24 +49,12 @@ void SemanticGlobalScopeVisitor::Visit(FunctionNode *node)
     }
     else
     {
-        error("repeating function name, " + node->f->FunctionName.value, node->f->FunctionName);
-        // std::cout << "repeating function name, \"" << node->f->FunctionName.value << "\"" << std::endl;
-        // exit(EXIT_FAILURE);
+        error("function " + node->f->FunctionName.value + " is already defined", node->f->FunctionName);
     }
     if (node->can_export)
     {
         this->exported_functions.insert(std::make_pair(node->f->FunctionName.value, (node->f)));
     }
-    // std::map<std::string, std::vector<SemanticFunction>> func;
-    // // SemanticFunction f = {no};
-    // std::vector<SemanticFunction> functions;
-    // functions.push_back(f);
-    // auto c = std::make_pair(node->f->FunctionName.value, functions);
-    // this->current_AST_module.functions.insert(c);
-    // if (node->can_export == true)
-    // {
-    //     this->current_AST_module.exported_functions.insert(c);
-    // }
 }
 
 void SemanticGlobalScopeVisitor::Visit(ModuleNode *node)
