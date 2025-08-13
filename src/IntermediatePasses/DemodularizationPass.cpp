@@ -28,9 +28,9 @@ void DemodularizedVisitor::Visit(ModuleNode *node)
                                       node->functions[i]->f->FunctionName)
                                .value(),
                            node->functions[i]));
-        this->program.functions.push_back(node->functions[i]);
 
         node->functions[i]->Accept(this);
+        this->program.functions.push_back(node->functions[i]);
     }
 }
 void DemodularizedVisitor::Visit(BooleanExprNode *node)
@@ -60,8 +60,8 @@ void DemodularizedVisitor::Visit(BlockNode *node)
 {
     for (int i = 0; i < node->functions.size(); i++)
     {
-        program.functions.push_back(node->functions[i]);
         node->functions[i]->Accept(this);
+        program.functions.push_back(node->functions[i]);
     }
     node->exit->Expr->Accept(this);
 }

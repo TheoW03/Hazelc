@@ -24,6 +24,8 @@ Output parse_cmd(std::vector<std::string> args)
     std::map<char, std::string> short_hand;
     short_hand['c'] = "object-file";
     short_hand['o'] = "output-file";
+    short_hand['O'] = "optimize";
+
     short_hand['v'] = "version";
     short_hand['h'] = "help";
 
@@ -81,8 +83,28 @@ Output parse_cmd(std::vector<std::string> args)
                                       o.gen_file = FileType::Ir_file;
                                   },
                                   "out puts an unoptimized llvm-ir file", 0};
-    option_handlers["optimize"] = {[](std::string &value, Output &o) {
-
+    option_handlers["optimize"] = {[](std::string &value, Output &o)
+                                   {
+                                       if (value == "none")
+                                       {
+                                           o.optimze_level = OptimizeLevel::No_Optimize;
+                                       }
+                                       else if (value == "0")
+                                       {
+                                           o.optimze_level = OptimizeLevel::level_0;
+                                       }
+                                       else if (value == "1")
+                                       {
+                                           o.optimze_level = OptimizeLevel::level_1;
+                                       }
+                                       else if (value == "2")
+                                       {
+                                           o.optimze_level = OptimizeLevel::level_2;
+                                       }
+                                       else
+                                       {
+                                           o.optimze_level = OptimizeLevel::level_3;
+                                       }
                                    },
                                    "optimization level 0 being the lowest 3 being the heighest", 0};
 

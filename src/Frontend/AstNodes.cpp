@@ -557,8 +557,19 @@ std::optional<std::shared_ptr<ModuleNode>> ProgramNode::getMainModule()
     }
     return {};
 }
-
-std::optional<std::shared_ptr<FunctionNode>> ProgramNode::getMainFunction()
+std::optional<std::shared_ptr<FunctionNode>> DemoduarlizedProgramNode::getMainFunction()
+{
+    for (int i = 0; i < this->functions.size(); i++)
+    {
+        if (this->functions[i]->f->FunctionName.value == "main")
+        {
+            return this->functions[i];
+        }
+    }
+    return {};
+}
+std::optional<std::shared_ptr<FunctionNode>>
+ProgramNode::getMainFunction()
 {
     for (const auto &[key, current_module] : this->avail_modules)
     {

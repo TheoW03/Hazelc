@@ -1,9 +1,13 @@
 #include <optimization/TreeShake.h>
 
-// this pass impls a "tree-shake" for modules only for functions the LLVM has to be the one todo this.
-// It goes through each module
-// creates a data strcuture of the modules that are used
-// its only implemented if the user doesnt link along with create an object file
+/*
+
+    this pass impls a "tree-shake" for modules only for functions the LLVM has to be the one todo this.
+    It goes through each module
+    creates a data strcuture of the modules that are used
+    its only implemented if the user doesnt link along with create an object file
+
+*/
 
 TreeShake::TreeShake() {}
 void TreeShake::Visit(ProgramNode *node)

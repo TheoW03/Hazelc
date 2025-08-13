@@ -21,7 +21,7 @@ bool check_ret(std::shared_ptr<ASTNode> node)
            || dynamic_cast<CharNode *>(node.get());   //
 }
 
-void InlineTopLevelVisitor::Visit(DemoduarlizedProgramNode *node)
+void InlineFunctionsVisitor::Visit(DemoduarlizedProgramNode *node)
 {
     for (const auto &pair : node->global_functions)
     {
@@ -41,7 +41,7 @@ void InlineTopLevelVisitor::Visit(DemoduarlizedProgramNode *node)
     std::cout << "hazelc: Inling Functions" << std::endl;
 }
 
-void InlineTopLevelVisitor::Visit(FunctionNode *node)
+void InlineFunctionsVisitor::Visit(FunctionNode *node)
 {
     auto name = node->f->FunctionName;
     if (!node->hash_name.has_value() && check_ret(node->stmnts->exit->Expr))
@@ -58,7 +58,7 @@ void InlineTopLevelVisitor::Visit(FunctionNode *node)
     node->stmnts->Accept(this);
 }
 
-void InlineTopLevelVisitor::Visit(ConditionalNode *node)
+void InlineFunctionsVisitor::Visit(ConditionalNode *node)
 {
     for (int i = 0; i < node->branches.size(); i++)
     {
@@ -68,7 +68,7 @@ void InlineTopLevelVisitor::Visit(ConditionalNode *node)
     }
 }
 
-void InlineTopLevelVisitor::Visit(BlockNode *node)
+void InlineFunctionsVisitor::Visit(BlockNode *node)
 {
     for (int i = 0; i < node->functions.size(); i++)
     {
@@ -77,7 +77,7 @@ void InlineTopLevelVisitor::Visit(BlockNode *node)
     node->exit->Expr->Accept(this);
     node->exit->Expr = substitute(node->exit->Expr);
 }
-std::shared_ptr<ASTNode> InlineTopLevelVisitor::substitute(std::shared_ptr<ASTNode> node)
+std::shared_ptr<ASTNode> InlineFunctionsVisitor::substitute(std::shared_ptr<ASTNode> node)
 {
     if (dynamic_cast<FunctionCallNode *>(node.get()))
     {

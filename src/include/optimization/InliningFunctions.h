@@ -3,7 +3,7 @@
 
 #ifndef INLINE_H
 #define INLINE_H
-class InlineTopLevelVisitor : public Visitor
+class InlineFunctionsVisitor : public Visitor
 {
 private:
     std::map<std::string, std::shared_ptr<ReturnNode>> functions;

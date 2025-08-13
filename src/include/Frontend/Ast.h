@@ -512,6 +512,7 @@ public:
 
     std::vector<std::shared_ptr<FunctionNode>> functions;
     DemoduarlizedProgramNode();
+    std::optional<std::shared_ptr<FunctionNode>> getMainFunction();
     void Accept(Visitor *v) override;
     std::string to_string() override;
 };

@@ -46,11 +46,15 @@ void CompileStatement::Visit(DemoduarlizedProgramNode *node)
 {
 
     auto functions = node->functions;
-    std::reverse(functions.begin(), functions.end());
+    // std::reverse(functions.begin(), functions.end());
+
     for (int i = 0; i < node->functions.size(); i++)
     {
+        // std::cout << "visited: " << functions[i]->f->FunctionName.value << std::endl;
+        // std::cout << "in stack: " << compiler_context.set_current_function().name.value << std::endl;
         functions[i]->Accept(this);
     }
+    // exit(EXIT_FAILURE);
     std::cout << "hazelc: Compiled Expressions" << std::endl;
 }
 

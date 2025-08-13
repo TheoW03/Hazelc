@@ -39,7 +39,6 @@ void InitCompiler(Output output, std::shared_ptr<DemoduarlizedProgramNode> node)
     CompileStatement *compile_statement = new CompileStatement(module, builder, context, compile_top->compiler_context, compile_top->params);
     node->Accept(compile_statement);
     std::cout << "" << std::endl;
-
     delete compile_top;
 
     // Initialize the target registry etc.llvm::InitializeAllTargets();

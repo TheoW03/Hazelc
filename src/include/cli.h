@@ -10,6 +10,19 @@ struct Option
 };
 
 #endif
+
+#ifndef OPTIMIZE_LEVEL_H
+#define OPTIMIZE_LEVEL_H
+enum OptimizeLevel
+{
+    No_Optimize,
+    level_0,
+    level_1,
+    level_2,
+    level_3,
+};
+#endif
+
 #ifndef FILE_TYPE_H
 #define FILE_TYPE_H
 enum FileType
@@ -28,6 +41,7 @@ struct Output
     std::vector<std::string> output_files;
     int print_llvm;
     int print_tokens;
+    OptimizeLevel optimze_level;
     FileType gen_file;
 };
 
