@@ -60,7 +60,9 @@ std::shared_ptr<ASTNode> BranchSimplfyVisitor::substitute(std::shared_ptr<ASTNod
         {
             if (dynamic_cast<BooleanConstNode *>(c->branches[i]->condition.get()))
             {
+
                 auto boolc = dynamic_cast<BooleanConstNode *>(c->branches[i]->condition.get());
+                c->branches[i]->stmnts->Accept(this);
                 if (boolc->val)
                 {
                     return c->branches[i]->stmnts->exit->Expr;
