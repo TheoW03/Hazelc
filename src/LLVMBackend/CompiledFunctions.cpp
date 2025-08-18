@@ -29,6 +29,8 @@ ValueStruct DefinedFunction::compile(CompilerContext &ctx, llvm::BasicBlock *blo
 
     llvm::DataLayout datalayout(&module);
     auto p_size = datalayout.getTypeAllocSize(ctx.params);
+    // std::cout << ctx. << std::endl;
+
     for (int i = 0; i < this->function.thunks.size(); i++)
     {
         auto functionParam = builder.CreateStructGEP(ctx.params, param_ptr, this->function.thunks[i].gep_loc, "destStructPtrF0");
@@ -37,7 +39,7 @@ ValueStruct DefinedFunction::compile(CompilerContext &ctx, llvm::BasicBlock *blo
         auto functionPtrField = builder.CreateStructGEP(this->function.thunks[i].thunk_type, functionParam, 1, "functionPtr");
         builder.CreateStore(builder.getInt1(0), isComputed);
         builder.CreateStore(ctx.function_params.front().function, functionPtrField);
-        // std::cout <<.name.value << std::endl;
+        // std::cout << "PARAM: " << ctx.function_params.front().name.value << std::endl;
         // std::cout << ""
         // auto dest = builder.CreateCall(ctx.CProcedures.malloc, {builder.getInt64(p_size)});
 

@@ -115,13 +115,13 @@ public:
     llvm::BasicBlock *block;
     // llvm::StructType *params;
     // std::map<std::string, Function> func_map;
-    CompilerContext compiler_context;
+    CompilerContext &compiler_context;
     llvm::IRBuilder<> &builder;
     llvm::LLVMContext &context;
     CompileExpr(llvm::Module &module,
                 llvm::IRBuilder<> &builder,
                 llvm::LLVMContext &context,
-                CompilerContext compiler_context, llvm::BasicBlock *block);
+                CompilerContext &compiler_context, llvm::BasicBlock *block);
     llvm::Value *IntMathExpression(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
     llvm::Value *FloatMathExpression(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
     llvm::Value *BoolIntMathExpr(llvm::Value *lhs, Tokens op, llvm::Value *rhs);

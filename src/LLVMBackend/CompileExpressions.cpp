@@ -10,10 +10,11 @@
 CompileExpr::CompileExpr(llvm::Module &module,
                          llvm::IRBuilder<> &builder,
                          llvm::LLVMContext &context,
-                         CompilerContext compiler_context,
+                         CompilerContext &compiler_context,
                          llvm::BasicBlock *block) : module(module),
                                                     builder(builder),
-                                                    context(context)
+                                                    context(context),
+                                                    compiler_context(compiler_context)
 {
     this->compiler_context = compiler_context;
     this->block = block;
@@ -613,7 +614,6 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
     else if (dynamic_cast<FunctionCallNode *>(node.get()))
     {
         auto c = dynamic_cast<FunctionCallNode *>(node.get());
-        std::cout << c->name.value << std::endl;
         auto func = compiler_context.get_function(c);
         auto value = func.value()->compile(compiler_context, block, module, builder, context);
         this->block = value.block;
