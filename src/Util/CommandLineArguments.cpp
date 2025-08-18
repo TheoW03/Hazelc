@@ -89,10 +89,6 @@ Output parse_cmd(std::vector<std::string> args)
                                        {
                                            o.optimze_level = OptimizeLevel::No_Optimize;
                                        }
-                                       else if (value == "0")
-                                       {
-                                           o.optimze_level = OptimizeLevel::level_0;
-                                       }
                                        else if (value == "1")
                                        {
                                            o.optimze_level = OptimizeLevel::level_1;
@@ -106,7 +102,7 @@ Output parse_cmd(std::vector<std::string> args)
                                            o.optimze_level = OptimizeLevel::level_3;
                                        }
                                    },
-                                   "optimization level 0 being the lowest 3 being the heighest", 0};
+                                   "optimization level 0 being the lowest 3 being the heighest", 1};
 
     // func_c(2017);
     std::optional<Parse_F> current;
