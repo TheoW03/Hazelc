@@ -202,7 +202,7 @@ std::optional<std::shared_ptr<ASTNode>> term(std::vector<Tokens> &tokens)
 std::optional<std::shared_ptr<ASTNode>> expression(std::vector<Tokens> &tokens)
 {
 
-    auto lhs = BoolExpr(tokens);
+    auto lhs = term(tokens);
     auto expression_tokens = {
         TokenType::Addition,
         TokenType::Subtraction,
@@ -218,7 +218,7 @@ std::optional<std::shared_ptr<ASTNode>> expression(std::vector<Tokens> &tokens)
     while (op.has_value())
     {
 
-        auto rhs = BoolExpr(tokens);
+        auto rhs = term(tokens);
         lhs = std::make_shared<ExprNode>(lhs.value(), op.value(), rhs.value());
         op = match_and_remove(expression_tokens, tokens);
     }
@@ -424,6 +424,8 @@ std::shared_ptr<ModuleNode> parse_module(std::vector<Tokens> &tokens)
         }
         else
         {
+            // print_tokens(tokens);
+
             error("invalid identifier", peek(tokens));
         }
     }

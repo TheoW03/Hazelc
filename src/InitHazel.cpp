@@ -68,6 +68,7 @@ std::vector<Tokens> lex_file(Output cli)
         }
     }
     tokens.push_back({"EOF", TokenType::EndOfFile});
+    std::cout << "hazelc: lexxed" << std::endl;
 
     return tokens;
 }
@@ -132,25 +133,27 @@ void runPasses(std::shared_ptr<ProgramNode> node, Output cli)
     auto typechecker = std::make_shared<TypeCheckerVistor>(IntermediateScope(demoddlarize->program.global_functions));
     demoddlarize->program.Accept(typechecker.get());
     auto mainModule = node->getMainModule();
-
-    if (mainModule.has_value())
-    {
-        std::shared_ptr<TreeShake> shake_imports = std::make_shared<TreeShake>();
-        node->Accept(shake_imports.get());
-        demoddlarize = std::make_shared<DemodularizedVisitor>(IntermediateScope(semantic->modules));
-        node->Accept(demoddlarize.get());
-    }
+    if (cli.optimze_level != OptimizeLevel::No_Optimize)
+        if (mainModule.has_value())
+        {
+            std::shared_ptr<TreeShake> shake_imports = std::make_shared<TreeShake>();
+            node->Accept(shake_imports.get());
+            demoddlarize = std::make_shared<DemodularizedVisitor>(IntermediateScope(semantic->modules));
+            node->Accept(demoddlarize.get());
+        }
     demoddlarize->program.Accept(std::make_shared<ConstantFoldingVisitor>().get());
-    for (int i = 0; i < 3; i++)
-    {
 
-        demoddlarize->program.Accept(std::make_shared<InlineFunctionsVisitor>().get());
-        demoddlarize->program.Accept(std::make_shared<BranchSimplfyVisitor>().get());
+    if (cli.optimze_level != OptimizeLevel::No_Optimize)
+        for (int i = 0; i < 3; i++)
+        {
 
-        demoddlarize->program.Accept(std::make_shared<DeadCode>().get());
+            demoddlarize->program.Accept(std::make_shared<InlineFunctionsVisitor>().get());
+            demoddlarize->program.Accept(std::make_shared<BranchSimplfyVisitor>().get());
 
-        demoddlarize->program.Accept(std::make_shared<ConstantFoldingVisitor>().get());
-    }
+            demoddlarize->program.Accept(std::make_shared<DeadCode>().get());
+
+            demoddlarize->program.Accept(std::make_shared<ConstantFoldingVisitor>().get());
+        }
 
     InitCompiler(cli, std::make_shared<DemoduarlizedProgramNode>(demoddlarize->program));
 }
@@ -167,7 +170,6 @@ int Init(std::vector<std::string> args)
     }
     auto tokens = lex_file(cli);
 
-    std::cout << "hazelc: lexxed" << std::endl;
     std::cout << "" << std::endl;
     if (cli.print_tokens == 1)
         print_tokens(tokens);
