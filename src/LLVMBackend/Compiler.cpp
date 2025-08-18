@@ -21,6 +21,7 @@
 
 void InitCompiler(Output output, std::shared_ptr<DemoduarlizedProgramNode> node)
 {
+
     llvm::LLVMContext context;
     llvm::Module module("MyModule", context);
 
@@ -41,8 +42,61 @@ void InitCompiler(Output output, std::shared_ptr<DemoduarlizedProgramNode> node)
     std::cout << "" << std::endl;
     delete compile_top;
 
-    // Initialize the target registry etc.llvm::InitializeAllTargets();
+    /*
+        llvm::LLVMContext context;
+        llvm::Module module("func_ptr_demo", context);
+        llvm::IRBuilder<> builder(context);
 
+        // --- Step 1: Create a function: int foo()
+        llvm::FunctionType *fooTy =
+            llvm::FunctionType::get(llvm::Type::getInt32Ty(context), false);
+        llvm::Function *fooFn = llvm::Function::Create(
+            fooTy, llvm::Function::ExternalLinkage, "foo", module);
+
+        llvm::BasicBlock *fooEntry =
+            llvm::BasicBlock::Create(context, "entry", fooFn);
+        builder.SetInsertPoint(fooEntry);
+        // builder.CreateRet(llvm::CreateCall::get(llvm::Type::getInt32Ty(context), 42));
+        builder.CreateRet(builder.CreateCall(fooFn, {}));
+        // --- Step 2: Struct with a function pointer field
+        llvm::PointerType *fooPtrTy = fooTy->getPointerTo();
+        llvm::StructType *structTy =
+            llvm::StructType::create(context, {fooPtrTy}, "MyStruct");
+
+        // --- Step 3: Define main() that stores and calls function pointer
+        llvm::FunctionType *mainTy =
+            llvm::FunctionType::get(llvm::Type::getInt32Ty(context), false);
+        llvm::Function *mainFn = llvm::Function::Create(
+            mainTy, llvm::Function::ExternalLinkage, "main", module);
+
+        llvm::BasicBlock *mainEntry =
+            llvm::BasicBlock::Create(context, "entry", mainFn);
+        builder.SetInsertPoint(mainEntry);
+
+        // Allocate the struct
+        llvm::Value *alloc = builder.CreateAlloca(structTy, nullptr, "s");
+
+        // GEP to the function pointer field (index 0)
+        llvm::Value *fieldPtr =
+            builder.CreateStructGEP(structTy, alloc, 0, "fp_slot");
+
+        // Store function pointer into struct
+        builder.CreateStore(fooFn, fieldPtr);
+
+        // Load function pointer
+        llvm::Value *loadedFn =
+            builder.CreateLoad(fooPtrTy, fieldPtr, "fp_loaded");
+
+        // Call through the pointer
+        loadedFn->dump();
+        llvm::CallInst *callRes =
+            builder.CreateCall(fooTy, loadedFn, {});
+        builder.CreateRet(callRes);
+
+        // --- Verify & print IR
+        llvm::verifyModule(module, &llvm::errs());
+        module.print(llvm::outs(), nullptr); // Initialize the target registry etc.llvm::InitializeAllTargets();
+    */
     llvm::InitializeAllTargetInfos();
     llvm::InitializeAllTargets();
     llvm::InitializeAllTargetMCs();

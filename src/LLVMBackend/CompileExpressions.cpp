@@ -272,6 +272,7 @@ TypeOfExpr CompileExpr::get_binary_expr_type(std::shared_ptr<ASTNode> n)
     if (dynamic_cast<FunctionCallNode *>(c->lhs.get()))
     {
         auto func = dynamic_cast<FunctionCallNode *>(c->lhs.get());
+
         auto f = compiler_context.get_function(func).value();
         return get_type_func_call(f);
     }
@@ -612,7 +613,7 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
     else if (dynamic_cast<FunctionCallNode *>(node.get()))
     {
         auto c = dynamic_cast<FunctionCallNode *>(node.get());
-
+        std::cout << c->name.value << std::endl;
         auto func = compiler_context.get_function(c);
         auto value = func.value()->compile(compiler_context, block, module, builder, context);
         this->block = value.block;

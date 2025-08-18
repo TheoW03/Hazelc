@@ -37,7 +37,7 @@ class Compiled_Function
 public:
     Compiled_Function();
     virtual std::shared_ptr<Type> get_ret_type() = 0;
-    virtual ValueStruct compile(CompilerContext ctx, llvm::BasicBlock *block, llvm::Module &module,
+    virtual ValueStruct compile(CompilerContext &ctx, llvm::BasicBlock *block, llvm::Module &module,
                                 llvm::IRBuilder<> &builder,
                                 llvm::LLVMContext &context) = 0;
 };
@@ -54,7 +54,7 @@ public:
     DefinedFunction();
     DefinedFunction(Function function);
     std::shared_ptr<Type> get_ret_type() override;
-    ValueStruct compile(CompilerContext ctx, llvm::BasicBlock *block, llvm::Module &module,
+    ValueStruct compile(CompilerContext &ctx, llvm::BasicBlock *block, llvm::Module &module,
                         llvm::IRBuilder<> &builder,
                         llvm::LLVMContext &context) override;
 };
@@ -71,7 +71,7 @@ public:
     ParamFunction();
     ParamFunction(FunctionParam thunk);
     std::shared_ptr<Type> get_ret_type() override;
-    ValueStruct compile(CompilerContext ctx, llvm::BasicBlock *block, llvm::Module &module,
+    ValueStruct compile(CompilerContext &ctx, llvm::BasicBlock *block, llvm::Module &module,
                         llvm::IRBuilder<> &builder,
                         llvm::LLVMContext &context) override;
 };

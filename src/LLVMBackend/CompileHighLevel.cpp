@@ -22,6 +22,11 @@ void CompileHighLevel::Visit(FunctionNode *node)
     //  then put it in a map if its global and a stack
     Function compiled_function = CompileFunctionHeader(node->f);
     compiled_function.isAnonymous = node->anonyomous;
+    if (node->is_param)
+    {
+        compiler_context.function_params.push(compiled_function);
+        // std::cout << "param" << std::endl;
+    }
     this->compiler_context.add_function(node, compiled_function);
 }
 

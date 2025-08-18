@@ -67,6 +67,11 @@ int functio_for_b(struct Params *params)
 int main(int argc, char const *argv[])
 {
 
+    struct Params *p1 = malloc(sizeof(struct Params));
+    p1->a->computation = 6;
+    p1->a->func_ptr = NULL;
+    // p1->a = {6, NULL, 1, p1};
+
     /* code */
 
     /*
@@ -92,18 +97,18 @@ int main(int argc, char const *argv[])
 
     */
 
-    struct Params *p1 = malloc(sizeof(struct Params));
-    struct ThunkMemoized n =
-        {
-            6,
-            NULL,
-            1,
-            p1};
-    p1->n = &n;
+    // struct Params *p1 = malloc(sizeof(struct Params));
+    // struct ThunkMemoized n =
+    //     {
+    //         6,
+    //         NULL,
+    //         1,
+    //         p1};
+    // p1->n = &n;
 
     // struct Params *p = malloc(sizeof(struct Params));
     // p.n =
-    int f = factorial(p1);
+    // int f = factorial(p1);
     // struct ThunkMemoized n2 =
     //     {
     //         0,
@@ -113,6 +118,6 @@ int main(int argc, char const *argv[])
     // p1.b = &n2;
 
     // int a = add(&p1);
-    printf("%d \n", f);
+    // printf("%d \n", f);
     return 0;
 }

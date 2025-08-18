@@ -21,6 +21,7 @@ public:
     std::map<std::string, Function> func_map;
     std::map<std::string, Function> exported_func_map;
     std::stack<Function> compiled_functions;
+
     bool is_global;
     llvm::StructType *params;
 

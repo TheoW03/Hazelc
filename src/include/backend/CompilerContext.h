@@ -46,6 +46,8 @@ public:
     CRunTimeFunctions CProcedures;
     Function current_function;
     std::vector<llvm::StructType *> lists;
+    std::queue<Function> function_params;
+
     llvm::StructType *string_type;
     CompilerContext();
 
