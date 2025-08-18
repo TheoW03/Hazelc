@@ -170,7 +170,7 @@ int Init(std::vector<std::string> args)
     }
     auto tokens = lex_file(cli);
 
-    std::cout << "" << std::endl;
+    std::cout << "" << std::endl; // Test
     if (cli.print_tokens == 1)
         print_tokens(tokens);
     auto modules = parse_node(tokens);
