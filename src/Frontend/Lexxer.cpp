@@ -272,14 +272,15 @@ void is_operand(Lexxer_Context &ctx, char value)
     }
     else
     {
+
         is_token(ctx);
         ctx.buffer += value;
         ctx.state = 1;
 
-        // if (value != '(' && value != ')')
-        //     ctx.state = 1;
-        // else
-        //     ctx.state = 2;
+        if (value != '(' && value != ')')
+            ctx.state = 1;
+        else
+            ctx.state = 2;
     }
 }
 void is_equal(Lexxer_Context &ctx, char value)
@@ -296,6 +297,11 @@ void is_equal(Lexxer_Context &ctx, char value)
 
         is_token(ctx);
         ctx.buffer += value;
+        if (value == '(')
+        {
+            is_token(ctx);
+        }
+        std::cout << "buffer: " << ctx.buffer << std::endl;
         // is_number(ctx, value);
         ctx.state = 1;
     }
@@ -490,8 +496,6 @@ std::vector<Tokens> lexxer(std::vector<std::string> lines, std::string file_name
             if (current_char == ' ' && ctx.state != 0)
             {
                 is_token(ctx);
-
-                ctx.buffer = "";
                 continue;
             }
             if (ctx.state == 0)
