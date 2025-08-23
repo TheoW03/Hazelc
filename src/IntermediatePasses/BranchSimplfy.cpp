@@ -35,6 +35,7 @@ void BranchSimplfyVisitor::Visit(DemoduarlizedProgramNode *node)
     {
         node->functions[i]->stmnts->Accept(this);
     }
+    std::cout << "hazelc: simplfy branching" << std::endl;
 }
 void BranchSimplfyVisitor::Visit(FunctionNode *node)
 {

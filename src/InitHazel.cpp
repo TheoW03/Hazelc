@@ -68,7 +68,9 @@ std::vector<Tokens> lex_file(Output cli)
         }
     }
     tokens.push_back({"EOF", TokenType::EndOfFile});
-    std::cout << "hazelc: lexxed" << std::endl;
+    std::cout << "" << std::endl; // Test
+
+    std::cout << "hazelc: Lexxed" << std::endl;
 
     return tokens;
 }
@@ -133,14 +135,13 @@ void runPasses(std::shared_ptr<ProgramNode> node, Output cli)
     auto typechecker = std::make_shared<TypeCheckerVistor>(IntermediateScope(demoddlarize->program.global_functions));
     demoddlarize->program.Accept(typechecker.get());
     auto mainModule = node->getMainModule();
-    if (cli.optimze_level != OptimizeLevel::No_Optimize)
-        if (mainModule.has_value())
-        {
-            std::shared_ptr<TreeShake> shake_imports = std::make_shared<TreeShake>();
-            node->Accept(shake_imports.get());
-            demoddlarize = std::make_shared<DemodularizedVisitor>(IntermediateScope(semantic->modules));
-            node->Accept(demoddlarize.get());
-        }
+    if (mainModule.has_value())
+    {
+        std::shared_ptr<TreeShake> shake_imports = std::make_shared<TreeShake>();
+        node->Accept(shake_imports.get());
+        demoddlarize = std::make_shared<DemodularizedVisitor>(IntermediateScope(semantic->modules));
+        node->Accept(demoddlarize.get());
+    }
     demoddlarize->program.Accept(std::make_shared<ConstantFoldingVisitor>().get());
 
     if (cli.optimze_level != OptimizeLevel::No_Optimize)
@@ -168,17 +169,17 @@ int Init(std::vector<std::string> args)
         std::cout << "compilation termianted" << std::endl;
         return EXIT_FAILURE;
     }
+
     auto tokens = lex_file(cli);
 
-    std::cout << "" << std::endl; // Test
     if (cli.print_tokens == 1)
         print_tokens(tokens);
+
     auto modules = parse_node(tokens);
-    std::cout << modules->avail_modules.size() << std::endl;
+    std::cout << "hazelc: modules: " << modules->avail_modules.size() << std::endl;
+
     // for (int i = 0; i < modules->)
 
-    std::cout << "hazelc: parsed" << std::endl;
-    std::cout << "" << std::endl;
     runPasses(modules, cli);
 
     // SemanticAnalysisTopLevel seman_analy;

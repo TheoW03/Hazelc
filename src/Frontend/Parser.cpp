@@ -488,5 +488,6 @@ std::shared_ptr<ProgramNode> parse_node(std::vector<Tokens> &tokens)
             error("expected module", peek(tokens));
         }
     }
+    std::cout << "hazelc: Parsed" << std::endl;
     return std::make_shared<ProgramNode>(modules);
 }

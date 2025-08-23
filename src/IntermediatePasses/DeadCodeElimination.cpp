@@ -46,6 +46,7 @@ void DeadCode::Visit(DemoduarlizedProgramNode *node)
         }
     }
     node->functions = functions_referenced;
+    std::cout << "dead code" << std::endl;
 }
 
 bool DeadCode::isVisited(std::shared_ptr<FunctionNode> node)
@@ -71,7 +72,20 @@ void DeadCode::Visit(ExprNode *node)
 
 void DeadCode::Visit(FunctionCallNode *node)
 {
+    for (int i = 0; i < node->params.size(); i++)
+    {
+        std::cout << node->param_types[i]->FunctionName.value << std::endl;
+    }
     this->workList.push(this->functions[node->hash_name.value_or(node->name.value)]);
+
+    // for (int i = 0; i < node->param_types.size(); i++)
+    // {
+    //     std::vector<std::shared_ptr<FunctionNode>> stmnts;
+    //     auto ret = std::make_shared<ReturnNode>(node->params[i]);
+    //     auto block = std::make_shared<BlockNode>(stmnts, ret);
+    //     auto param_func = std::make_shared<FunctionNode>(false, true, true, node->param_types[i], block);
+    //     this->workList.push(param_func);
+    // }
 }
 
 void DeadCode::Visit(BlockNode *node)
