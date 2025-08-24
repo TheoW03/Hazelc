@@ -148,8 +148,7 @@ llvm::Value *CompileExpr::IntegerBool(llvm::Value *lhs, Tokens op, llvm::Value *
     auto BoolType = compiler_context.get_boolean_type();
     auto lhs_val = integer_type.get_inner_value(builder, lhs, true);
     auto rhs_val = integer_type.get_inner_value(builder, rhs, true);
-    lhs->dump();
-    rhs->dump();
+
     // auto lhs_val = builder.CreateLoad(builder.getInt64Ty(), builder.CreateStructGEP(integer_type.type, lhs, 0, "int_lhs"));
     // auto rhs_val = builder.CreateLoad(builder.getInt64Ty(), builder.CreateStructGEP(integer_type.type, rhs, 0, "int_rhs"));
     auto math = BoolIntMathExpr(lhs_val, op, rhs_val);
@@ -439,10 +438,10 @@ llvm::Value *CompileExpr::BoolIntMathExpr(llvm::Value *lhs, Tokens op, llvm::Val
         return builder.CreateICmp(llvm::CmpInst::ICMP_SGE, lhs, rhs, "GE");
     case NE:
         return builder.CreateICmp(llvm::CmpInst::ICMP_NE, lhs, rhs, "NE");
-    case Logical_And:
-        return builder.CreateAnd(lhs, rhs);
-    case Logical_Or:
-        return builder.CreateOr(lhs, rhs);
+    // case Logical_And:
+    //     return builder.CreateAnd(lhs, rhs);
+    // case Logical_Or:
+    //     return builder.CreateOr(lhs, rhs);
     default:
         std::cout << "semantic anaylsis bug perhaps in boolean \"" << op.value << "\"" << std::endl;
         exit(EXIT_FAILURE);
@@ -658,27 +657,116 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
     else if (dynamic_cast<BooleanExprNode *>(node.get()))
     {
         auto c = dynamic_cast<BooleanExprNode *>(node.get());
-
-        auto lhs = Expression(c->lhs);
-        auto rhs = Expression(c->rhs);
-
         auto get_type = get_binary_bool_expr_type(node);
-        switch (get_type)
+        return ShortCicuitEval(c, get_type);
+
+        // auto lhs = Expression(c->lhs);
+        // auto rhs = Expression(c->rhs);
+
+        // switch (get_type)
+        // {
+        // case Integer_Type:
+        //     return {this->block, IntegerBool(lhs.value, c->op, rhs.value)};
+        // case Float_Type:
+        //     return {this->block, FloatBool(lhs.value, c->op, rhs.value)};
+        // case String_Type:
+        //     return {this->block, StringBoolMathExpr(lhs.value, c->op, rhs.value)};
+        // case None_Type:
+        //     return {this->block, NoneBool(lhs.value, c->op, rhs.value, c)};
+        //     break;
+        // case Boolean_Type:
+        //     return {this->block, BoolBool(lhs.value, c->op, rhs.value)};
+        // default:
+        //     break;
+        // }
+    }
+    return {this->block, nullptr};
+}
+
+ValueStruct CompileExpr::ShortCicuitEval(BooleanExprNode *node, TypeOfExpr type)
+{
+    std::cout << node->op.type << std::endl;
+    switch (node->op.type)
+    {
+
+    case Logical_Or:
+    {
+        auto trueValue = compiler_context.get_boolean_type().set_loaded_value(builder.getInt1(1), builder);
+
+        llvm::BasicBlock *rhsBlock = llvm::BasicBlock::Create(builder.getContext(), "or.rhs", compiler_context.get_current_function().function);
+        llvm::BasicBlock *trueBlock = llvm::BasicBlock::Create(builder.getContext(), "or.true", compiler_context.get_current_function().function);
+        llvm::BasicBlock *mergeBlock = llvm::BasicBlock::Create(builder.getContext(), "or.merge", compiler_context.get_current_function().function);
+        auto lhsVal = compiler_context.get_boolean_type().get_inner_value(builder, Expression(node->lhs).value, true);
+        builder.CreateCondBr(lhsVal, trueBlock, rhsBlock);
+        builder.SetInsertPoint(rhsBlock);
+        auto rhsVal = Expression(node->rhs).value;
+        builder.CreateBr(mergeBlock);
+
+        builder.SetInsertPoint(trueBlock);
+        builder.CreateBr(mergeBlock);
+        builder.SetInsertPoint(mergeBlock);
+
+        llvm::PHINode *phi = builder.CreatePHI(llvm::PointerType::get(compiler_context.get_boolean_type().type, 0), 2);
+        phi->addIncoming(trueValue, trueBlock);
+
+        phi->addIncoming(rhsVal, rhsBlock);
+        this->block = mergeBlock;
+        return {
+            mergeBlock, phi};
+    }
+
+    case Logical_And:
+    {
+        auto falseValue = compiler_context.get_boolean_type().set_loaded_value(builder.getInt1(0), builder);
+        llvm::BasicBlock *rhsBlock = llvm::BasicBlock::Create(builder.getContext(), "and.rhs", compiler_context.get_current_function().function);
+        llvm::BasicBlock *falseBlock = llvm::BasicBlock::Create(builder.getContext(), "and.false", compiler_context.get_current_function().function);
+        llvm::BasicBlock *mergeBlock = llvm::BasicBlock::Create(builder.getContext(), "and.merge", compiler_context.get_current_function().function);
+
+        auto lhsVal = compiler_context.get_boolean_type().get_inner_value(builder, Expression(node->lhs).value, true);
+        builder.CreateCondBr(lhsVal, rhsBlock, falseBlock);
+
+        // RHS block
+        builder.SetInsertPoint(rhsBlock);
+        auto rhsVal = Expression(node->rhs).value;
+        builder.CreateBr(mergeBlock);
+
+        // False block
+        builder.SetInsertPoint(falseBlock);
+        builder.CreateBr(mergeBlock);
+
+        // Merge block
+        builder.SetInsertPoint(mergeBlock);
+        llvm::PHINode *phi = builder.CreatePHI(llvm::PointerType::get(compiler_context.get_boolean_type().type, 0), 2);
+        // compiler_context.get_boolean_type().set_loaded_value(builder.getInt1(0), builder)->getType()->dump();
+        // compiler_context.get_boolean_type().set_loaded_value(rhsVal, builder)->getType()->dump();
+        phi->addIncoming(rhsVal, rhsBlock);
+        phi->addIncoming(falseValue, falseBlock);
+
+        this->block = mergeBlock;
+        return {
+            mergeBlock, phi};
+    }
+    default:
+    {
+        auto lhs = Expression(node->lhs);
+        auto rhs = Expression(node->rhs);
+        switch (type)
         {
+
         case Integer_Type:
-            return {this->block, IntegerBool(lhs.value, c->op, rhs.value)};
+            return {this->block, IntegerBool(lhs.value, node->op, rhs.value)};
         case Float_Type:
-            return {this->block, FloatBool(lhs.value, c->op, rhs.value)};
+            return {this->block, FloatBool(lhs.value, node->op, rhs.value)};
         case String_Type:
-            return {this->block, StringBoolMathExpr(lhs.value, c->op, rhs.value)};
+            return {this->block, StringBoolMathExpr(lhs.value, node->op, rhs.value)};
         case None_Type:
-            return {this->block, NoneBool(lhs.value, c->op, rhs.value, c)};
+            return {this->block, NoneBool(lhs.value, node->op, rhs.value, node)};
             break;
         case Boolean_Type:
-            return {this->block, BoolBool(lhs.value, c->op, rhs.value)};
+            return {this->block, BoolBool(lhs.value, node->op, rhs.value)};
         default:
             break;
         }
     }
-    return {this->block, nullptr};
+    }
 }

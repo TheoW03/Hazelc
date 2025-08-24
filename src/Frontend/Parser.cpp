@@ -279,7 +279,7 @@ std::optional<std::shared_ptr<ASTNode>> parse_logic_operators(std::vector<Tokens
     {
 
         auto rhs = parse_bool_expr(tokens);
-        lhs = std::make_shared<ExprNode>(lhs.value(), op.value(), rhs.value());
+        lhs = std::make_shared<BooleanExprNode>(lhs.value(), op.value(), rhs.value());
         op = match_and_remove(expression_tokens, tokens);
     }
 
