@@ -296,12 +296,16 @@ std::optional<std::shared_ptr<ASTNode>> BoolExpr(std::vector<Tokens> &tokens)
     auto op = match_and_remove(bool_expr_tokens,
                                tokens);
 
-    if (op.has_value())
+    while (op.has_value())
     {
 
-        auto rhs = expression_bitwise(tokens);
+        // auto rhs = expression_bitwise(tokens);
 
-        return std::make_shared<BooleanExprNode>(lhs.value(), op.value(), rhs.value());
+        // return std::make_shared<BooleanExprNode>(lhs.value(), op.value(), rhs.value());
+
+        auto rhs = expression_bitwise(tokens);
+        lhs = std::make_shared<BooleanExprNode>(lhs.value(), op.value(), rhs.value());
+        op = match_and_remove(bool_expr_tokens, tokens);
     }
     return lhs;
 }

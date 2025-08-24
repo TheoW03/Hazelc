@@ -122,6 +122,7 @@ int main(int argc, char const *argv[])
     // printf("%d \n", f);
     int c = 3 & 6 > 1 ^ 2;
     int f = 1 ^ 1 & 2;
+    int c = 1 == 2 && 2 == 1;
     printf("%d \n", c);
     return 0;
 }
