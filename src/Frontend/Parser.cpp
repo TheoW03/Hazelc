@@ -154,6 +154,7 @@ std::optional<std::shared_ptr<ASTNode>> factor(std::vector<Tokens> &tokens)
     }
     return {};
 }
+/*
 std::optional<std::shared_ptr<ASTNode>> BoolExpr(std::vector<Tokens> &tokens)
 {
     auto bool_expr_tokens = {
@@ -177,7 +178,7 @@ std::optional<std::shared_ptr<ASTNode>> BoolExpr(std::vector<Tokens> &tokens)
         return std::make_shared<BooleanExprNode>(lhs.value(), op.value(), rhs.value());
     }
     return lhs;
-}
+} */
 std::optional<std::shared_ptr<ASTNode>> term(std::vector<Tokens> &tokens)
 {
     auto term_tokens = {
@@ -186,13 +187,13 @@ std::optional<std::shared_ptr<ASTNode>> term(std::vector<Tokens> &tokens)
         TokenType::Modulas,
 
     };
-    auto lhs = BoolExpr(tokens);
+    auto lhs = factor(tokens);
 
     auto op = match_and_remove(term_tokens,
                                tokens);
     while (op.has_value())
     {
-        auto rhs = BoolExpr(tokens);
+        auto rhs = factor(tokens);
         lhs = std::make_shared<ExprNode>(lhs.value(), op.value(), rhs.value());
         op = match_and_remove(term_tokens, tokens);
     }
@@ -207,11 +208,6 @@ std::optional<std::shared_ptr<ASTNode>> expression(std::vector<Tokens> &tokens)
         TokenType::Addition,
         TokenType::Subtraction,
         TokenType::Concation,
-        TokenType::Left_Shift,
-        TokenType::Right_Shift,
-        TokenType::And,
-        TokenType::Or
-
     };
 
     auto op = match_and_remove(expression_tokens, tokens);
@@ -226,6 +222,89 @@ std::optional<std::shared_ptr<ASTNode>> expression(std::vector<Tokens> &tokens)
     return lhs;
 }
 
+std::optional<std::shared_ptr<ASTNode>> factor_bitwise(std::vector<Tokens> &tokens)
+{
+
+    auto lhs = expression(tokens);
+    auto expression_tokens = {
+        TokenType::Left_Shift,
+        TokenType::Right_Shift,
+    };
+
+    auto op = match_and_remove(expression_tokens, tokens);
+    while (op.has_value())
+    {
+
+        auto rhs = expression(tokens);
+        lhs = std::make_shared<ExprNode>(lhs.value(), op.value(), rhs.value());
+        op = match_and_remove(expression_tokens, tokens);
+    }
+
+    return lhs;
+}
+
+std::optional<std::shared_ptr<ASTNode>> term_bitwise(std::vector<Tokens> &tokens)
+{
+
+    auto lhs = factor_bitwise(tokens);
+    auto expression_tokens = {
+        TokenType::And,
+        TokenType::Or};
+
+    auto op = match_and_remove(expression_tokens, tokens);
+    while (op.has_value())
+    {
+
+        auto rhs = factor_bitwise(tokens);
+        lhs = std::make_shared<ExprNode>(lhs.value(), op.value(), rhs.value());
+        op = match_and_remove(expression_tokens, tokens);
+    }
+
+    return lhs;
+}
+std::optional<std::shared_ptr<ASTNode>> expression_bitwise(std::vector<Tokens> &tokens)
+{
+
+    auto lhs = term_bitwise(tokens);
+    auto expression_tokens = {
+        TokenType::Xor};
+
+    auto op = match_and_remove(expression_tokens, tokens);
+    while (op.has_value())
+    {
+
+        auto rhs = term_bitwise(tokens);
+        lhs = std::make_shared<ExprNode>(lhs.value(), op.value(), rhs.value());
+        op = match_and_remove(expression_tokens, tokens);
+    }
+
+    return lhs;
+}
+
+std::optional<std::shared_ptr<ASTNode>> BoolExpr(std::vector<Tokens> &tokens)
+{
+    auto bool_expr_tokens = {
+        TokenType::LT,
+        TokenType::GT,
+        TokenType::LTE,
+        TokenType::GTE,
+        TokenType::EQ,
+        TokenType::NE};
+
+    auto lhs = expression_bitwise(tokens);
+
+    auto op = match_and_remove(bool_expr_tokens,
+                               tokens);
+
+    if (op.has_value())
+    {
+
+        auto rhs = expression_bitwise(tokens);
+
+        return std::make_shared<BooleanExprNode>(lhs.value(), op.value(), rhs.value());
+    }
+    return lhs;
+}
 std::optional<std::shared_ptr<BranchNode>> parse_branch(std::vector<Tokens> &tokens)
 {
     std::shared_ptr<BlockNode> parse_block(std::vector<Tokens> & tokens);
@@ -273,7 +352,7 @@ std::optional<std::shared_ptr<ASTNode>> expr_parse(std::vector<Tokens> &tokens)
     }
     else
     {
-        auto f = expression(tokens);
+        auto f = BoolExpr(tokens);
         return f;
     }
     return {};

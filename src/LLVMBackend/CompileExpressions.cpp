@@ -64,6 +64,8 @@ llvm::Value *CompileExpr::IntMathExpression(llvm::Value *lhs, Tokens op, llvm::V
         return builder.CreateShl(lhs, rhs, "leftshoit");
     case Right_Shift:
         return builder.CreateLShr(lhs, rhs, "right_shift");
+    case Xor:
+        return builder.CreateXor(lhs, rhs, "right_shift");
     default:
         std::cout << "semantic anaylsis bug perhaps" << std::endl;
         exit(EXIT_FAILURE);

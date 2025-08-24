@@ -93,6 +93,9 @@ std::shared_ptr<ASTNode> FoldExpr::fold_integer(std::shared_ptr<IntegerNode> lhs
     case Or:
         return std::make_shared<IntegerNode>(lhs->number | rhs->number);
         break;
+    case Xor:
+        return std::make_shared<IntegerNode>(lhs->number ^ rhs->number);
+        break;
     case Left_Shift:
     {
         return std::make_shared<IntegerNode>(lhs->number << rhs->number);

@@ -67,6 +67,7 @@ int functio_for_b(struct Params *params)
 int main(int argc, char const *argv[])
 {
 
+    /*
     struct Params *p1 = malloc(sizeof(struct Params));
     p1->a->computation = 6;
     p1->a->func_ptr = NULL;
@@ -119,5 +120,8 @@ int main(int argc, char const *argv[])
 
     // int a = add(&p1);
     // printf("%d \n", f);
+    int c = 3 & 6 > 1 ^ 2;
+    int f = 1 ^ 1 & 2;
+    printf("%d \n", c);
     return 0;
 }

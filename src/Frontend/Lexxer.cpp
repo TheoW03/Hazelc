@@ -122,6 +122,7 @@ std::map<std::string, TokenType> get_keyword_map()
     token_map["*"] = TokenType::Multiplication;
     token_map["/"] = TokenType::Division;
     token_map["%"] = TokenType::Modulas;
+    token_map["^"] = TokenType::Xor;
     token_map["++"] = TokenType::Concation;
     token_map["!!"] = TokenType::Index_In;
 
@@ -301,7 +302,6 @@ void is_equal(Lexxer_Context &ctx, char value)
         {
             is_token(ctx);
         }
-        std::cout << "buffer: " << ctx.buffer << std::endl;
         // is_number(ctx, value);
         ctx.state = 1;
     }
@@ -325,7 +325,15 @@ void is_number(Lexxer_Context &ctx, char value)
         ctx.state = 3;
         ctx.buffer += value;
     }
-    else if (value == '+' || value == '*' || value == '-' || value == '/' || value == '%' || value == '(' || value == ')' || value == '!')
+    else if (value == '+'     //
+             || value == '*'  //
+             || value == '-'  //
+             || value == '/'  //
+             || value == '%'  //
+             || value == '('  //
+             || value == ')'  //
+             || value == '!'  //
+             || value == '^') //
     {
 
         is_token(ctx);
@@ -562,6 +570,7 @@ void print_tokens(std::vector<Tokens> tokens)
     token_map[TokenType::Subtraction] = "Subtraction";
     token_map[TokenType::Multiplication] = "Multiplication";
     token_map[TokenType::Division] = "Division";
+    token_map[TokenType::Xor] = "Xor";
 
     token_map[TokenType::Identifier] = "Identifier";
     token_map[TokenType::Open_Parenthesis] = "Open_paren";
