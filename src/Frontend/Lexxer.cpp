@@ -333,7 +333,8 @@ void is_number(Lexxer_Context &ctx, char value)
              || value == '('  //
              || value == ')'  //
              || value == '!'  //
-             || value == '^') //
+             || value == '^'  //
+             || value == '&') //
     {
 
         is_token(ctx);

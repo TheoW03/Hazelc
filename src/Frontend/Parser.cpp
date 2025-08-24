@@ -6,8 +6,7 @@
 #include <map>
 #include <stdint.h>
 #include <error.h>
-
-std::optional<Tokens> current;
+#include <Frontend/TokenManager.h>
 
 std::optional<std::shared_ptr<ASTNode>> expr_parse(std::vector<Tokens> &tokens);
 std::optional<std::shared_ptr<FunctionRefNode>> parse_function_ref(std::vector<Tokens> &tokens);
@@ -20,54 +19,6 @@ using parser = std::optional<std::shared_ptr<ASTNode>> (*)(std::vector<Tokens> &
 // what it does in that codase is iterate the vector if it contians one tokenType of the 0th element of the list of tokens
 // it removes it and returns it
 
-std::optional<Tokens> match_and_remove(TokenType token_type, std::vector<Tokens> &tokens)
-{
-    if (tokens.empty())
-        return {};
-    if (tokens[0].type == token_type)
-    {
-
-        current = tokens[0];
-        tokens.erase(tokens.begin());
-
-        return current;
-    }
-    return {};
-}
-std::optional<Tokens> match_and_remove(std::vector<TokenType> token, std::vector<Tokens> &tokens)
-{
-    for (int i = 0; i < token.size(); i++)
-    {
-        if (tokens[0].type == token[i])
-        {
-            current = tokens[0];
-            tokens.erase(tokens.begin());
-            return current;
-        }
-    }
-    return {};
-}
-Tokens peek(std::vector<Tokens> &tokens)
-{
-    return tokens[0];
-}
-
-bool look_ahead(TokenType t, std::vector<Tokens> &tokens)
-{
-    return t == tokens[0].type;
-}
-
-bool look_ahead(std::vector<TokenType> token, std::vector<Tokens> &tokens)
-{
-    for (int i = 0; i < token.size(); i++)
-    {
-        if (token[i] == tokens[0].type)
-        {
-            return true;
-        }
-    }
-    return false;
-}
 std::optional<std::shared_ptr<ASTNode>> parse_list(std::vector<Tokens> &tokens)
 {
     std::vector<std::shared_ptr<ASTNode>> values;
@@ -98,6 +49,20 @@ std::optional<std::shared_ptr<ASTNode>> parse_function_call(std::vector<Tokens> 
     return std::make_shared<FunctionCallNode>(name.value(), parse_call_params(tokens));
 }
 
+/*
+precendence
+
+Parenthesis
+Multiplication, Division, modulo
+Addition, Subtraction, string operators
+Leftshift, right shift
+and,
+xor,
+or,
+boolean expression
+
+
+*/
 std::optional<std::shared_ptr<ASTNode>> factor(std::vector<Tokens> &tokens)
 {
     // print_tokens(tokens);
@@ -125,17 +90,17 @@ std::optional<std::shared_ptr<ASTNode>> factor(std::vector<Tokens> &tokens)
     {
         return parse_list(tokens);
     }
-    else if (match_and_remove({TokenType::True, TokenType::False}, tokens).has_value())
+    else if (look_ahead({TokenType::True, TokenType::False}, tokens))
     {
-        return std::make_shared<BooleanConstNode>(current.value());
+        return std::make_shared<BooleanConstNode>(match_and_remove({TokenType::True, TokenType::False}, tokens).value());
     }
-    else if (match_and_remove(TokenType::String_Lit, tokens).has_value())
+    else if (look_ahead(TokenType::String_Lit, tokens))
     {
-        return std::make_shared<StringNode>(current.value());
+        return std::make_shared<StringNode>(match_and_remove(TokenType::String_Lit, tokens).value());
     }
-    else if (match_and_remove(TokenType::Char_Lit, tokens).has_value())
+    else if (look_ahead(TokenType::Char_Lit, tokens))
     {
-        return std::make_shared<CharNode>(current.value());
+        return std::make_shared<CharNode>(match_and_remove(TokenType::Char_Lit, tokens).value());
     }
     else if (look_ahead(TokenType::Identifier, tokens))
     {
@@ -154,31 +119,7 @@ std::optional<std::shared_ptr<ASTNode>> factor(std::vector<Tokens> &tokens)
     }
     return {};
 }
-/*
-std::optional<std::shared_ptr<ASTNode>> BoolExpr(std::vector<Tokens> &tokens)
-{
-    auto bool_expr_tokens = {
-        TokenType::LT,
-        TokenType::GT,
-        TokenType::LTE,
-        TokenType::GTE,
-        TokenType::EQ,
-        TokenType::NE};
 
-    auto lhs = factor(tokens);
-
-    auto op = match_and_remove(bool_expr_tokens,
-                               tokens);
-
-    if (op.has_value())
-    {
-
-        auto rhs = factor(tokens);
-
-        return std::make_shared<BooleanExprNode>(lhs.value(), op.value(), rhs.value());
-    }
-    return lhs;
-} */
 std::optional<std::shared_ptr<ASTNode>> term(std::vector<Tokens> &tokens)
 {
     auto term_tokens = {
@@ -222,7 +163,7 @@ std::optional<std::shared_ptr<ASTNode>> expression(std::vector<Tokens> &tokens)
     return lhs;
 }
 
-std::optional<std::shared_ptr<ASTNode>> factor_bitwise(std::vector<Tokens> &tokens)
+std::optional<std::shared_ptr<ASTNode>> parse_bit_shift(std::vector<Tokens> &tokens)
 {
 
     auto lhs = expression(tokens);
@@ -243,29 +184,29 @@ std::optional<std::shared_ptr<ASTNode>> factor_bitwise(std::vector<Tokens> &toke
     return lhs;
 }
 
-std::optional<std::shared_ptr<ASTNode>> term_bitwise(std::vector<Tokens> &tokens)
+std::optional<std::shared_ptr<ASTNode>> parse_and(std::vector<Tokens> &tokens)
 {
 
-    auto lhs = factor_bitwise(tokens);
+    auto lhs = parse_bit_shift(tokens);
     auto expression_tokens = {
-        TokenType::And,
-        TokenType::Or};
+        TokenType::And};
 
     auto op = match_and_remove(expression_tokens, tokens);
     while (op.has_value())
     {
 
-        auto rhs = factor_bitwise(tokens);
+        auto rhs = parse_bit_shift(tokens);
         lhs = std::make_shared<ExprNode>(lhs.value(), op.value(), rhs.value());
         op = match_and_remove(expression_tokens, tokens);
     }
 
     return lhs;
 }
-std::optional<std::shared_ptr<ASTNode>> expression_bitwise(std::vector<Tokens> &tokens)
+
+std::optional<std::shared_ptr<ASTNode>> parse_xor(std::vector<Tokens> &tokens)
 {
 
-    auto lhs = term_bitwise(tokens);
+    auto lhs = parse_and(tokens);
     auto expression_tokens = {
         TokenType::Xor};
 
@@ -273,15 +214,32 @@ std::optional<std::shared_ptr<ASTNode>> expression_bitwise(std::vector<Tokens> &
     while (op.has_value())
     {
 
-        auto rhs = term_bitwise(tokens);
+        auto rhs = parse_and(tokens);
         lhs = std::make_shared<ExprNode>(lhs.value(), op.value(), rhs.value());
         op = match_and_remove(expression_tokens, tokens);
     }
 
     return lhs;
 }
+std::optional<std::shared_ptr<ASTNode>> parse_or(std::vector<Tokens> &tokens)
+{
 
-std::optional<std::shared_ptr<ASTNode>> BoolExpr(std::vector<Tokens> &tokens)
+    auto lhs = parse_xor(tokens);
+    auto expression_tokens = {
+        TokenType::Or};
+
+    auto op = match_and_remove(expression_tokens, tokens);
+    while (op.has_value())
+    {
+
+        auto rhs = parse_xor(tokens);
+        lhs = std::make_shared<ExprNode>(lhs.value(), op.value(), rhs.value());
+        op = match_and_remove(expression_tokens, tokens);
+    }
+
+    return lhs;
+}
+std::optional<std::shared_ptr<ASTNode>> parse_bool_expr(std::vector<Tokens> &tokens)
 {
     auto bool_expr_tokens = {
         TokenType::LT,
@@ -291,7 +249,7 @@ std::optional<std::shared_ptr<ASTNode>> BoolExpr(std::vector<Tokens> &tokens)
         TokenType::EQ,
         TokenType::NE};
 
-    auto lhs = expression_bitwise(tokens);
+    auto lhs = parse_or(tokens);
 
     auto op = match_and_remove(bool_expr_tokens,
                                tokens);
@@ -303,7 +261,7 @@ std::optional<std::shared_ptr<ASTNode>> BoolExpr(std::vector<Tokens> &tokens)
 
         // return std::make_shared<BooleanExprNode>(lhs.value(), op.value(), rhs.value());
 
-        auto rhs = expression_bitwise(tokens);
+        auto rhs = parse_or(tokens);
         lhs = std::make_shared<BooleanExprNode>(lhs.value(), op.value(), rhs.value());
         op = match_and_remove(bool_expr_tokens, tokens);
     }
@@ -356,7 +314,7 @@ std::optional<std::shared_ptr<ASTNode>> expr_parse(std::vector<Tokens> &tokens)
     }
     else
     {
-        auto f = BoolExpr(tokens);
+        auto f = parse_bool_expr(tokens);
         return f;
     }
     return {};
@@ -463,9 +421,9 @@ std::optional<std::shared_ptr<FunctionRefNode>> parse_function_ref(std::vector<T
     return std::make_shared<FunctionRefNode>(name.value(), params, ret_type.value());
 }
 
-std::optional<std::shared_ptr<FunctionNode>> parse_function(std::vector<Tokens> &tokens)
+std::optional<std::shared_ptr<FunctionNode>> parse_function(std::vector<Tokens> &tokens, bool isExport)
 {
-    bool is_export = current.value().type == TokenType::Export;
+    bool is_export = isExport;
     std::shared_ptr<BlockNode> parse_block(std::vector<Tokens> & tokens);
     match_and_remove(TokenType::Let, tokens);
     auto func = parse_function_ref(tokens);
@@ -499,11 +457,11 @@ std::shared_ptr<ModuleNode> parse_module(std::vector<Tokens> &tokens)
 
     while (!look_ahead(TokenType::EndOfFile, tokens) && !look_ahead(TokenType::Module, tokens))
     {
-        match_and_remove(TokenType::Export, tokens);
+        auto isExport = match_and_remove(TokenType::Export, tokens).has_value();
 
         if (look_ahead(TokenType::Let, tokens))
         {
-            functions.push_back(parse_function(tokens).value());
+            functions.push_back(parse_function(tokens, isExport).value());
         }
         else
         {
@@ -527,10 +485,9 @@ std::shared_ptr<BlockNode> parse_block(std::vector<Tokens> &tokens)
         while (!match_and_remove(TokenType::Dedents, tokens).has_value() && peek(tokens).type != TokenType::EndOfFile)
         {
 
-            std::map<TokenType, parser> parse_map;
             if (peek(tokens).type == TokenType::Let)
             {
-                ast.push_back(parse_function(tokens).value());
+                ast.push_back(parse_function(tokens, false).value());
                 // print(tokens);
                 std::cout << " " << std::endl;
             }

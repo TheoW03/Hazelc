@@ -141,7 +141,7 @@ std::shared_ptr<Type> CheckExpressionType::traverse_type(std::shared_ptr<ASTNode
         auto rhstype = traverse_type(exprs->rhs);
         if (!lhstype->can_accept(rhstype.get()))
         {
-            error("expected " + lhstype->get_type_value() + "got " + rhstype->get_type_value(), exprs->op);
+            error("expected " + lhstype->get_type_value() + " got " + rhstype->get_type_value(), exprs->op);
         }
         return std::make_shared<BoolType>();
     }

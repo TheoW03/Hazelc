@@ -28,12 +28,12 @@ llvm::Value *CompileExpr::CompileStr(llvm::Value *str, llvm::Value *length, llvm
     // that conatin  the string and length
 
     auto string_inner_type = compiler_context.get_string_inner_type();
-    auto destField0ptr = builder.CreateStructGEP(string_inner_type, structure, 0, "destStructPtrF0");
+    auto destField0ptr = builder.CreateStructGEP(string_inner_type, structure, 0, "string_contents");
     builder.CreateStore(str, destField0ptr);
     // structure->getType()->dump();
     // str->getType()->dump();
     // length->getType()->dump();
-    auto destField1ptr = builder.CreateStructGEP(string_inner_type, structure, 1, "destStructPtrF1");
+    auto destField1ptr = builder.CreateStructGEP(string_inner_type, structure, 1, "string_length");
     // length = builder.CreateLoad(builder.getInt64Ty(), length);
     builder.CreateStore(length, destField1ptr);
     // return ValueOrLoad(builder, structure, c);

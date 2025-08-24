@@ -35,6 +35,7 @@ add_llvm_executable(${EXECUTABLE_NAME}
    src/Frontend/Lexxer.cpp
    src/Frontend/Parser.cpp
    src/Frontend/AstNodes.cpp
+   src/Frontend/TokenManager.cpp
 
    src/IntermediatePasses/ConstantFolding.cpp
    src/IntermediatePasses/SemanticGlobalScope.cpp
