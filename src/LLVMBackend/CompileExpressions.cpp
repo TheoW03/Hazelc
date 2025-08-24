@@ -56,9 +56,9 @@ llvm::Value *CompileExpr::IntMathExpression(llvm::Value *lhs, Tokens op, llvm::V
         return builder.CreateSub(lhs, rhs, "addition");
     case Modulas:
         return builder.CreateSRem(lhs, rhs, "modulas");
-    case And:
+    case Bitwise_And:
         return builder.CreateAnd(lhs, rhs, "modulas");
-    case Or:
+    case Bitwise_Or:
         return builder.CreateOr(lhs, rhs, "modulas");
     case Left_Shift:
         return builder.CreateShl(lhs, rhs, "leftshoit");
@@ -148,6 +148,8 @@ llvm::Value *CompileExpr::IntegerBool(llvm::Value *lhs, Tokens op, llvm::Value *
     auto BoolType = compiler_context.get_boolean_type();
     auto lhs_val = integer_type.get_inner_value(builder, lhs, true);
     auto rhs_val = integer_type.get_inner_value(builder, rhs, true);
+    lhs->dump();
+    rhs->dump();
     // auto lhs_val = builder.CreateLoad(builder.getInt64Ty(), builder.CreateStructGEP(integer_type.type, lhs, 0, "int_lhs"));
     // auto rhs_val = builder.CreateLoad(builder.getInt64Ty(), builder.CreateStructGEP(integer_type.type, rhs, 0, "int_rhs"));
     auto math = BoolIntMathExpr(lhs_val, op, rhs_val);
@@ -437,9 +439,9 @@ llvm::Value *CompileExpr::BoolIntMathExpr(llvm::Value *lhs, Tokens op, llvm::Val
         return builder.CreateICmp(llvm::CmpInst::ICMP_SGE, lhs, rhs, "GE");
     case NE:
         return builder.CreateICmp(llvm::CmpInst::ICMP_NE, lhs, rhs, "NE");
-    case And:
+    case Logical_And:
         return builder.CreateAnd(lhs, rhs);
-    case Or:
+    case Logical_Or:
         return builder.CreateOr(lhs, rhs);
     default:
         std::cout << "semantic anaylsis bug perhaps in boolean \"" << op.value << "\"" << std::endl;

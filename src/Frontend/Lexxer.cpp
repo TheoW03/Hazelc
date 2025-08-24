@@ -125,11 +125,13 @@ std::map<std::string, TokenType> get_keyword_map()
     token_map["^"] = TokenType::Xor;
     token_map["++"] = TokenType::Concation;
     token_map["!!"] = TokenType::Index_In;
+    token_map["&"] = TokenType::Bitwise_And;
+    token_map["|"] = TokenType::Bitwise_Or;
 
     token_map[">>"] = TokenType::Right_Shift;
     token_map["<<"] = TokenType::Left_Shift;
-    token_map["and"] = TokenType::And;
-    token_map["or"] = TokenType::Or;
+    token_map["and"] = TokenType::Logical_And;
+    token_map["or"] = TokenType::Logical_Or;
 
     token_map["("] = TokenType::Open_Parenthesis;
     token_map[")"] = TokenType::Close_Parenthesis;
@@ -161,7 +163,6 @@ std::map<std::string, TokenType> get_keyword_map()
     token_map["false"] = TokenType::False;
 
     token_map["return"] = TokenType::Return;
-    token_map["|"] = TokenType::cont_line;
     token_map[":"] = TokenType::Colon;
     token_map[","] = TokenType::Comma;
 
@@ -334,6 +335,7 @@ void is_number(Lexxer_Context &ctx, char value)
              || value == ')'  //
              || value == '!'  //
              || value == '^'  //
+             || value == '|'  //
              || value == '&') //
     {
 
@@ -597,8 +599,8 @@ void print_tokens(std::vector<Tokens> tokens)
 
     token_map[TokenType::Right_Shift] = "right_shift";
     token_map[TokenType::Left_Shift] = "left_shift";
-    token_map[TokenType::And] = "and";
-    token_map[TokenType::Or] = "or";
+    token_map[TokenType::Logical_And] = "and";
+    token_map[TokenType::Logical_Or] = "or";
     token_map[TokenType::True] = "true";
 
     token_map[TokenType::cont_line] = "contine";

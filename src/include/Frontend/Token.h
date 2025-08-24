@@ -44,8 +44,10 @@ enum TokenType
     character,
     string,
     Modulas,
-    And,
-    Or,
+    Logical_And,
+    Logical_Or,
+    Bitwise_And,
+    Bitwise_Or,
     True,
     False,
     Left_Shift,
@@ -63,6 +65,7 @@ enum TokenType
 
 };
 #endif
+
 #ifndef TOKENS
 #define TOKENS
 struct Tokens

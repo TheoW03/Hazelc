@@ -315,11 +315,14 @@ Unlike most functional languages. there is no function notation for operators an
       * & Multiplication, Multiplies 2 numbers together & 1 * 1\\ \hline
       / & Division, Divides 2 numbers, assuming the denominator is not 0 & 1/2 \\ \hline
       $>>,<<$ & bit-shift left and bit-shift right, this is an integer exclusive operator that shifts the bits of a number, yielding a result that's divide by 2 or multiply by 2 & $1 << 2, 1 >> 2$  \\ \hline   
-      $\sim$ & bit wise not ,unary operator, that works on all integers and boolean. It performs bit wise not on the bits of a number & $\sim1$, $\sim$true  \\ \hline     
-       and & performs bit-wise ``AND" between left hand side and right hand side. it works on both Integers and boolean types & 1 and 1, true and false   \\ \hline   
-      or & performs bit-wise ``OR" between left hand side and right hand side. it works on both Integers and boolean types & 1 or 1, true or false   \\ \hline   
-      \^{ } & performs bit-wise ``XOR" between left hand side and right hand side. it works on Integer types only & 1 \^{ } 1   \\ \hline   
-      
+      $\sim$ & performs bit-wise ``NOT" of one side. works on Integer types & $\sim1$  \\ \hline     
+       $\&$ & performs bit-wise ``AND" between left hand side and right hand side. it works on Integers types & 1 $\&$ 1   \\ \hline   
+      $|$ & performs bit-wise ``OR" between left hand side and right hand side. it works on Integer types & 1 $|$ 1   \\ \hline   
+      \^{ } & performs bit-wise ``XOR" between left hand side and right hand side. it works on Integer types & 1 \^{ } 1   \\ \hline   
+       and & performs logical ``AND" between left hand side and right hand side. it works on boolean types & true and false   \\ \hline   
+      or & performs logical ``OR" between left hand side and right hand side. it works on  boolean types & true or false   \\ \hline   
+        not & performs logical ``NOT" of one side. it works on  boolean types & not true, not true and false   \\ \hline   
+
     \end{tabular}
        
 \end{table}

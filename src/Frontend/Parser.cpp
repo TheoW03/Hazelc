@@ -189,7 +189,7 @@ std::optional<std::shared_ptr<ASTNode>> parse_and(std::vector<Tokens> &tokens)
 
     auto lhs = parse_bit_shift(tokens);
     auto expression_tokens = {
-        TokenType::And};
+        TokenType::Bitwise_And};
 
     auto op = match_and_remove(expression_tokens, tokens);
     while (op.has_value())
@@ -226,7 +226,7 @@ std::optional<std::shared_ptr<ASTNode>> parse_or(std::vector<Tokens> &tokens)
 
     auto lhs = parse_xor(tokens);
     auto expression_tokens = {
-        TokenType::Or};
+        TokenType::Bitwise_Or};
 
     auto op = match_and_remove(expression_tokens, tokens);
     while (op.has_value())
@@ -265,6 +265,24 @@ std::optional<std::shared_ptr<ASTNode>> parse_bool_expr(std::vector<Tokens> &tok
         lhs = std::make_shared<BooleanExprNode>(lhs.value(), op.value(), rhs.value());
         op = match_and_remove(bool_expr_tokens, tokens);
     }
+    return lhs;
+}
+std::optional<std::shared_ptr<ASTNode>> parse_logic_operators(std::vector<Tokens> &tokens)
+{
+
+    auto lhs = parse_bool_expr(tokens);
+    auto expression_tokens = {
+        TokenType::Logical_And, TokenType::Logical_Or};
+
+    auto op = match_and_remove(expression_tokens, tokens);
+    while (op.has_value())
+    {
+
+        auto rhs = parse_bool_expr(tokens);
+        lhs = std::make_shared<ExprNode>(lhs.value(), op.value(), rhs.value());
+        op = match_and_remove(expression_tokens, tokens);
+    }
+
     return lhs;
 }
 std::optional<std::shared_ptr<BranchNode>> parse_branch(std::vector<Tokens> &tokens)
@@ -314,7 +332,7 @@ std::optional<std::shared_ptr<ASTNode>> expr_parse(std::vector<Tokens> &tokens)
     }
     else
     {
-        auto f = parse_bool_expr(tokens);
+        auto f = parse_logic_operators(tokens);
         return f;
     }
     return {};

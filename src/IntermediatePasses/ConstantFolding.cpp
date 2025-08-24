@@ -87,10 +87,10 @@ std::shared_ptr<ASTNode> FoldExpr::fold_integer(std::shared_ptr<IntegerNode> lhs
     case Modulas:
         return std::make_shared<IntegerNode>(lhs->number % rhs->number);
         break;
-    case And:
+    case Bitwise_And:
         return std::make_shared<IntegerNode>(lhs->number & rhs->number);
         break;
-    case Or:
+    case Bitwise_Or:
         return std::make_shared<IntegerNode>(lhs->number | rhs->number);
         break;
     case Xor:
@@ -168,9 +168,9 @@ std::shared_ptr<ASTNode> FoldExpr::fold_bool_const(std::shared_ptr<BooleanConstN
 {
     switch (op.type)
     {
-    case And:
+    case Logical_And:
         return std::make_shared<BooleanConstNode>(lhs->val && rhs->val);
-    case Or:
+    case Logical_Or:
         return std::make_shared<BooleanConstNode>(lhs->val || rhs->val);
     }
     return nullptr;
