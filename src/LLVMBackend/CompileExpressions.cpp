@@ -442,6 +442,8 @@ llvm::Value *CompileExpr::BoolIntMathExpr(llvm::Value *lhs, Tokens op, llvm::Val
         return builder.CreateAnd(lhs, rhs);
     case Bitwise_Or:
         return builder.CreateOr(lhs, rhs);
+    case Xor:
+        return builder.CreateXor(lhs, rhs);
     default:
         std::cout << "semantic anaylsis bug perhaps in boolean \"" << op.value << "\"" << std::endl;
         exit(EXIT_FAILURE);
@@ -746,4 +748,5 @@ ValueStruct CompileExpr::ShortCicuitEval(BooleanExprNode *node, TypeOfExpr type)
         }
     }
     }
+    return {this->block, nullptr};
 }

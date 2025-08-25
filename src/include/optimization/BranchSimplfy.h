@@ -13,6 +13,7 @@ public:
     // void Visit(ProgramNode *node) override;
     void Visit(FunctionNode *node) override;
     void Visit(BlockNode *node) override;
+    void Visit(ConditionalNode *node) override;
 
     std::shared_ptr<ASTNode> substitute(std::shared_ptr<ASTNode>);
 };

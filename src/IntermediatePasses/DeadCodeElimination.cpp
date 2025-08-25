@@ -72,10 +72,10 @@ void DeadCode::Visit(ExprNode *node)
 
 void DeadCode::Visit(FunctionCallNode *node)
 {
-    for (int i = 0; i < node->params.size(); i++)
-    {
-        std::cout << node->param_types[i]->FunctionName.value << std::endl;
-    }
+    // for (int i = 0; i < node->params.size(); i++)
+    // {
+    //     std::cout << node->param_types[i]->FunctionName.value << std::endl;
+    // }
     this->workList.push(this->functions[node->hash_name.value_or(node->name.value)]);
 
     // for (int i = 0; i < node->param_types.size(); i++)
@@ -105,14 +105,16 @@ void DeadCode::Visit(BlockNode *node)
         }
         this->visited.erase(name.value);
     }
-    node->exit->Accept(this);
+    node->exit->Expr->Accept(this);
 }
 
 void DeadCode::Visit(ConditionalNode *node)
 {
     for (int i = 0; i < node->branches.size(); i++)
     {
+
         node->branches[i]->condition->Accept(this);
+
         node->branches[i]->stmnts->Accept(this);
     }
 }
