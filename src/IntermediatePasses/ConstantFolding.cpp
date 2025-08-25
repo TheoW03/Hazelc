@@ -168,6 +168,10 @@ std::shared_ptr<ASTNode> FoldExpr::fold_bool_const(std::shared_ptr<BooleanConstN
 {
     switch (op.type)
     {
+    case EQ:
+        return std::make_shared<BooleanConstNode>(lhs->val == rhs->val);
+    case NE:
+        return std::make_shared<BooleanConstNode>(lhs->val != rhs->val);
     case Logical_And:
         return std::make_shared<BooleanConstNode>(lhs->val && rhs->val);
     case Logical_Or:
@@ -329,17 +333,18 @@ std::shared_ptr<ASTNode> FoldExpr::fold_expr(std::shared_ptr<ASTNode> n)
             return fold_bool_const(std::make_shared<BooleanConstNode>(lhsInt),
                                    expr->op, std::make_shared<BooleanConstNode>(rhsInt));
         }
+
         if (dynamic_cast<BooleanConstNode *>(lhs.get()))
         {
             auto lhsInt = dynamic_cast<BooleanConstNode *>(lhs.get())->val;
-            return short_ciruit_fold(std::make_shared<BooleanConstNode>(lhsInt),
-                                     expr->op);
+            lhs = short_ciruit_fold(std::make_shared<BooleanConstNode>(lhsInt),
+                                    expr->op);
         }
         if (dynamic_cast<BooleanConstNode *>(rhs.get()))
         {
             auto rhsInt = dynamic_cast<BooleanConstNode *>(rhs.get())->val;
-            return short_ciruit_fold(std::make_shared<BooleanConstNode>(rhsInt),
-                                     expr->op);
+            rhs = short_ciruit_fold(std::make_shared<BooleanConstNode>(rhsInt),
+                                    expr->op);
         }
         return std::make_shared<BooleanExprNode>(lhs, expr->op, rhs);
     }

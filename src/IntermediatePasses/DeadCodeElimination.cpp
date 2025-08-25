@@ -112,7 +112,10 @@ void DeadCode::Visit(ConditionalNode *node)
 {
     for (int i = 0; i < node->branches.size(); i++)
     {
-
+        if (node->branches[i]->condition == nullptr)
+        {
+            std::cout << i << "null " << std::endl;
+        }
         node->branches[i]->condition->Accept(this);
 
         node->branches[i]->stmnts->Accept(this);

@@ -46,9 +46,6 @@ void BranchSimplfyVisitor::Visit(BlockNode *node)
     node->exit->Expr = substitute(node->exit->Expr);
 }
 
-void BranchSimplfyVisitor::Visit(ConditionalNode *node)
-{
-}
 std::shared_ptr<ASTNode> BranchSimplfyVisitor::substitute(std::shared_ptr<ASTNode> node)
 {
 
@@ -70,12 +67,11 @@ std::shared_ptr<ASTNode> BranchSimplfyVisitor::substitute(std::shared_ptr<ASTNod
                 {
                     return (*i)->stmnts->exit->Expr;
                 }
-                // i = c->branches.erase(i);
                 c->branches.erase(i);
             }
             else
             {
-                i++;
+                ++i;
             }
         }
 
