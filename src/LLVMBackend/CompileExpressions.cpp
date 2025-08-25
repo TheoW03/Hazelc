@@ -438,10 +438,10 @@ llvm::Value *CompileExpr::BoolIntMathExpr(llvm::Value *lhs, Tokens op, llvm::Val
         return builder.CreateICmp(llvm::CmpInst::ICMP_SGE, lhs, rhs, "GE");
     case NE:
         return builder.CreateICmp(llvm::CmpInst::ICMP_NE, lhs, rhs, "NE");
-    // case Logical_And:
-    //     return builder.CreateAnd(lhs, rhs);
-    // case Logical_Or:
-    //     return builder.CreateOr(lhs, rhs);
+    case Bitwise_And:
+        return builder.CreateAnd(lhs, rhs);
+    case Bitwise_Or:
+        return builder.CreateOr(lhs, rhs);
     default:
         std::cout << "semantic anaylsis bug perhaps in boolean \"" << op.value << "\"" << std::endl;
         exit(EXIT_FAILURE);
@@ -659,33 +659,12 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         auto c = dynamic_cast<BooleanExprNode *>(node.get());
         auto get_type = get_binary_bool_expr_type(node);
         return ShortCicuitEval(c, get_type);
-
-        // auto lhs = Expression(c->lhs);
-        // auto rhs = Expression(c->rhs);
-
-        // switch (get_type)
-        // {
-        // case Integer_Type:
-        //     return {this->block, IntegerBool(lhs.value, c->op, rhs.value)};
-        // case Float_Type:
-        //     return {this->block, FloatBool(lhs.value, c->op, rhs.value)};
-        // case String_Type:
-        //     return {this->block, StringBoolMathExpr(lhs.value, c->op, rhs.value)};
-        // case None_Type:
-        //     return {this->block, NoneBool(lhs.value, c->op, rhs.value, c)};
-        //     break;
-        // case Boolean_Type:
-        //     return {this->block, BoolBool(lhs.value, c->op, rhs.value)};
-        // default:
-        //     break;
-        // }
     }
     return {this->block, nullptr};
 }
 
 ValueStruct CompileExpr::ShortCicuitEval(BooleanExprNode *node, TypeOfExpr type)
 {
-    std::cout << node->op.type << std::endl;
     switch (node->op.type)
     {
 
@@ -737,8 +716,6 @@ ValueStruct CompileExpr::ShortCicuitEval(BooleanExprNode *node, TypeOfExpr type)
         // Merge block
         builder.SetInsertPoint(mergeBlock);
         llvm::PHINode *phi = builder.CreatePHI(llvm::PointerType::get(compiler_context.get_boolean_type().type, 0), 2);
-        // compiler_context.get_boolean_type().set_loaded_value(builder.getInt1(0), builder)->getType()->dump();
-        // compiler_context.get_boolean_type().set_loaded_value(rhsVal, builder)->getType()->dump();
         phi->addIncoming(rhsVal, rhsBlock);
         phi->addIncoming(falseValue, falseBlock);
 
