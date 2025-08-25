@@ -333,14 +333,13 @@ std::shared_ptr<ASTNode> FoldExpr::fold_expr(std::shared_ptr<ASTNode> n)
             return fold_bool_const(std::make_shared<BooleanConstNode>(lhsInt),
                                    expr->op, std::make_shared<BooleanConstNode>(rhsInt));
         }
-
-        if (dynamic_cast<BooleanConstNode *>(lhs.get()))
+        else if (dynamic_cast<BooleanConstNode *>(lhs.get()))
         {
             auto lhsInt = dynamic_cast<BooleanConstNode *>(lhs.get())->val;
             lhs = short_ciruit_fold(std::make_shared<BooleanConstNode>(lhsInt),
                                     expr->op);
         }
-        if (dynamic_cast<BooleanConstNode *>(rhs.get()))
+        else if (dynamic_cast<BooleanConstNode *>(rhs.get()))
         {
             auto rhsInt = dynamic_cast<BooleanConstNode *>(rhs.get())->val;
             rhs = short_ciruit_fold(std::make_shared<BooleanConstNode>(rhsInt),
