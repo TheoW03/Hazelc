@@ -29,7 +29,7 @@ void DeadCode::Visit(DemoduarlizedProgramNode *node)
     this->workList.push(main);
     while (!workList.empty())
     {
-        auto f = workList.top();
+        auto f = workList.back();
         workList.pop();
         if (f->hash_name.has_value())
         {
@@ -61,6 +61,7 @@ bool DeadCode::isVisited(std::shared_ptr<FunctionNode> node)
 
 void DeadCode::Visit(FunctionNode *node)
 {
+    std::cout << node->f->FunctionName.value << std::endl;
     node->stmnts->Accept(this);
 }
 
@@ -112,12 +113,7 @@ void DeadCode::Visit(ConditionalNode *node)
 {
     for (int i = 0; i < node->branches.size(); i++)
     {
-        if (node->branches[i]->condition == nullptr)
-        {
-            std::cout << i << "null " << std::endl;
-        }
         node->branches[i]->condition->Accept(this);
-
         node->branches[i]->stmnts->Accept(this);
     }
 }

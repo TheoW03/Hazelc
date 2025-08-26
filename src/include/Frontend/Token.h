@@ -46,8 +46,11 @@ enum TokenType
     Modulas,
     Logical_And,
     Logical_Or,
+    Logical_Not,
     Bitwise_And,
     Bitwise_Or,
+    Bitwise_Not,
+
     True,
     False,
     Left_Shift,

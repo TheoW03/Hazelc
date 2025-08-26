@@ -123,6 +123,8 @@ std::map<std::string, TokenType> get_keyword_map()
     token_map["/"] = TokenType::Division;
     token_map["%"] = TokenType::Modulas;
     token_map["^"] = TokenType::Xor;
+    token_map["~"] = TokenType::Bitwise_Not;
+
     token_map["++"] = TokenType::Concation;
     token_map["!!"] = TokenType::Index_In;
     token_map["&"] = TokenType::Bitwise_And;
@@ -132,6 +134,7 @@ std::map<std::string, TokenType> get_keyword_map()
     token_map["<<"] = TokenType::Left_Shift;
     token_map["and"] = TokenType::Logical_And;
     token_map["or"] = TokenType::Logical_Or;
+    token_map["not"] = TokenType::Logical_Not;
 
     token_map["("] = TokenType::Open_Parenthesis;
     token_map[")"] = TokenType::Close_Parenthesis;
@@ -260,6 +263,7 @@ void is_token(Lexxer_Context &ctx)
 
 void is_operand(Lexxer_Context &ctx, char value)
 {
+
     if ((value == '+' && ctx.buffer == "+")     // concat
         || (value == '!' && ctx.buffer == "!")) // Index in
     {
@@ -274,7 +278,6 @@ void is_operand(Lexxer_Context &ctx, char value)
     }
     else
     {
-
         is_token(ctx);
         ctx.buffer += value;
         ctx.state = 1;
@@ -299,7 +302,7 @@ void is_equal(Lexxer_Context &ctx, char value)
 
         is_token(ctx);
         ctx.buffer += value;
-        if (value == '(')
+        if (value == '(' || value == '~')
         {
             is_token(ctx);
         }
@@ -336,6 +339,7 @@ void is_number(Lexxer_Context &ctx, char value)
              || value == '!'  //
              || value == '^'  //
              || value == '|'  //
+             || value == '~'  //
              || value == '&') //
     {
 

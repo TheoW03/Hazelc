@@ -297,6 +297,23 @@ std::shared_ptr<ASTNode> FoldExpr::fold_expr(std::shared_ptr<ASTNode> n)
         }
         return std::make_shared<ExprNode>(lhs, expr->operation, rhs);
     }
+    else if (dynamic_cast<UnaryExprNode *>(n.get()))
+    {
+        auto expr = dynamic_cast<UnaryExprNode *>(n.get());
+        auto lhs = fold_expr(expr->expr);
+        if (dynamic_cast<IntegerNode *>(lhs.get()))
+        {
+            auto lhsInt = dynamic_cast<IntegerNode *>(lhs.get())->number;
+
+            switch (expr->op.type)
+            {
+            case Bitwise_Not:
+            {
+                return std::make_shared<IntegerNode>(~(lhsInt));
+            }
+            }
+        }
+    }
     else if (dynamic_cast<BooleanExprNode *>(n.get()))
     {
         auto expr = dynamic_cast<BooleanExprNode *>(n.get());

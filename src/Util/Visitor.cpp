@@ -73,6 +73,10 @@ void Visitor::Visit(ListNode *node)
 {
 }
 
+void Visitor::Visit(UnaryExprNode *node)
+{
+}
+
 void Visitor::Visit(DemoduarlizedProgramNode *node)
 {
 }

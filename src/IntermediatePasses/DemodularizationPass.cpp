@@ -65,6 +65,10 @@ void DemodularizedVisitor::Visit(BlockNode *node)
     }
     node->exit->Expr->Accept(this);
 }
+void DemodularizedVisitor::Visit(UnaryExprNode *node)
+{
+    node->expr->Accept(this);
+}
 void DemodularizedVisitor::Visit(FunctionCallNode *node)
 {
 

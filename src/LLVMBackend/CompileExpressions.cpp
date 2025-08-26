@@ -142,6 +142,13 @@ llvm::Value *CompileExpr::MathExpr(llvm::Value *lhs, Tokens op, llvm::Value *rhs
     auto math = solve(lhs_val, op, rhs_val);
     return type.set_loaded_value(math, builder);
 }
+
+llvm::Value *CompileExpr::UnaryExpr(llvm::Value *lhs, Tokens op, std::function<llvm::Value *(Tokens, llvm::Value *)> solve, OptionalType type)
+{
+    auto lhs_val = type.get_inner_value(builder, lhs, true);
+    auto math = solve(op, lhs_val);
+    return type.set_loaded_value(math, builder);
+}
 llvm::Value *CompileExpr::IntegerBool(llvm::Value *lhs, Tokens op, llvm::Value *rhs)
 {
     auto integer_type = compiler_context.get_integer_type();
@@ -555,6 +562,18 @@ llvm::Value *CompileExpr::StringBoolMathExpr(llvm::Value *lhs, Tokens op, llvm::
     return BoolType.set_loaded_value(math, builder);
 }
 
+llvm::Value *CompileExpr::UnaryMath(llvm::Value *lhs, Tokens op)
+{
+    switch (op.type)
+    {
+    case TokenType::Bitwise_Not:
+    {
+        return builder.CreateNot(lhs);
+    }
+    }
+    return nullptr;
+}
+
 ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
 {
     if (dynamic_cast<IntegerNode *>(node.get()))
@@ -661,6 +680,17 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         auto c = dynamic_cast<BooleanExprNode *>(node.get());
         auto get_type = get_binary_bool_expr_type(node);
         return ShortCicuitEval(c, get_type);
+    }
+    else if (dynamic_cast<UnaryExprNode *>(node.get()))
+    {
+        auto c = dynamic_cast<UnaryExprNode *>(node.get());
+
+        auto compiled = Expression(c->expr);
+        compiled.value->dump();
+
+        // if (dynamic_cast<UnaryExprNode *>(node.get()))
+        return {this->block, UnaryExpr(compiled.value, c->op, [&](Tokens op, llvm::Value *rhs)
+                                       { return this->UnaryMath(rhs, op); }, compiler_context.get_integer_type())};
     }
     return {this->block, nullptr};
 }

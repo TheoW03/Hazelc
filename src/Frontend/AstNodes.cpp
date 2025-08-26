@@ -55,6 +55,7 @@ ASTNode::ASTNode()
 {
 }
 std::string IntegerNode::to_string()
+
 {
     return std::to_string(this->number);
 }
@@ -659,4 +660,22 @@ void DemoduarlizedProgramNode::Accept(Visitor *v)
 std::string DemoduarlizedProgramNode::to_string()
 {
     return std::string();
+}
+UnaryExprNode::UnaryExprNode()
+{
+}
+UnaryExprNode::UnaryExprNode(Tokens op, std::shared_ptr<ASTNode> expr)
+{
+    this->op = op;
+    this->expr = expr;
+}
+void UnaryExprNode::Accept(Visitor *v)
+{
+    v->Visit(this);
+}
+
+std::string UnaryExprNode::to_string()
+{
+    return "";
+    // v->Visit(this);
 }

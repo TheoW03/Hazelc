@@ -88,6 +88,7 @@ class CompileExpr
 {
 private:
     llvm::Value *MathExpr(llvm::Value *lhs, Tokens op, llvm::Value *rhs, std::function<llvm::Value *(llvm::Value *, Tokens, llvm::Value *)> solve, OptionalType type);
+    llvm::Value *UnaryExpr(llvm::Value *lhs, Tokens op, std::function<llvm::Value *(Tokens, llvm::Value *)> solve, OptionalType type);
 
     llvm::Value *CompileStr(llvm::Value *str, llvm::Value *length, llvm::Value *structure);
     // llvm::Value *IntegerMath(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
@@ -129,6 +130,7 @@ public:
     llvm::Value *BoolBoolExpr(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
     llvm::Value *StringMathExpr(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
     llvm::Value *StringBoolMathExpr(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
+    llvm::Value *UnaryMath(llvm::Value *lhs, Tokens op);
 
     ValueStruct Expression(std::shared_ptr<ASTNode> node);
     ValueStruct ShortCicuitEval(BooleanExprNode *node, TypeOfExpr type);

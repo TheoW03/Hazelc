@@ -85,6 +85,10 @@ void TypeCheckerVistor::Visit(ConditionalNode *node)
         }
     }
 }
+void TypeCheckerVistor::Visit(UnaryExprNode *node)
+{
+    node->expr->Accept(this);
+}
 CheckExpressionType::CheckExpressionType(std::shared_ptr<Type> match_type, IntermediateScope s, std::map<std::string, std::shared_ptr<FunctionRefNode>> local_functions)
 {
     this->match_type = match_type;
@@ -144,6 +148,17 @@ std::shared_ptr<Type> CheckExpressionType::traverse_type(std::shared_ptr<ASTNode
             error("expected " + lhstype->get_type_value() + " got " + rhstype->get_type_value(), exprs->op);
         }
         return std::make_shared<BoolType>();
+    }
+    else if (dynamic_cast<UnaryExprNode *>(expr.get()) != nullptr)
+    {
+        auto exprs = dynamic_cast<UnaryExprNode *>(expr.get());
+        auto c = exprs->expr;
+        auto expr = traverse_type(exprs->expr);
+        if (c == nullptr)
+        {
+            std::cout << "test" << std::endl;
+        }
+        return expr;
     }
     return nullptr;
 }

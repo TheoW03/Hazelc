@@ -13,7 +13,7 @@ int main(int argc, char const *argv[])
     struct String s1 = {"hello world", 5};
     size_t start = 2;
     size_t end = 10;
-    size_t len = end - start;
+    int len = ~1 + 1 >> 1;
     char *sub = malloc(len);
     memcpy(sub, s1.str + start, len);
     printf("%s \n", sub);

@@ -113,6 +113,12 @@ std::optional<std::shared_ptr<ASTNode>> factor(std::vector<Tokens> &tokens)
         match_and_remove(TokenType::Close_Parenthesis, tokens);
         return ret;
     }
+    else if (look_ahead(TokenType::Bitwise_Not, tokens))
+    {
+        auto c = match_and_remove(TokenType::Bitwise_Not, tokens);
+        auto expr = factor(tokens);
+        return std::make_shared<UnaryExprNode>(c.value(), expr.value());
+    }
     else
     {
         error("invalid expr identifier ", peek(tokens));

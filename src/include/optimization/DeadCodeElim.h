@@ -19,7 +19,7 @@ public:
     std::unordered_map<std::string, std::shared_ptr<FunctionNode>> functions;
     std::set<std::string> visited;
     DeadCode();
-    std::stack<std::shared_ptr<FunctionNode>> workList;
+    std::queue<std::shared_ptr<FunctionNode>> workList;
     void Visit(DemoduarlizedProgramNode *node) override;
 
     // void Visit(ProgramNode *node) override;

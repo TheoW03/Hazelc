@@ -517,3 +517,19 @@ public:
     std::string to_string() override;
 };
 #endif
+
+#ifndef UNARY_H
+#define UNARY_H
+
+class Visitor;
+class UnaryExprNode : public ASTNode
+{
+public:
+    std::shared_ptr<ASTNode> expr;
+    Tokens op;
+    UnaryExprNode();
+    UnaryExprNode(Tokens op, std::shared_ptr<ASTNode> expr);
+    void Accept(Visitor *v) override;
+    std::string to_string();
+};
+#endif

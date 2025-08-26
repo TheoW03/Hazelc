@@ -139,6 +139,8 @@ public:
     void Visit(ExprNode *node) override;
     void Visit(BooleanExprNode *node) override;
     void Visit(ConditionalNode *node) override;
+    void Visit(UnaryExprNode *node) override;
+
     void Visit(DemoduarlizedProgramNode *node) override;
 };
 #endif

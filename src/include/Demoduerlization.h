@@ -20,6 +20,7 @@ public:
     void Visit(BooleanExprNode *node) override;
     void Visit(ConditionalNode *node) override;
     void Visit(BlockNode *node) override;
+    void Visit(UnaryExprNode *node) override;
 
     void Visit(FunctionCallNode *node) override;
 };
