@@ -131,5 +131,6 @@ public:
     llvm::Value *StringBoolMathExpr(llvm::Value *lhs, Tokens op, llvm::Value *rhs);
 
     ValueStruct Expression(std::shared_ptr<ASTNode> node);
+    ValueStruct ShortCicuitEval(BooleanExprNode *node, TypeOfExpr type);
 };
 #endif

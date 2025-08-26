@@ -15,10 +15,11 @@
 
 bool check_ret(std::shared_ptr<ASTNode> node)
 {
-    return dynamic_cast<IntegerNode *>(node.get())    //
-           || dynamic_cast<DecimalNode *>(node.get()) //
-           || dynamic_cast<StringNode *>(node.get())  //
-           || dynamic_cast<CharNode *>(node.get());   //
+    return dynamic_cast<IntegerNode *>(node.get())          //
+           || dynamic_cast<DecimalNode *>(node.get())       //
+           || dynamic_cast<StringNode *>(node.get())        //
+           || dynamic_cast<CharNode *>(node.get())          //
+           || dynamic_cast<BooleanConstNode *>(node.get()); //
 }
 
 void InlineFunctionsVisitor::Visit(DemoduarlizedProgramNode *node)

@@ -142,6 +142,7 @@ void runPasses(std::shared_ptr<ProgramNode> node, Output cli)
         demoddlarize = std::make_shared<DemodularizedVisitor>(IntermediateScope(semantic->modules));
         node->Accept(demoddlarize.get());
     }
+
     demoddlarize->program.Accept(std::make_shared<ConstantFoldingVisitor>().get());
 
     if (cli.optimze_level != OptimizeLevel::No_Optimize)

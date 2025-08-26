@@ -57,23 +57,24 @@ std::shared_ptr<ASTNode> BranchSimplfyVisitor::substitute(std::shared_ptr<ASTNod
         {
             return c->branches[0]->stmnts->exit->Expr;
         }
-        for (int i = 0; i < c->branches.size() - 1; i++)
+        for (auto i = c->branches.begin(); i != c->branches.end() - 1;)
         {
-            if (dynamic_cast<BooleanConstNode *>(c->branches[i]->condition.get()))
+            if (auto boolc = dynamic_cast<BooleanConstNode *>((*i)->condition.get()))
             {
+                (*i)->stmnts->Accept(this);
 
-                auto boolc = dynamic_cast<BooleanConstNode *>(c->branches[i]->condition.get());
-                c->branches[i]->stmnts->Accept(this);
                 if (boolc->val)
                 {
-                    return c->branches[i]->stmnts->exit->Expr;
+                    return (*i)->stmnts->exit->Expr;
                 }
-                if (!boolc->val)
-                {
-                    c->branches.erase(c->branches.begin() + i);
-                }
+                c->branches.erase(i);
+            }
+            else
+            {
+                ++i;
             }
         }
+
         return node;
     }
     if (dynamic_cast<ExprNode *>(node.get()))

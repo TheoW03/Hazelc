@@ -602,6 +602,7 @@ void print_tokens(std::vector<Tokens> tokens)
     token_map[TokenType::Logical_And] = "and";
     token_map[TokenType::Logical_Or] = "or";
     token_map[TokenType::True] = "true";
+    token_map[TokenType::False] = "false";
 
     token_map[TokenType::cont_line] = "contine";
     token_map[TokenType::Open_Bracket] = "Open bracket";

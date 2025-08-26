@@ -302,7 +302,9 @@ structure ListStructure
 Math operators in hazel will work with any 2 numbers of the same type yield a number that is the same type of the 2 numbers you provided, so
 an integer + integer yields an integer 
 
-Unlike most functional languages. there is no function notation for operators and no operator overloads. You must do left hand side value operator right hand side value for binary operators or operator value. for unary operators
+Unlike most functional languages. there is no function notation for operators and no operator overloads.
+ You must do left hand side value operator right hand side value for binary operators or operator value. for unary operators
+
 
 \begin{table}[H]
     \centering
@@ -310,18 +312,19 @@ Unlike most functional languages. there is no function notation for operators an
       
 \subsection*{Operator} & \subsection*{Function} & \subsection*{Example}
  \\ \hline
-      + & Addition, Adds any 2 numbers together & 1 + 1 \\ \hline
-      - & Subtraction, subtracts 2 numbers together  & 1 - 1 \\ \hline
-      * & Multiplication, Multiplies 2 numbers together & 1 * 1\\ \hline
-      / & Division, Divides 2 numbers, assuming the denominator is not 0 & 1/2 \\ \hline
-      $>>,<<$ & bit-shift left and bit-shift right, this is an integer exclusive operator that shifts the bits of a number, yielding a result that's divide by 2 or multiply by 2 & $1 << 2, 1 >> 2$  \\ \hline   
-      $\sim$ & performs bit-wise ``NOT" of one side. works on Integer types & $\sim1$  \\ \hline     
-       $\&$ & performs bit-wise ``AND" between left hand side and right hand side. it works on Integers types & 1 $\&$ 1   \\ \hline   
-      $|$ & performs bit-wise ``OR" between left hand side and right hand side. it works on Integer types & 1 $|$ 1   \\ \hline   
-      \^{ } & performs bit-wise ``XOR" between left hand side and right hand side. it works on Integer types & 1 \^{ } 1   \\ \hline   
-       and & performs logical ``AND" between left hand side and right hand side. it works on boolean types & true and false   \\ \hline   
-      or & performs logical ``OR" between left hand side and right hand side. it works on  boolean types & true or false   \\ \hline   
-        not & performs logical ``NOT" of one side. it works on  boolean types & not true, not true and false   \\ \hline   
+    + & Addition, Adds any 2 numbers together & 1 + 1 \\ \hline
+    - & Subtraction, subtracts 2 numbers together  & 1 - 1 \\ \hline
+    * & Multiplication, Multiplies 2 numbers together & 1 * 1\\ \hline
+    / & Division, Divides 2 numbers, assuming the denominator is not 0 & 1/2 \\ \hline
+    \% & Modulas, Takes the modulo of 2 integrs & 1\%2 \\ \hline
+    $>>,<<$ & right bitshift and left bitshift, shifts the bits of the number on the left hand side, with how many on the right hand side. Works on integer types & $1 << 2, 1 >> 2$  \\ \hline   
+    $\sim$ & bit-wise ``NOT", negates the bits of a number. Works on Integer types & $\sim1$  \\ \hline     
+    $\&$ & performs bit-wise ``AND" between left hand side and right hand side. Works on Integer and boolean types & 1 $\&$ 1, true $\&$ false  \\ \hline   
+    $|$ & performs bit-wise ``OR" between left hand side and right hand side. Works on Integer and boolean types & 1 $|$ 1, true $|$ false   \\ \hline   
+    \^{ } & performs bit-wise ``XOR" between left hand side and right hand side. Works on Integer and boolean types & 1 \^{ } 1, true  \^{ } false   \\ \hline   
+    and & performs logical ``AND" between left hand side and right hand side, it uses short-circuit evaluation. Works on boolean types & true and false   \\ \hline   
+    or & performs logical ``OR" between left hand side and right hand side, it uses short-circuit evaluation. Works on  boolean types & true or false   \\ \hline   
+    not & performs logical ``NOT" of one side. Works on  boolean types & not true, not false   \\ \hline   
 
     \end{tabular}
        
@@ -348,7 +351,7 @@ Example  1 = 1 yields true
       $<=$ & Less than or equal to, returns true if left-hand-side is less than or equal to right hand size 0 & $1 <= 1$ \\ \hline
       
     \end{tabular}
-        \caption{Types in hazel}
+        \caption{Comparison operators}
 \end{table}
 
 
@@ -371,6 +374,7 @@ and they don't mutate the type. they create a new new list or string after every
     \end{tabular}
         \caption{Types in hazel}
 \end{table}
+
 
 \section{Functions}
 

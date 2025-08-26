@@ -168,6 +168,10 @@ std::shared_ptr<ASTNode> FoldExpr::fold_bool_const(std::shared_ptr<BooleanConstN
 {
     switch (op.type)
     {
+    case EQ:
+        return std::make_shared<BooleanConstNode>(lhs->val == rhs->val);
+    case NE:
+        return std::make_shared<BooleanConstNode>(lhs->val != rhs->val);
     case Logical_And:
         return std::make_shared<BooleanConstNode>(lhs->val && rhs->val);
     case Logical_Or:
@@ -229,6 +233,28 @@ std::shared_ptr<ASTNode> FoldExpr::fold_bool_string(std::shared_ptr<StringNode> 
     }
     return std::shared_ptr<ASTNode>();
 }
+std::shared_ptr<ASTNode> FoldExpr::short_ciruit_fold(std::shared_ptr<BooleanConstNode> lhs, Tokens op)
+{
+    switch (op.type)
+    {
+    case Logical_And:
+    {
+        if (lhs->val == false)
+        {
+            return std::make_shared<BooleanConstNode>(false);
+        }
+    }
+    case Logical_Or:
+    {
+        if (lhs->val == true)
+        {
+            return std::make_shared<BooleanConstNode>(true);
+        }
+    }
+    }
+    return lhs;
+}
+
 std::shared_ptr<ASTNode> FoldExpr::fold_expr(std::shared_ptr<ASTNode> n)
 {
 
@@ -304,8 +330,20 @@ std::shared_ptr<ASTNode> FoldExpr::fold_expr(std::shared_ptr<ASTNode> n)
             auto lhsInt = dynamic_cast<BooleanConstNode *>(lhs.get())->val;
             auto rhsInt = dynamic_cast<BooleanConstNode *>(rhs.get())->val;
 
-            return fold_bool_integer(std::make_shared<IntegerNode>(lhsInt),
-                                     expr->op, std::make_shared<IntegerNode>(rhsInt));
+            return fold_bool_const(std::make_shared<BooleanConstNode>(lhsInt),
+                                   expr->op, std::make_shared<BooleanConstNode>(rhsInt));
+        }
+        else if (dynamic_cast<BooleanConstNode *>(lhs.get()))
+        {
+            auto lhsInt = dynamic_cast<BooleanConstNode *>(lhs.get())->val;
+            lhs = short_ciruit_fold(std::make_shared<BooleanConstNode>(lhsInt),
+                                    expr->op);
+        }
+        else if (dynamic_cast<BooleanConstNode *>(rhs.get()))
+        {
+            auto rhsInt = dynamic_cast<BooleanConstNode *>(rhs.get())->val;
+            rhs = short_ciruit_fold(std::make_shared<BooleanConstNode>(rhsInt),
+                                    expr->op);
         }
         return std::make_shared<BooleanExprNode>(lhs, expr->op, rhs);
     }
