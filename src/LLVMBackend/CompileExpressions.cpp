@@ -271,7 +271,26 @@ ValueStruct CompileExpr::CompileConditional(ConditionalNode *condition_stmnt)
 
 TypeOfExpr CompileExpr::get_binary_expr_type(std::shared_ptr<ASTNode> n)
 {
+    if (dynamic_cast<UnaryExprNode *>(n.get()))
+    {
+        auto unaryexpr = dynamic_cast<UnaryExprNode *>(n.get())->expr;
+        return get_binary_expr_type(unaryexpr);
+    }
+    if (dynamic_cast<IntegerNode *>(n.get()))
+        return TypeOfExpr::Integer_Type;
+    else if (dynamic_cast<DecimalNode *>(n.get()))
+        return TypeOfExpr::Float_Type;
+    else if (dynamic_cast<BooleanConstNode *>(n.get()))
+        return TypeOfExpr::Boolean_Type;
+    else if (dynamic_cast<StringNode *>(n.get()))
+        return TypeOfExpr::String_Type;
+    else if (dynamic_cast<FunctionCallNode *>(n.get()))
+    {
+        auto func = dynamic_cast<FunctionCallNode *>(n.get());
+        return get_type_func_call(compiler_context.get_function(func).value());
+    }
     auto c = dynamic_cast<ExprNode *>(n.get());
+
     if (dynamic_cast<IntegerNode *>(c->lhs.get()) && dynamic_cast<IntegerNode *>(c->rhs.get()))
         return TypeOfExpr::Integer_Type;
     else if (dynamic_cast<DecimalNode *>(c->lhs.get()) && dynamic_cast<DecimalNode *>(c->rhs.get()))
@@ -640,10 +659,10 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         auto c = dynamic_cast<FunctionCallNode *>(node.get());
         auto func = compiler_context.get_function(c);
         // std::cout << c->hash_name.value() << std::endl;
-        // for (const auto &pair : compiler_context.global_functions)
-        // {
-        //     std::cout << "Key: " << pair.first << ", Value: " << pair.second << std::endl;
-        // }
+        for (const auto &pair : compiler_context.global_functions)
+        {
+            std::cout << "Key: " << pair.first << ", Value: " << pair.second << std::endl;
+        }
         auto value = func.value()->compile(compiler_context, block, module, builder, context);
         this->block = value.block;
 
@@ -693,11 +712,25 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
         auto c = dynamic_cast<UnaryExprNode *>(node.get());
 
         auto compiled = Expression(c->expr);
+        auto type = get_binary_expr_type(node);
+        switch (type)
+        {
+        case Integer_Type:
+        {
+            return {this->block, UnaryExpr(compiled.value, c->op, [&](Tokens op, llvm::Value *rhs)
+                                           { return this->UnaryMath(rhs, op); }, compiler_context.get_integer_type())};
+        }
+        case Boolean_Type:
+        {
+            return {this->block, UnaryExpr(compiled.value, c->op, [&](Tokens op, llvm::Value *rhs)
+                                           { return this->UnaryMath(rhs, op); }, compiler_context.get_boolean_type())};
+        }
+        }
         compiled.value->dump();
 
         // if (dynamic_cast<UnaryExprNode *>(node.get()))
-        return {this->block, UnaryExpr(compiled.value, c->op, [&](Tokens op, llvm::Value *rhs)
-                                       { return this->UnaryMath(rhs, op); }, compiler_context.get_integer_type())};
+        // return {this->block, UnaryExpr(compiled.value, c->op, [&](Tokens op, llvm::Value *rhs)
+        //    { return this->UnaryMath(rhs, op); }, compiler_context.get_integer_type())};
     }
     return {this->block, nullptr};
 }

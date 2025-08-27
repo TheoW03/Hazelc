@@ -313,6 +313,18 @@ std::shared_ptr<ASTNode> FoldExpr::fold_expr(std::shared_ptr<ASTNode> n)
             }
             }
         }
+        else if (dynamic_cast<BooleanConstNode *>(lhs.get()))
+        {
+            auto lhsInt = dynamic_cast<BooleanConstNode *>(lhs.get())->val;
+
+            switch (expr->op.type)
+            {
+            case Bitwise_Not:
+            {
+                return std::make_shared<BooleanConstNode>(!(lhsInt));
+            }
+            }
+        }
     }
     else if (dynamic_cast<BooleanExprNode *>(n.get()))
     {

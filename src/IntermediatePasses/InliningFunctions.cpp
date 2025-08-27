@@ -102,5 +102,11 @@ std::shared_ptr<ASTNode> InlineFunctionsVisitor::substitute(std::shared_ptr<ASTN
         c->rhs = substitute(c->rhs);
         return std::make_shared<BooleanExprNode>(c->lhs, c->op, c->rhs);
     }
+    if (dynamic_cast<UnaryExprNode *>(node.get()))
+    {
+        auto c = dynamic_cast<UnaryExprNode *>(node.get());
+        c->expr = substitute(c->expr);
+        return std::make_shared<UnaryExprNode>(c->op, c->expr);
+    }
     return node;
 }

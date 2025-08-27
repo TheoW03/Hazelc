@@ -212,6 +212,11 @@ void SemanticLocalScopeVisitor::Visit(BranchNode *node)
     scope.erase(scope.end() - 1);
 }
 
+void SemanticLocalScopeVisitor::Visit(UnaryExprNode *node)
+{
+    node->expr->Accept(this);
+}
+
 void SemanticLocalScopeVisitor::Visit(BlockNode *node)
 {
     for (int i = 0; i < node->functions.size(); i++)

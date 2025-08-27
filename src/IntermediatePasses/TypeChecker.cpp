@@ -154,10 +154,7 @@ std::shared_ptr<Type> CheckExpressionType::traverse_type(std::shared_ptr<ASTNode
         auto exprs = dynamic_cast<UnaryExprNode *>(expr.get());
         auto c = exprs->expr;
         auto expr = traverse_type(exprs->expr);
-        if (c == nullptr)
-        {
-            std::cout << "test" << std::endl;
-        }
+
         return expr;
     }
     return nullptr;

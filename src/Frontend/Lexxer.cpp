@@ -134,7 +134,6 @@ std::map<std::string, TokenType> get_keyword_map()
     token_map["<<"] = TokenType::Left_Shift;
     token_map["and"] = TokenType::Logical_And;
     token_map["or"] = TokenType::Logical_Or;
-    token_map["not"] = TokenType::Logical_Not;
 
     token_map["("] = TokenType::Open_Parenthesis;
     token_map[")"] = TokenType::Close_Parenthesis;

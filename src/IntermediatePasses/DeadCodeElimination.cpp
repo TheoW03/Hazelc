@@ -31,20 +31,17 @@ void DeadCode::Visit(DemoduarlizedProgramNode *node)
     {
         auto f = workList.front();
         workList.pop();
-        if (f->hash_name.has_value())
-        {
 
-            this->local_functions.clear();
-        }
         if (!isVisited(f))
         {
 
             f->Accept(this);
-
             functions_referenced.push_back(f);
             this->visited.insert(f->hash_name.value_or(f->f->FunctionName.value));
         }
     }
+    std::cout << functions_referenced.size() << std::endl;
+
     node->functions = functions_referenced;
     std::cout << "hazelc: Dead Code Elimination" << std::endl;
 }
@@ -65,7 +62,7 @@ std::optional<std::shared_ptr<FunctionNode>> DeadCode::getfunction(FunctionCallN
 }
 std::optional<std::shared_ptr<FunctionNode>> DeadCode::getfunction(std::shared_ptr<FunctionNode> node)
 {
-    if (node->hash_name.has_value() && this->functions.find(node->hash_name.value_or(node->hash_name.value())) != this->functions.end())
+    if (node->hash_name.has_value() && this->functions.find(node->hash_name.value()) != this->functions.end())
     {
         return this->functions[node->hash_name.value()];
     }
@@ -147,6 +144,10 @@ void DeadCode::Visit(BooleanExprNode *node)
 {
     node->lhs->Accept(this);
     node->rhs->Accept(this);
+}
+void DeadCode::Visit(UnaryExprNode *node)
+{
+    node->expr->Accept(this);
 }
 void DeadCode::Visit(ReturnNode *node)
 {
