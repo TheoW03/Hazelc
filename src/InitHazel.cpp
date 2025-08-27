@@ -146,7 +146,7 @@ void runPasses(std::shared_ptr<ProgramNode> node, Output cli)
     demoddlarize->program.Accept(std::make_shared<ConstantFoldingVisitor>().get());
 
     if (cli.optimze_level != OptimizeLevel::No_Optimize)
-        for (int i = 0; i < 1; i++)
+        for (int i = 0; i < 3; i++)
         {
 
             demoddlarize->program.Accept(std::make_shared<InlineFunctionsVisitor>().get());
