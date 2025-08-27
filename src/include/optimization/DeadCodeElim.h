@@ -17,11 +17,15 @@ public:
     std::vector<std::shared_ptr<FunctionNode>> functions_referenced;
     std::vector<Tokens> func_calls;
     std::unordered_map<std::string, std::shared_ptr<FunctionNode>> functions;
+    std::unordered_map<std::string, std::shared_ptr<FunctionNode>> local_functions;
+
     std::set<std::string> visited;
     DeadCode();
     std::queue<std::shared_ptr<FunctionNode>> workList;
     void Visit(DemoduarlizedProgramNode *node) override;
+    std::optional<std::shared_ptr<FunctionNode>> getfunction(std::shared_ptr<FunctionNode> node);
 
+    std::optional<std::shared_ptr<FunctionNode>> getfunction(FunctionCallNode *node);
     // void Visit(ProgramNode *node) override;
     void Visit(FunctionNode *node) override;
     void Visit(ExprNode *node) override;

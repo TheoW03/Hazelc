@@ -639,9 +639,16 @@ ValueStruct CompileExpr::Expression(std::shared_ptr<ASTNode> node)
     {
         auto c = dynamic_cast<FunctionCallNode *>(node.get());
         auto func = compiler_context.get_function(c);
+        // std::cout << c->hash_name.value() << std::endl;
+        // for (const auto &pair : compiler_context.global_functions)
+        // {
+        //     std::cout << "Key: " << pair.first << ", Value: " << pair.second << std::endl;
+        // }
         auto value = func.value()->compile(compiler_context, block, module, builder, context);
         this->block = value.block;
+
         return value;
+        // return {nullptr, this->block};
     }
     else if (dynamic_cast<ExprNode *>(node.get()))
     {

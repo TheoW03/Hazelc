@@ -29,12 +29,12 @@ void DeadCode::Visit(DemoduarlizedProgramNode *node)
     this->workList.push(main);
     while (!workList.empty())
     {
-        auto f = workList.back();
+        auto f = workList.front();
         workList.pop();
         if (f->hash_name.has_value())
         {
 
-            this->functions = node->global_functions;
+            this->local_functions.clear();
         }
         if (!isVisited(f))
         {
@@ -46,13 +46,40 @@ void DeadCode::Visit(DemoduarlizedProgramNode *node)
         }
     }
     node->functions = functions_referenced;
-    std::cout << "dead code" << std::endl;
+    std::cout << "hazelc: Dead Code Elimination" << std::endl;
 }
 
+std::optional<std::shared_ptr<FunctionNode>> DeadCode::getfunction(FunctionCallNode *node)
+{
+
+    if (node->hash_name.has_value() && this->functions.find(node->hash_name.value_or(node->hash_name.value())) != this->functions.end())
+    {
+        return this->functions[node->hash_name.value()];
+    }
+    else if (this->local_functions.find(node->name.value) != this->local_functions.end())
+    {
+        return this->local_functions[node->hash_name.value()];
+    }
+
+    return {};
+}
+std::optional<std::shared_ptr<FunctionNode>> DeadCode::getfunction(std::shared_ptr<FunctionNode> node)
+{
+    if (node->hash_name.has_value() && this->functions.find(node->hash_name.value_or(node->hash_name.value())) != this->functions.end())
+    {
+        return this->functions[node->hash_name.value()];
+    }
+    else if (this->local_functions.find(node->f->FunctionName.value) != this->local_functions.end())
+    {
+        return this->local_functions[node->f->FunctionName.value];
+    }
+
+    return {};
+}
 bool DeadCode::isVisited(std::shared_ptr<FunctionNode> node)
 {
     if (this->visited.find(node->hash_name.value_or(node->f->FunctionName.value)) != this->visited.end() //
-        && this->functions.find(node->hash_name.value_or(node->f->FunctionName.value)) != this->functions.end())
+        && getfunction(node).has_value())
     {
         return true;
     }
@@ -61,7 +88,6 @@ bool DeadCode::isVisited(std::shared_ptr<FunctionNode> node)
 
 void DeadCode::Visit(FunctionNode *node)
 {
-    std::cout << node->f->FunctionName.value << std::endl;
     node->stmnts->Accept(this);
 }
 
@@ -77,7 +103,7 @@ void DeadCode::Visit(FunctionCallNode *node)
     // {
     //     std::cout << node->param_types[i]->FunctionName.value << std::endl;
     // }
-    this->workList.push(this->functions[node->hash_name.value_or(node->name.value)]);
+    this->workList.push(getfunction(node).value());
 
     // for (int i = 0; i < node->param_types.size(); i++)
     // {
@@ -96,13 +122,13 @@ void DeadCode::Visit(BlockNode *node)
     {
         auto name = node->functions[i]->f->FunctionName;
 
-        if (this->functions.find(name.value) != this->functions.end())
+        if (this->local_functions.find(name.value) != this->functions.end())
         {
-            this->functions[name.value] = node->functions[i];
+            this->local_functions[name.value] = node->functions[i];
         }
         else
         {
-            this->functions.insert(std::make_pair(name.value, node->functions[i]));
+            this->local_functions.insert(std::make_pair(name.value, node->functions[i]));
         }
         this->visited.erase(name.value);
     }
