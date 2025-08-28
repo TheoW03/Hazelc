@@ -29,7 +29,7 @@ void DeadCode::Visit(DemoduarlizedProgramNode *node)
     this->workList.push(main);
     while (!workList.empty())
     {
-        auto f = workList.front();
+        auto f = workList.top();
         workList.pop();
 
         if (!isVisited(f))
@@ -55,7 +55,7 @@ std::optional<std::shared_ptr<FunctionNode>> DeadCode::getfunction(FunctionCallN
     }
     else if (this->local_functions.find(node->name.value) != this->local_functions.end())
     {
-        return this->local_functions[node->hash_name.value()];
+        return this->local_functions[node->name.value];
     }
 
     return {};

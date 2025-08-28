@@ -21,7 +21,7 @@ public:
 
     std::set<std::string> visited;
     DeadCode();
-    std::queue<std::shared_ptr<FunctionNode>> workList;
+    std::stack<std::shared_ptr<FunctionNode>> workList;
     void Visit(DemoduarlizedProgramNode *node) override;
     std::optional<std::shared_ptr<FunctionNode>> getfunction(std::shared_ptr<FunctionNode> node);
 

@@ -23,6 +23,8 @@ void CompileStatement::Visit(FunctionNode *node)
     // all functions are stored in a stack. the compiler pulls a function from the stack
     // sees if its a global or local function
     // if local we put it in the local scope. if global we generate it
+    std::cout << node->f->FunctionName.value << std::endl;
+
     auto current_function = this->compiler_context.set_current_function();
     if (!current_function.isAnonymous && !node->hash_name.has_value())
     {
@@ -50,8 +52,8 @@ void CompileStatement::Visit(DemoduarlizedProgramNode *node)
 
     for (int i = 0; i < node->functions.size(); i++)
     {
-        // std::cout << "visited: " << functions[i]->f->FunctionName.value << std::endl;
-        // std::cout << "in stack: " << compiler_context.set_current_function().name.value << std::endl;
+        std::cout << "visited: " << functions[i]->f->FunctionName.value << std::endl;
+        std::cout << "in stack: " << compiler_context.set_current_function().name.value << std::endl;
         functions[i]->Accept(this);
     }
     // exit(EXIT_FAILURE);

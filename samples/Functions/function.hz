@@ -1,5 +1,5 @@
 module fuction
 
 
-let f : integer => f
-let main : integer => f
+let add(let a : integer, let b : integer) : integer => a + b
+let main : integer => add(1,1)
